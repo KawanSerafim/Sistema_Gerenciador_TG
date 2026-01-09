@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tcc.aluno.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.objetosvalor;
 
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.ValidacaoExcecao;
