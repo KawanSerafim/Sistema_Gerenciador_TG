@@ -27,6 +27,8 @@ public class Professor {
         this.cargo = assegurarPresenca(cargo, "cargo");
     }
 
+    // Métodos Factory ---------------------------------------------------------
+
     public static Professor novo(Nome nome, Matricula matricula,
                                  ContaUsuario contaUsuario,
                                  CargoProfessor cargo) {
@@ -40,6 +42,8 @@ public class Professor {
         return new Professor(id, nome, matricula, contaUsuario, cargo);
     }
 
+    // Métodos especiais -------------------------------------------------------
+
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
@@ -48,9 +52,13 @@ public class Professor {
         return objeto;
     }
 
+    // Métodos de Atualização --------------------------------------------------
+
     public void atualizarCargo(CargoProfessor novoCargo) {
         this.cargo = assegurarPresenca(novoCargo, "cargo");
     }
+
+    // Métodos Getters de Delegação --------------------------------------------
 
     public Email email() {
         return contaUsuario.email();
@@ -59,4 +67,12 @@ public class Professor {
     public StatusContaUsuario statusContaUsuario() {
         return contaUsuario.status();
     }
+
+    // Métodos Getters ---------------------------------------------------------
+
+    public ProfessorId id() { return id; }
+    public Nome nome() { return nome; }
+    public Matricula matricula() { return matricula; }
+    public ContaUsuario contaUsuario() { return contaUsuario; }
+    public CargoProfessor cargo() { return cargo; }
 }
