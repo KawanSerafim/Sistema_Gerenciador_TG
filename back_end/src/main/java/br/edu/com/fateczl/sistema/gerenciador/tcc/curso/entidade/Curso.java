@@ -34,6 +34,11 @@ public class Curso {
     public static Curso carregar(CursoId id, Nome nome,
                                  ParametrosCurso parametros,
                                  Professor coordenador) {
+        if(id == null) {
+            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "ID do curso");
+        }
+
         return new Curso(id, nome, parametros, coordenador);
     }
 

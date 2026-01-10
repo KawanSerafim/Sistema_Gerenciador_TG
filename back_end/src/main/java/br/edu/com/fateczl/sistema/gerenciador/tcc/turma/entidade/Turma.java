@@ -41,6 +41,11 @@ public class Turma {
                                  Disciplina disciplina, Turno turno,
                                  PeriodoLetivo periodoLetivo,
                                  Professor professorTg) {
+        if(id == null) {
+            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "ID da turma");
+        }
+
         return new Turma(id, curso, disciplina, turno, periodoLetivo,
                 professorTg);
     }

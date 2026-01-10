@@ -39,6 +39,11 @@ public class Professor {
                                      Matricula matricula,
                                      ContaUsuario contaUsuario,
                                      CargoProfessor cargo) {
+        if(id == null) {
+            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "ID do professor");
+        }
+
         return new Professor(id, nome, matricula, contaUsuario, cargo);
     }
 
