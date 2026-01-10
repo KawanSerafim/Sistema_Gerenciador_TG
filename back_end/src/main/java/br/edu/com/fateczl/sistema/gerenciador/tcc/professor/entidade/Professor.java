@@ -11,7 +11,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tcc.professor.objetosvalor.CargoPr
 import br.edu.com.fateczl.sistema.gerenciador.tcc.professor.objetosvalor.ProfessorId;
 
 public class Professor {
-    private ProfessorId id;
+    private final ProfessorId id;
     private final Nome nome;
     private final Matricula matricula;
     private final ContaUsuario contaUsuario;
