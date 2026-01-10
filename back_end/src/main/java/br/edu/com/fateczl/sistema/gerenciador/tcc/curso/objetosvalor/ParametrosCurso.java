@@ -34,4 +34,21 @@ public record ParametrosCurso(List<Turno> turnos,
     public boolean validarTurno(Turno turno) {
         return turnos.contains(turno);
     }
+
+    public boolean validarTipoTcc(TipoTcc tipoTcc) {
+        if(tipoTcc == null) return false;
+
+        return ajustesTipoTcc.stream().anyMatch(ajuste -> ajuste.tipoTcc()
+                .equals(tipoTcc));
+    }
+
+    public boolean validarQtdAlunosGrupo(TipoTcc tipoTcc, Integer quantidade) {
+        if(quantidade == null || quantidade < 1 || tipoTcc == null) return false;
+
+        return ajustesTipoTcc.stream()
+                .filter(ajuste -> ajuste.tipoTcc() == tipoTcc)
+                .findFirst()
+                .map(ajuste -> ajuste.validarQtdAlunosGrupo(quantidade))
+                .orElse(false);
+    }
 }
