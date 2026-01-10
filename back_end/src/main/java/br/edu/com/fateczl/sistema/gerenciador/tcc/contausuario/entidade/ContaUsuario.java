@@ -15,6 +15,8 @@ public class ContaUsuario {
         this.status = assegurarPresenca(status, "status");
     }
 
+    // Métodos Factory ---------------------------------------------------------
+
     public static ContaUsuario novo(Email email, Senha senha) {
         return new ContaUsuario(email, senha,
                 StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE);
@@ -25,6 +27,8 @@ public class ContaUsuario {
         return new ContaUsuario(email, senha, status);
     }
 
+    // Métodos especiais -------------------------------------------------------
+
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
@@ -32,6 +36,8 @@ public class ContaUsuario {
         }
         return objeto;
     }
+
+    // Métodos de Atualização --------------------------------------------------
 
     public void atualizarStatus(StatusContaUsuario novoStatus) {
         this.status = assegurarPresenca(novoStatus, "status");
@@ -41,13 +47,9 @@ public class ContaUsuario {
         this.senha = assegurarPresenca(novaSenha, "senha");
     }
 
-    public Email email() {
-        return email;
-    }
-    public Senha senha() {
-        return senha;
-    }
-    public StatusContaUsuario status() {
-        return status;
-    }
+    // Métodos Getters ---------------------------------------------------------
+
+    public Email email() { return email; }
+    public Senha senha() { return senha; }
+    public StatusContaUsuario status() { return status; }
 }
