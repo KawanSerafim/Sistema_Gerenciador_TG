@@ -7,7 +7,7 @@ public enum CodigoErro {
     VD_002_FORMATO_INVALIDO("VD", "O campo '%s' deve estar no formato '%s'."),
     VD_003_ASSOCIACAO_OBRIGATORIA("VD", "O campo '%s' deve ter uma associação" +
             " ao campo '%s'."),
-    VD_004_DATA_INVALIDA("VD", "O campo '%s' possui a data inválida."),
+    VD_004_DATA_INVALIDA("VD", "O campo '%s' deve respeitar a condição: '%s'."),
     VD_005_PADRAO_INVALIDO("VD", "O campo '%s' deve respeitar o padrão '%s'."),
     VD_006_COLECAO_OBRIGATORIA_VAZIA("VD", "A coleção '%s' deve ter um valor."),
     VD_007_CAMPO_NAO_SUPORTADO("VD", "O campo '%s' não é suportado."),
