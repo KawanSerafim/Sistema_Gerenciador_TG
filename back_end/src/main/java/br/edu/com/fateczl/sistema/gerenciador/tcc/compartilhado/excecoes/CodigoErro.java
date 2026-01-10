@@ -10,13 +10,14 @@ public enum CodigoErro {
     VD_004_DATA_INVALIDA("VD", "O campo '%s' deve respeitar a condição: '%s'."),
     VD_005_PADRAO_INVALIDO("VD", "O campo '%s' deve respeitar o padrão '%s'."),
     VD_006_COLECAO_OBRIGATORIA_VAZIA("VD", "A coleção '%s' deve ter um valor."),
-    VD_007_CAMPO_NAO_SUPORTADO("VD", "O campo '%s' não é suportado."),
+    VD_007_CAMPO_NAO_SUPORTADO("VD", "O campo '%s' não é suportado. Motivo: " +
+            "'%s'"),
     VD_008_ARQUIVO_INVALIDO("VD", "O arquivo não é válido."),
 
     // REGRA DE NEGÓCIO --------------------------------------------------------
 
     RN_001_ESTADO_INVALIDO_PARA_ACAO("RN", "O campo '%s' deve ter o estado " +
-            "válido para a '%s'."),
+            "'%s' para ser considerado válido para essa ação."),
     RN_002_REGISTRO_DUPLICADO("RN", "O campo '%s' tem valor duplicado."),
     RN_003_CONDICAO_ACAO_NAO_ATENDIDA("RN", "O campo '%s' não atende a " +
             "condição '%s'."),
