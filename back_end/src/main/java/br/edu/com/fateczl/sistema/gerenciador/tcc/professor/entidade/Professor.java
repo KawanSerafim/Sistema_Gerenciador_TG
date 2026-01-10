@@ -52,6 +52,18 @@ public class Professor {
         return objeto;
     }
 
+    public boolean podeSerOrientador() {
+        return cargo.podeSerOrientador();
+    }
+
+    public boolean podeSerProfessorTg() {
+        return cargo.podeSerProfessorTg();
+    }
+
+    public boolean podeSerCoordenadorCurso() {
+        return cargo.podeSerCoordenadorCurso();
+    }
+
     // Métodos de Atualização --------------------------------------------------
 
     public void atualizarCargo(CargoProfessor novoCargo) {
