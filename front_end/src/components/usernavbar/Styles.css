@@ -1,0 +1,5 @@
+.nav__link:hover {
+    /*Adiciona efeito de hover ao link*/
+    background-color: color-mix(in srgb, #333, transparent 80%) !important;
+    transition: 0.3s !important;
+}

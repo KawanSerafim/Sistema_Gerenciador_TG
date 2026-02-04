@@ -1,0 +1,19 @@
+//VARIÁVEIS DO BOOTSTRAP
+
+// CORES PERSONALIZADAS
+$primary: #B20000;
+$secondary: #46547C; // Geralmente um cinza para itens menos importantes
+$success: #28A745; // Para mensagens de sucesso/aprovado
+$danger: #DC3545; // Para erros/excluir
+$warning: #FFC107; // Para avisos de prazo
+$info: #17A2B8;
+
+
+// FUNDO E TEXTO
+$body-bg: #F4F4F4; // Cor de fundo da página (cinza claro no seu protótipo)
+$body-color: #212529; // Cor padrão do texto (quase preto)
+
+
+/* ============================================ */
+// Garante que o Bootstrap use as suas variáveis
+@import "bootstrap/scss/bootstrap";
