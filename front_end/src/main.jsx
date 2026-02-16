@@ -9,6 +9,7 @@ import CadastroProfessor from './pages/professor/CadastroProfessor.jsx';
 import FormarGrupo from './pages/aluno/formarGrupo/FormarGrupo.jsx';
 import ConfirmarEmail from './pages/utils/ConfirmarEmail.jsx';
 import CadastrarCurso from './pages/curso/CadastrarCurso.jsx';
+import VisaoSolicitacaoOrientacao from './pages/professor/visaoSolicitacaoOrientacao/VisaoSolicitacaoOrientacao.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/cadastro" element={<CadastroProfessor />} />
         <Route path="/confirmarEmail" element={<ConfirmarEmail />} />
         <Route path="/curso/cadastro" element={<CadastrarCurso />} />
+        <Route path="/professor/visaoSolicitarOrientacao" element={<VisaoSolicitacaoOrientacao />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
