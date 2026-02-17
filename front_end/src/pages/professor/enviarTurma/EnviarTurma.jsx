@@ -6,6 +6,14 @@ import "./EnviarTurma.css"
 
 const EnviarTurma = () => {
 
+    const [fileName, setFileName] = useState("");
+
+    const handleFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            setFileName(e.target.files[0].name);
+        }
+    }
+
     const [showSendInput, setShowSendInput] = useState(false)
 
     const handleSelectChange = (e) => {
@@ -52,8 +60,24 @@ const EnviarTurma = () => {
                     </FormGroup>
                     {showSendInput && (
                         <>
+
                             <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSendTurma">
-                                <FormControl type="file" title="Selecione o arquivo da turma .xlsx" placeholder="Selecione o arquivo da turma .xlsx" required={true} className='input-send text-black fw-bold fs-4 w-75' content="Selecione o arquivo da turma .xlsx" />
+                                {/* Input verdadeiro escondido */}
+                                <FormControl type="file"
+                                    id="input-arquivo-turma"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                    accept=".xlsx"
+                                    required={true} className='input-send text-black fw-bold fs-4 w-75' />
+                                {/* Label personalizada como botão */}
+                                <FormLabel
+                                    htmlFor="input-arquivo-turma"
+                                    className="btn btn-lg input-send py-3 fw-bold fs-4 w-75 fw-bold shadow"
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {fileName ? `Arquivo selecionado: ${fileName}` : "Clique aqui para selecionar a planilha de alunos (apenas .xlsx)"}
+                                </FormLabel>
+                                {/* Feedback visual */}
                             </FormGroup>
                             <FormGroup className="text-center">
                                 <Button
@@ -64,6 +88,7 @@ const EnviarTurma = () => {
                                     Cadastrar Turma
                                 </Button>
                             </FormGroup>
+                            {fileName && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
                         </>
                     )}
 

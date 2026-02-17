@@ -35,11 +35,10 @@ const CarregarTG = () => {
                     {/* Label personalizada como botão */}
                     <FormLabel
                         htmlFor="input-arquivo-tg"
-                        className=" input-send btn btn-lg w-75 py-3 fs-4 fw-bold shadow "
+                        className="input-send btn btn-lg w-75 py-3 fs-4 fw-bold shadow"
                         style={{ cursor: 'pointer' }}
                     >
-                        {/* Icone opcional (ex: Bootstrap Icons) */}
-                        <i className="bi bi-cloud-upload me-2"></i>
+
                         {fileName ? `Arquivo selecionado: ${fileName}` : "Clique aqui para selecionar o trabalho de graduação (apenas .pdf)"}
                     </FormLabel>
                     {/* Feedback visual */}
