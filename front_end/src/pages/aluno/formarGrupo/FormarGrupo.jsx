@@ -1,6 +1,6 @@
 import addIcon from '../../../assets/add.svg'
 import CancelIcon from '../../../assets/Cancel.svg'
-import { Container, Table } from 'react-bootstrap';
+import { Container, FormControl, FormLabel, FormSelect, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
