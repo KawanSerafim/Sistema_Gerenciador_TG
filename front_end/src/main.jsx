@@ -11,6 +11,7 @@ import ConfirmarEmail from './pages/utils/ConfirmarEmail.jsx';
 import CadastrarCurso from './pages/curso/CadastrarCurso.jsx';
 import VisaoSolicitacaoOrientacao from './pages/professor/visaoSolicitacaoOrientacao/VisaoSolicitacaoOrientacao.jsx';
 import EnviarTurma from './pages/professor/enviarTurma/enviarTurma.jsx';
+import VisaoGrupos from './pages/professor/visaoGrupos/VisaoGrupos.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/curso/cadastro" element={<CadastrarCurso />} />
         <Route path="/professor/visaoSolicitarOrientacao" element={<VisaoSolicitacaoOrientacao />} />
         <Route path="/professor/enviarTurma" element={<EnviarTurma />} />
+        <Route path="/professor/visaoGrupos" element={<VisaoGrupos />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
