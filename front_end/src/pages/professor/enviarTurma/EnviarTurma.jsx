@@ -1,7 +1,8 @@
-import { Container, Form, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap"
+import { Button, Container, Form, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import { useState } from "react"
 import TableComponent from "../../../components/table/TableComponent"
+import "./EnviarTurma.css"
 
 const EnviarTurma = () => {
 
@@ -30,7 +31,7 @@ const EnviarTurma = () => {
                 userName="Cristina"
             ></UserNavBar>
             <Container className="mt-5">
-                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Turma a ser enviada: </h2>
+                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Envio de planilha de alunos</h2>
                 <Form
                     validated={true}
                     className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
@@ -50,11 +51,20 @@ const EnviarTurma = () => {
                         </FormSelect>
                     </FormGroup>
                     {showSendInput && (
-                        <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSendTurma">
-                            <FormControl type="file" placeholder="Selecione o arquivo da turma .xlsx" required={true} className='bg-white text-black fw-bold fs-5 w-75' />
-
-                        </FormGroup>
-
+                        <>
+                            <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSendTurma">
+                                <FormControl type="file" title="Selecione o arquivo da turma .xlsx" placeholder="Selecione o arquivo da turma .xlsx" required={true} className='input-send text-black fw-bold fs-4 w-75' content="Selecione o arquivo da turma .xlsx" />
+                            </FormGroup>
+                            <FormGroup className="text-center">
+                                <Button
+                                    variant="primary"
+                                    type="submit"
+                                    id='btn-cadastro' className='mb-2 fs-4 fw-medium w-25'
+                                >
+                                    Cadastrar Turma
+                                </Button>
+                            </FormGroup>
+                        </>
                     )}
 
                 </Form>
