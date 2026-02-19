@@ -1,8 +1,9 @@
 import Table from 'react-bootstrap/Table';
 import './TableComponent.css'
 /** 
- * columns: [{ }]
- * data: [{ }]
+ * columns: lista de objetos contendo: header, accessor e opcionalmente um render 
+ * 
+ * data: lista de objetos contendo: id, valor1, valor2, valorN
 **/
 const TableComponent = ({ columns, data }) => {
 
