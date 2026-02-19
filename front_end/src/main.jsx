@@ -15,6 +15,7 @@ import VisaoGrupos from './pages/professor/visaoGrupos/VisaoGrupos.jsx';
 import VisaoAlunosEnviados from './pages/professor/visaoAlunosEnviados/VisaoAlunosEnviados.jsx';
 import CadastrarTurma from './pages/professor/coordenador/cadastrarTurma/CadastrarTurma.jsx';
 import CarregarTG from './pages/aluno/carregarTG/CarregarTG.jsx';
+import GerarCertificado from './pages/professor/gerarCertificado/GerarCertificado.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/visaoAlunosEnviados" element={<VisaoAlunosEnviados />} />
         <Route path="/coordenador/cadastrarTurmaTG" element={<CadastrarTurma />} />
         <Route path="/aluno/enviarTG" element={<CarregarTG />} />
+        <Route path="/professor/certificados" element={<GerarCertificado />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
