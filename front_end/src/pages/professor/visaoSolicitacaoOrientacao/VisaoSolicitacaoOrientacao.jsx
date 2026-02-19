@@ -1,22 +1,21 @@
 import { Button, Container, Modal, Stack } from 'react-bootstrap';
 import TableComponent from '../../../components/table/TableComponent'
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
-import { useState } from 'react';
 import "../../../styles/ModalIntegrantes.css"
+import { useModal } from '../../../hooks/useModal';
 
 const VisaoSolicitacaoOrientacao = () => {
-    //columns = buscara do backend
-    //data = buscara do backend
+    //TODO: //columns = buscara do backend  //data = buscara do backend
+
     //Modal integrantes
-    const [show, setShow] = useState(false);
-    const [selectedMembers, setSelectedMembers] = useState([]);
-    const handleClose = () => setShow(false);
-    const handleShowMembers = (members) => {
-        //Salva os integrantes a serem exibidos
-        setSelectedMembers(members);
-        //Exibe o modal
-        setShow(true);
-    }
+    //Usando hook do modal
+    const {
+        show,
+        selectedData: selectedMembers,
+        handleOpen,
+        handleClose
+    } = useModal();
+
     //Mocks temporarios
     const columns = [
         { header: "Aluno solicitante", accessor: "aluno" },
@@ -30,7 +29,7 @@ const VisaoSolicitacaoOrientacao = () => {
                     size='lm'
                     className="px-2"
                     //Passa a lista dos integrantes do grupo da linha selecionada
-                    onClick={() => handleShowMembers(row.grupo)}
+                    onClick={() => handleOpen(row.grupo)}
                 >
                     Visualizar Integrantes
                 </Button>
