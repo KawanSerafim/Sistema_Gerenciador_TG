@@ -2,7 +2,7 @@ import { Button, Container, Modal, Stack } from 'react-bootstrap';
 import TableComponent from '../../../components/table/TableComponent'
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
 import { useState } from 'react';
-import "./VisaoSolicitacaoOrientacao.css"
+import "../../../styles/ModalIntegrantes.css"
 
 const VisaoSolicitacaoOrientacao = () => {
     //columns = buscara do backend
