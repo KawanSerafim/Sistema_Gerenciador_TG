@@ -10,7 +10,7 @@ import FormarGrupo from './pages/aluno/formarGrupo/FormarGrupo.jsx';
 import ConfirmarEmail from './pages/utils/ConfirmarEmail.jsx';
 import CadastrarCurso from './pages/curso/CadastrarCurso.jsx';
 import VisaoSolicitacaoOrientacao from './pages/professor/visaoSolicitacaoOrientacao/VisaoSolicitacaoOrientacao.jsx';
-import EnviarTurma from './pages/professor/enviarTurma/enviarTurma.jsx';
+import EnviarTurma from "./pages/professor/enviarTurma/EnviarTurma.jsx"
 import VisaoGrupos from './pages/professor/visaoGrupos/VisaoGrupos.jsx';
 import VisaoAlunosEnviados from './pages/professor/visaoAlunosEnviados/VisaoAlunosEnviados.jsx';
 import CadastrarTurma from './pages/professor/coordenador/cadastrarTurma/CadastrarTurma.jsx';

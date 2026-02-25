@@ -1,7 +1,8 @@
 
 import UserNavBar from './components/usernavbar/UserNavBar';
 import './App.css';
-import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/solicitarOrientacao';
+import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrientacao';
+
 
 
 function App() {
