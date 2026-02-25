@@ -7,21 +7,27 @@ const MarcarBanca = () => {
 
     //TODO: tirar mocks e buscar dados do backend
     // GRUPOS
-    const grupos = [{ grupoId: 1, tema: "Tema1", alunos: ["aluno1", "aluno2"] }, { grupoId: 2, tema: "Tema2", alunos: ["aluno3", "aluno4", "aluno5"] }, { grupoId: 3, tema: "Tema3", alunos: ["aluno6", "aluno7", "aluno8"] }]
+    const grupos = [
+        { grupoId: 1, tema: "Tema1", alunos: [{nome: "aluno1"}, {nome: "aluno2"}] },
+        { grupoId: 2, tema: "Tema2", alunos: [{nome: "aluno3"}, {nome: "aluno4"}, {nome: "aluno5"}] }, 
+        { grupoId: 3, tema: "Tema3", alunos: [{nome: "aluno6"}, {nome: "aluno7"}, {nome: "aluno8"}] }
+    ]
 
     // Tabela grupo
-    const [selectedGrupo, setSelectedGrupo] = useState({})
+    const [selectedGrupo, setSelectedGrupo] = useState(null)
 
     const handleSelectedGrupo = (e) => {
-        const grupo = e.target.value
-        if (grupo !== "")
-            setSelectedGrupo(grupo)
+        const id = parseInt(e.target.value);
+        const grupoEncontrado = grupos.find(i => i.grupoId === id)
+        if (grupoEncontrado)
+            setSelectedGrupo(grupoEncontrado)
     }
-    const colunaTabelaGupo = [{ header: "Alunos", acessor: "alunos" }]
+
+    const colunaTabelaGupo = [{ header: "Alunos", accessor: "nome" }]
 
     //Membros
-    const [membros, setMembros] = useState([{}])
-    const colunaTabelaMembro = [{ header: "Membros da Banca", acessor: "membros" }]
+    const [membros, setMembros] = useState([])
+    const colunaTabelaMembro = [{ header: "Membros da Banca", accessor: "nome" }]
 
     // Professores
     const professores = [
@@ -30,119 +36,149 @@ const MarcarBanca = () => {
         { id: 3, nome: "professor3" }
     ]
 
-    const handleProfessorSelected = (e) => {
-        const professor = e.target.value
-        if (professor != "") {
-            console.log(professor)
-            setMembros(membros.push({ id: professor.id, tipo: "professor", membro: professor }))
+    const [profSelecionado, setProfSelecionado] = useState("");
+
+    const handleAddProfessor = () => {
+        if (profSelecionado != "") {
+            const prof = professores.find( i => i.id === parseInt(profSelecionado));
+            //Evita duplicatas
+            if (prof && !membros.some(membro => membro.id === prof.id && membro.tipo === "professor")){
+                //Copia a lista anterior e adiciona o novo professor
+                setMembros([...membros, { id: prof.id, tipo: "professor", nome: prof.nome }])
+            }
         }
     }
 
     //Membros externos
-    // TODO: função para buscar membros
-    const handleMembroSelected = (e) => {
-        const membro = e.target.value
-        if (membro != "") {
-            console.log(membro)
-            setMembros(membros.push({ tipo: "membroExterno", membro: membro }))
+    //TODO: Verificar se a unica informação pedida do membro externo será o email
+    const [emailExterno, setEmailExterno] = useState("");
+
+    const handleAddMembroExterno = () => {
+        if ( emailExterno && emailExterno.trim() !== "") {
+            const jaExiste = membros.some(membro => membro.nome === emailExterno);
+            if (!jaExiste){   
+                setMembros([...membros, {id: emailExterno, tipo: "membroExterno", nome: emailExterno}]);
+                //Limpa o input apos adicionar
+                setEmailExterno("");
+            }
         }
     }
 
     return (
         <>
-            <Container className="mt-5"  >
+            <Container className="mt-5" style={{ minWidth: "800px" }}  >
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Marcar banca</h2>
                 <Form
                     validated={true}
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
-                    <div className="d-flex justify-content-center">
-                        <Form.Label>Grupo:</Form.Label>
+                    className='bg-light border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
+
+                    {/* Grupo */}
+                    <div className="d-flex justify-content-center align-items-center mb-4 gap-2">
+                        <Form.Label className="m-0 fw-bold text-secondary">Grupo:</Form.Label>
                         <Form.Select
-                            onChange={(e) => handleSelectedGrupo(e)}
+                            defaultValue=""
+                            onChange={handleSelectedGrupo}
+                            className="w-50 bg-primary border-primary text-white fw-bold"
                         >
                             <option value="" disabled selected>Selecione o grupo</option>
-                            {grupos ? (
+                            {
                                 grupos.map((grupo) => (
-                                    <option value={grupo.grupoId}>{grupo.tema}</option>
+                                    <option key={grupo.grupoId} value={grupo.grupoId}>{grupo.grupoId}</option>
                                 ))
-                            ) : (
-                                <option value="" disabled selected>Nenhum grupo foi encontrado</option>
-                            )}
+                           }
                         </Form.Select>
                     </div>
 
-                    {/* TODO: Após selecionado exibir o tema e preencher a tabela com os nomes dos alunos*/}
+                    {/*Após selecionado exibir o tema e preencher a tabela com os nomes dos alunos*/}
                     {selectedGrupo && (
-                        <h3>{selectedGrupo.tema}</h3>
-                    )}
-                    {/* Tabela de Integrantes do grupo */}
-                    {selectedGrupo && (
-                        <TableComponent
-                            columns={colunaTabelaGupo}
-                            data={selectedGrupo}
-                        />
+                        <div className="text-center mb-4">
+                            <h5 className="text-primary fw-bold">[{selectedGrupo.tema}]</h5>
+                            <div className="mt-3">
+                                {/* Tabela de Integrantes do grupo */}
+                            <TableComponent
+                                columns={colunaTabelaGupo}
+                                data={selectedGrupo.alunos}
+                            />
+                            </div>
+                        </div>
                     )}
 
-                    <Form.Label>Membros da banca: </Form.Label>
+                    <h6 className="fw-bold text-primary mt-4 mb-3">Membros da banca: </h6>
+
                     {/* Professor */}
-                    <div className="d-flex justify-content-between">
-                        <Form.Label>Professor: </Form.Label>
+                    <div className="d-flex align-items-center mb-3 gap-2">
+                        <Form.Label className="m-0 fw-bold text-primary" style={{ width: "130px" }}>Professor: </Form.Label>
                         <Form.Select
-                            onChange={(e) => handleProfessorSelected(e)}
+                            defaultValue=""
+                            onChange={(e) => setProfSelecionado(e.target.value)}
+                            className="border-primary text-white bg-primary flex-grow-1"
                         >
                             <option value="" disabled selected>Selecione o professor</option>
-                            {professores ? (
+                            {
                                 professores.map((professor) => (
-                                    <option value={professor}>{professor}</option>
+                                    <option key={professor.id} value={professor.id}>{professor.nome}</option>
                                 ))
-                            ) : (
-                                <option value="" disabled selected>Nenhum professor encontrado</option>
-                            )}
+                           }
                         </Form.Select>
-                        {/* <Button
-                            onClick={(e) => handleProfessorSelected(e)}
+                        <Button
+                            variant="link"
+                            className="p-0 text-primary"
+                            onClick={handleAddProfessor}
                         >
                             <img src={AddIcon} alt="Adicionar professor" width={'55rem'} />
-                        </Button> */}
+                        </Button> 
                     </div>
                     {/* Membro Externo */}
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex align-items-center mb-4 gap-2">
                         {/* TODO: Verificar se é necessario pegar o nome do membro externo ou se será aceito apenas quem esta no sistema */}
-                        <Form.Label>Membro Externo: </Form.Label>
-                        <Form.Select
-                            onChange={handleMembroSelected}
-                        >
-                            <option value="" disabled selected>Digite o email do membro externo</option>
-
-                        </Form.Select>
-                        {/* <Button>
+                        <Form.Label className="m-0 fw-bold text-primary" style={{ width: "130px" }}>Membro Externo: </Form.Label>
+                        <Form.Control
+                            type="email"
+                            placeholder="Digite o email do membro externo"
+                            value={emailExterno}
+                            onChange={(e) => setEmailExterno(e.target.value)}
+                            className="flex-grow-1"
+                        />
+                        <Button variant="link" className="p-0 text-primary"
+                            onClick={handleAddMembroExterno}>
                             <img src={AddIcon} alt="Adicionar membro" width={'55rem'} />
-                        </Button> */}
+                        </Button>
                     </div>
 
                     {/* Tabela membros */}
-                    <TableComponent
-                        columns={colunaTabelaMembro}
-                        data={membros}
-                    />
+                    {membros.length > 0 && (
+                        <div className="mb-4">
+                            <TableComponent
+                                columns={colunaTabelaMembro}
+                                data={membros}
+                            />
+                        </div>
+                    )}
+
                     {/* Horario e Local */}
-                    <div className="d-flex justify-content-between">
-                        <Form.Label>Data:</Form.Label>
-                        <Form.Control placeholder="DD/MM/AAA" id="inputData"
-                        />
-                        <Form.Label>Hora:</Form.Label>
-                        <Form.Control placeholder="HH:MM" id="inputHora"
-                        />
-                        <Form.Label>Sala:</Form.Label>
-                        <Form.Select>
-                            <option value="" disabled selected>Selecione a sala</option>
-                        </Form.Select>
+                    <div className="d-flex align-items-center justify-content-between mb-4 gap-2 fw-bold text-primary">
+                        <div className="d-flex align-items-center gap-2">
+                            <Form.Label className="m-0">Data:</Form.Label>
+                            <Form.Control type="date" placeholder="DD/MM/AAA"/>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                            <Form.Label className="m-0">Hora:</Form.Label>
+                            <Form.Control type="time" placeholder="HH:MM"/>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                            <Form.Label className="m-0">Sala:</Form.Label>
+                            <Form.Select defaultValue="" className="bg-primary text-white border-primary">
+                                <option value="" disabled selected>Selecione a sala</option>
+                                <option value="1">Sala 1</option>
+                                <option value="2">Sala 2</option>
+                            </Form.Select>
+                        </div>
                     </div>
-                    <Form.Group>
-                        <Button variant="primary">
+                    <div className="d-flex justify-content-center mt-5">
+                        <Button variant="primary" className="w-50 fw-bold">
                             Marcar banca
                         </Button>
-                    </Form.Group>
+                    </div>
                 </Form>
             </Container>
         </>
