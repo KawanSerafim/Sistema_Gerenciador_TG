@@ -17,6 +17,7 @@ import CadastrarTurma from './pages/professor/coordenador/cadastrarTurma/Cadastr
 import CarregarTG from './pages/aluno/carregarTG/CarregarTG.jsx';
 import GerarCertificado from './pages/professor/gerarCertificado/GerarCertificado.jsx';
 import MarcarBanca from './pages/professor/marcarBanca/MarcarBanca.jsx';
+import VisaoBancasArtigos from './pages/professor/visaoBancasArtigos/visaoBancasArtigos.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/aluno/enviarTG" element={<CarregarTG />} />
         <Route path="/professor/certificados" element={<GerarCertificado />} />
         <Route path="/professor/marcarBanca" element={<MarcarBanca />} />
+        <Route path="/professor/visaoBancas" element={<VisaoBancasArtigos />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
