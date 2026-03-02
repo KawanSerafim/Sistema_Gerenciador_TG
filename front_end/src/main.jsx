@@ -19,14 +19,16 @@ import GerarCertificado from './pages/professor/gerarCertificado/GerarCertificad
 import MarcarBanca from './pages/professor/marcarBanca/MarcarBanca.jsx';
 import VisaoBancasArtigos from './pages/professor/visaoBancasArtigos/visaoBancasArtigos.jsx';
 import FinalizarDisciplinas from './pages/professor/finalizarDisciplinas/FinalizarDisciplinas.jsx';
+import Login from './pages/utils/login/Login.jsx';
+import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrientacao.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
         <Route path="/aluno/cadastro" element={<CadastroAluno />} />
         <Route path="/aluno/formarGrupo" element={<FormarGrupo />} />
+        <Route path="/aluno/solicitarOrientacao" element={<SolicitarOrientacao />} />
         <Route path="/professor/cadastro" element={<CadastroProfessor />} />
         <Route path="/confirmarEmail" element={<ConfirmarEmail />} />
         <Route path="/curso/cadastro" element={<CadastrarCurso />} />
@@ -40,6 +42,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/marcarBanca" element={<MarcarBanca />} />
         <Route path="/professor/visaoBancas" element={<VisaoBancasArtigos />} />
         <Route path="/professor/finalizarDisciplinas" element={<FinalizarDisciplinas />} />
+        <Route path="/" element={<Login />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
