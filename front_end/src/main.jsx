@@ -21,6 +21,7 @@ import VisaoBancasArtigos from './pages/professor/visaoBancasArtigos/visaoBancas
 import FinalizarDisciplinas from './pages/professor/finalizarDisciplinas/FinalizarDisciplinas.jsx';
 import Login from './pages/utils/login/Login.jsx';
 import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrientacao.jsx';
+import Home from './pages/aluno/home/Home.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -43,6 +44,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/visaoBancas" element={<VisaoBancasArtigos />} />
         <Route path="/professor/finalizarDisciplinas" element={<FinalizarDisciplinas />} />
         <Route path="/" element={<Login />} />
+        <Route path="/aluno/home" element={<Home />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
