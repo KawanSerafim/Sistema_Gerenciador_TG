@@ -1,8 +1,9 @@
-import { Container } from 'react-bootstrap';
+import { Container, InputGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
 import { useForm } from "../../../hooks/useForm"
+import { useState } from 'react';
 
 //Função pura que recebe os valores digitados e retorna um objeto com ois erros, caso não tenha erros retorna um objeto vazio
 const validarCadastro = (valores) => {
@@ -20,6 +21,9 @@ const validarCadastro = (valores) => {
         //Email
         else if (key == "email" && !/\S+@\S+\.\S+/.test(value)) {
             erros.email = 'Formato de email inválido.';
+        }
+        else if (key == "telefone" && value.trim().length != 11) {
+            erros.telefone = "Telefone invalido"
         }
         //Senha e ConfirmarSenha
         else if (key == "confirmarSenha" && value !== valores.senha) {
@@ -39,6 +43,7 @@ const CadastroAluno = () => {
         nome: "",
         matricula: "",
         email: "",
+        telefone: "",
         senha: "",
         confirmarSenha: "",
     }
@@ -46,6 +51,38 @@ const CadastroAluno = () => {
         campos,
         validarCadastro
     );
+
+    // Redes Sociais
+    const [redesSelecionadas, setRedesSelecionadas] = useState([]);
+
+    const handleRedeSelecionada = (e) => {
+        const redeEscolhida = e.target.value;
+
+        // Evita adicionar se não escolheu nada ou se já adicionou aquela rede (opcional)
+        if (redeEscolhida) {
+            setRedesSelecionadas(
+                [
+                    ...redesSelecionadas,
+                    { rede: redeEscolhida, url: "" }
+                ]);
+            //Reseta o select
+            e.target.value = ""
+        }
+    };
+
+    //Atualiza URL do input
+    const handleAtualizarUrl = (index, valor) => {
+        const novasRedes = [...redesSelecionadas];
+        novasRedes[index].url = valor;
+        setRedesSelecionadas(novasRedes)
+    }
+
+    //Remove rede social
+    const handleRemoverRede = (index) => {
+        const novasRedes = [...redesSelecionadas];
+        novasRedes.splice(index, 1);
+        setRedesSelecionadas(novasRedes);
+    }
 
     // A função que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
@@ -111,8 +148,65 @@ const CadastroAluno = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* Contato */}
+                    <Form.Group className="mb-3">
+                        <Form.Label className='text-secondary fs-5 fw-medium'>Telefone</Form.Label>
+                        <Form.Control
+                            type="tel" placeholder="11912345678"
+                            required={true}
+                            className='bg-white text-black fw-normal fs-5'
+                            pattern="[0-9]{2}-[9]{1}-[0-9]{8}"
+                            name="telefone"
+                            value={values.telefone}
+                            onChange={handleChange}
+                            isInvalid={!!errors.telefone} />
+
+                        <Form.Control.Feedback type="invalid">
+                            {errors.telefone}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    {/* Redes Sociais */}
+
+                    <Form.Group className="mb-4" controlId="formRedes">
+                        <Form.Label className='text-secondary fs-5 fw-medium'>Redes Sociais: </Form.Label>
+
+                        <Form.Select
+                            required={false}
+                            className='bg-white fw-medium fs-5 w-75 text-center mb-3'
+                            onChange={handleRedeSelecionada}
+                            defaultValue=""
+                        >
+
+                            <option value="" disabled>Selecione as redes sociais que deseja adicionar</option>
+                            <option value="linkedin">Linkedin</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="facebook">Facebook</option>
+                        </Form.Select>
+
+                        {/*Lista dinamica de inputs de URL */}
+                        {redesSelecionadas.map((rede, index) => (
+                            <InputGroup className="mb-2 w75" key={index}>
+                                {/* Exibe o nome da rede com a primeira letra maiúscula */}
+                                <InputGroup.Text className="text-capitalize fw-bold" >
+                                    {rede.rede}
+                                </InputGroup.Text>
+
+                                <Form.Control
+                                    type="url"
+                                    placeholder={`Cole o link do seu ${rede.rede}`}
+                                    value={rede.url}
+                                    onChange={(e) => handleAtualizarUrl(index, e.target.value)}
+                                />
+                                <Button variant='outline-danger' onClick={() => handleRemoverRede(index)}>
+                                    Remover
+                                </Button>
+                            </InputGroup>
+                        ))}
+                    </Form.Group>
+
                     {/* Senha */}
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Group className="mb-4" controlId="formBasicPassword">
                         <Form.Label className='text-secondary fs-5 fw-medium'>Senha</Form.Label>
                         <Form.Control
                             type="password" placeholder="Digite sua senha"
@@ -130,7 +224,7 @@ const CadastroAluno = () => {
                     </Form.Group>
 
                     {/* Confirmar Senha */}
-                    <FormGroup className="mb-3" controlId="formBasicConfirmPassword">
+                    <FormGroup className="mb-4" controlId="formBasicConfirmPassword">
                         <Form.Label className='text-secondary fs-5 fw-medium'>Confirmar Senha</Form.Label>
                         <Form.Control
                             type="password" placeholder="Confirme sua senha"
@@ -158,7 +252,7 @@ const CadastroAluno = () => {
                     </FormGroup>
 
                 </Form>
-            </Container>
+            </Container >
         </>
     )
 }
