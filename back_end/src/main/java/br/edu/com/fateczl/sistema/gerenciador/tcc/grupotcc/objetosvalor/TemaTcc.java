@@ -18,7 +18,7 @@ public record TemaTcc(String nome, String descricao) {
             throw new ValidacaoExcecao(CodigoErro.VD_002_FORMATO_INVALIDO,
                     "descrição do tema do tcc", "3 dígitos ou mais");
         }
-        if (!nome.matches("^[a-zA-ZÀ-ÿ0-9\\s.\\-/&]+$") &&
+        if (!nome.matches("^[a-zA-ZÀ-ÿ0-9\\s.\\-/&]+$") ||
                 !descricao.matches("^[a-zA-ZÀ-ÿ0-9\\s.\\-/&]+$")) {
             throw new ValidacaoExcecao(CodigoErro.VD_002_FORMATO_INVALIDO,
                     "nome ou descrição do tema de tcc",
