@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tcc.professor.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.contausuario.entidade.ContaUsuario;
@@ -10,7 +11,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tcc.contausuario.objetosvalor.Stat
 import br.edu.com.fateczl.sistema.gerenciador.tcc.professor.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.professor.objetosvalor.ProfessorId;
 
-public class Professor {
+public class Professor implements Coorientador {
     private final ProfessorId id;
     private final Nome nome;
     private final Matricula matricula;
@@ -75,6 +76,11 @@ public class Professor {
         this.cargo = assegurarPresenca(novoCargo, "cargo");
     }
 
+    // Métodos de contrato -----------------------------------------------------
+
+    @Override public Nome nome() { return nome; }
+    @Override public String identificacao() { return this.matricula.valor(); }
+
     // Métodos Getters de Delegação --------------------------------------------
 
     public Email email() {
@@ -88,7 +94,7 @@ public class Professor {
     // Métodos Getters ---------------------------------------------------------
 
     public ProfessorId id() { return id; }
-    public Nome nome() { return nome; }
+    public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
     public ContaUsuario contaUsuario() { return contaUsuario; }
     public CargoProfessor cargo() { return cargo; }
