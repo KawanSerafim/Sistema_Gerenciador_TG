@@ -2,11 +2,12 @@ package br.edu.com.fateczl.sistema.gerenciador.tcc.coorientador.externo.entidade
 
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.coorientador.externo.objetosvalor.CoorientadorExternoId;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.coorientador.externo.objetosvalor.Origem;
 
-public class CoorientadorExterno {
+public class CoorientadorExterno implements Coorientador {
     private final CoorientadorExternoId id;
     private final Nome nome;
     private final Origem origem;
@@ -44,9 +45,13 @@ public class CoorientadorExterno {
         return objeto;
     }
 
+    // Métodos de contrato -----------------------------------------------------
+
+    @Override public Nome nome() { return nome; }
+    @Override public String identificacao() { return this.origem.valor(); }
+
     // Métodos Getters ---------------------------------------------------------
 
     public CoorientadorExternoId id() { return id; }
-    public Nome nome() { return nome; }
     public Origem origem() { return origem; }
 }
