@@ -8,3 +8,33 @@
 body {
   background-color: #f4f4f4;
 }
+
+/* Estilos de forms */
+
+/* Estiliza o quadrado do checkbox especificamente */
+.custom-chk .form-check-input {
+  background-color: #e71313 !important;
+  border: 1px solid #e71313 !important;
+  margin-top: 0;
+  /* Alinha verticalmente com o texto */
+  cursor: pointer;
+}
+
+/* Quando o checkbox estiver marcado */
+.custom-chk .form-check-input:checked {
+  background-color: #b30000 !important;
+  /* Cor de destaque (vermelho) */
+  border-color: #b30000 !important;
+}
+
+/* Estiliza o campo de número */
+.custom-number-input {
+  background-color: #ffffff !important;
+  border: 1px solid #ced4da !important;
+  text-align: center;
+}
+
+/* Ajuste para evitar que o tooltip de erro do navegador desloque o layout */
+.custom-number-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(179, 0, 0, 0.25);
+}

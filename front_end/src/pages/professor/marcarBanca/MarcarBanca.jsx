@@ -8,9 +8,9 @@ const MarcarBanca = () => {
     //TODO: tirar mocks e buscar dados do backend
     // GRUPOS
     const grupos = [
-        { grupoId: 1, tema: "Tema1", alunos: [{nome: "aluno1"}, {nome: "aluno2"}] },
-        { grupoId: 2, tema: "Tema2", alunos: [{nome: "aluno3"}, {nome: "aluno4"}, {nome: "aluno5"}] }, 
-        { grupoId: 3, tema: "Tema3", alunos: [{nome: "aluno6"}, {nome: "aluno7"}, {nome: "aluno8"}] }
+        { grupoId: 1, tema: "Tema1", alunos: [{ nome: "aluno1" }, { nome: "aluno2" }] },
+        { grupoId: 2, tema: "Tema2", alunos: [{ nome: "aluno3" }, { nome: "aluno4" }, { nome: "aluno5" }] },
+        { grupoId: 3, tema: "Tema3", alunos: [{ nome: "aluno6" }, { nome: "aluno7" }, { nome: "aluno8" }] }
     ]
 
     // Tabela grupo
@@ -40,9 +40,9 @@ const MarcarBanca = () => {
 
     const handleAddProfessor = () => {
         if (profSelecionado != "") {
-            const prof = professores.find( i => i.id === parseInt(profSelecionado));
+            const prof = professores.find(i => i.id === parseInt(profSelecionado));
             //Evita duplicatas
-            if (prof && !membros.some(membro => membro.id === prof.id && membro.tipo === "professor")){
+            if (prof && !membros.some(membro => membro.id === prof.id && membro.tipo === "professor")) {
                 //Copia a lista anterior e adiciona o novo professor
                 setMembros([...membros, { id: prof.id, tipo: "professor", nome: prof.nome }])
             }
@@ -54,10 +54,10 @@ const MarcarBanca = () => {
     const [emailExterno, setEmailExterno] = useState("");
 
     const handleAddMembroExterno = () => {
-        if ( emailExterno && emailExterno.trim() !== "") {
+        if (emailExterno && emailExterno.trim() !== "") {
             const jaExiste = membros.some(membro => membro.nome === emailExterno);
-            if (!jaExiste){   
-                setMembros([...membros, {id: emailExterno, tipo: "membroExterno", nome: emailExterno}]);
+            if (!jaExiste) {
+                setMembros([...membros, { id: emailExterno, tipo: "membroExterno", nome: emailExterno }]);
                 //Limpa o input apos adicionar
                 setEmailExterno("");
             }
@@ -70,7 +70,7 @@ const MarcarBanca = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Marcar banca</h2>
                 <Form
                     validated={true}
-                    className='bg-light border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
+                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
 
                     {/* Grupo */}
                     <div className="d-flex justify-content-center align-items-center mb-4 gap-2">
@@ -85,7 +85,7 @@ const MarcarBanca = () => {
                                 grupos.map((grupo) => (
                                     <option key={grupo.grupoId} value={grupo.grupoId}>{grupo.grupoId}</option>
                                 ))
-                           }
+                            }
                         </Form.Select>
                     </div>
 
@@ -95,10 +95,10 @@ const MarcarBanca = () => {
                             <h5 className="text-primary fw-bold">[{selectedGrupo.tema}]</h5>
                             <div className="mt-3">
                                 {/* Tabela de Integrantes do grupo */}
-                            <TableComponent
-                                columns={colunaTabelaGupo}
-                                data={selectedGrupo.alunos}
-                            />
+                                <TableComponent
+                                    columns={colunaTabelaGupo}
+                                    data={selectedGrupo.alunos}
+                                />
                             </div>
                         </div>
                     )}
@@ -118,7 +118,7 @@ const MarcarBanca = () => {
                                 professores.map((professor) => (
                                     <option key={professor.id} value={professor.id}>{professor.nome}</option>
                                 ))
-                           }
+                            }
                         </Form.Select>
                         <Button
                             variant="link"
@@ -126,7 +126,7 @@ const MarcarBanca = () => {
                             onClick={handleAddProfessor}
                         >
                             <img src={AddIcon} alt="Adicionar professor" width={'55rem'} />
-                        </Button> 
+                        </Button>
                     </div>
                     {/* Membro Externo */}
                     <div className="d-flex align-items-center mb-4 gap-2">
@@ -159,11 +159,11 @@ const MarcarBanca = () => {
                     <div className="d-flex align-items-center justify-content-between mb-4 gap-2 fw-bold text-primary">
                         <div className="d-flex align-items-center gap-2">
                             <Form.Label className="m-0">Data:</Form.Label>
-                            <Form.Control type="date" placeholder="DD/MM/AAA"/>
+                            <Form.Control type="date" placeholder="DD/MM/AAA" />
                         </div>
                         <div className="d-flex align-items-center gap-2">
                             <Form.Label className="m-0">Hora:</Form.Label>
-                            <Form.Control type="time" placeholder="HH:MM"/>
+                            <Form.Control type="time" placeholder="HH:MM" />
                         </div>
                         <div className="d-flex align-items-center gap-2">
                             <Form.Label className="m-0">Sala:</Form.Label>

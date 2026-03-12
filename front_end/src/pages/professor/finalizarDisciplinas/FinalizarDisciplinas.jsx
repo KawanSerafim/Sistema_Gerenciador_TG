@@ -70,7 +70,7 @@ const FinalizarDisciplinas = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Finalizar Disciplinas</h2>
                 <Form
                     validated={validado}
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'
+                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'
                     id="formTurma"
                     onSubmit={handleSubmit}
 

@@ -10,7 +10,7 @@ const CadastroProfessor = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Professor</h2>
                 <Form
                     validated={true}
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
+                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
                     {/* Nome */}
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label className='text-secondary fs-5 fw-medium'>Nome Completo</Form.Label>

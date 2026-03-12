@@ -48,7 +48,7 @@ const VisaoAlunosEnviados = () => {
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-2'>Alunos enviados: </h2>
                 <Form
                     validated={true}
-                    className='p-4'>
+                    className='form-bg p-4'>
 
                     {/* Seleção de turma */}
                     <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSelectTurma">

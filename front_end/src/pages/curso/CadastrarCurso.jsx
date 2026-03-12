@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Container, Form, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Button } from "react-bootstrap";
 
+
 const CadastrarCurso = () => {
+    //TODO: VALIDAÇÃO com o hook useForm
+
     const [validado, setValidado] = useState(false);
 
     const handleSubmit = (event) => {
@@ -13,8 +16,21 @@ const CadastrarCurso = () => {
         setValidado(true);
     }
 
-    //TODO: VALIDAÇÃO DOS CHECKBOXES E INPUTS DE NÚMERO
+    const [tiposAtivos, setTiposAtivos] = useState({
+        software: false,
+        monografia: false,
+        artigo: false,
+        planoNegocios: false
+    });
 
+    // Função para alternar o estado
+    const handleCheckboxChange = (e) => {
+        const { id, checked } = e.target;
+        setTiposAtivos(prev => ({
+            ...prev,
+            [id]: checked
+        }));
+    };
 
 
     return (
@@ -23,7 +39,7 @@ const CadastrarCurso = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Curso</h2>
                 <Form
                     validated={validado}
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'
+                    className='form-bg border border-secondary-subtle border-top-0 p-4 rounded-bottom-4 shadow-sm'
                     id="formCurso"
                     onSubmit={handleSubmit}
 
@@ -94,58 +110,80 @@ const CadastrarCurso = () => {
 
                         <div className="mb-3">
                             {/* Desenvolvimento de Software */}
-                            <div className="d-flex align-items-center gap-3 mb-3">
+                            <div className="d-flex align-items-center gap-2 mb-3">
                                 <FormCheck
-                                    className="fw-medium"
-                                    label={"Desenvolvimento de Software".toUpperCase()}
                                     name="Desenvolvimento de Software"
                                     type="checkbox"
-                                    id="checkbox-desenvolvimento"
+                                    id="software"
+                                    checked={tiposAtivos.software}
+                                    onChange={handleCheckboxChange}
                                 />
+                                <FormLabel htmlFor="software" className='mb-0 fw-bold text-uppercase'>Desenvolvimento de Software </FormLabel>
+
                                 {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                <FormLabel className='text-secondary fs-6 fw-medium '>Quantidade maxima do grupo: </FormLabel>
-                                <FormControl type="number" id="desenvolvimentoQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                <div className="d-flex align-items-center gap-2 ms-auto">
+                                    <FormLabel className={tiposAtivos.software ? "text-dark fs-6 fw-medium" : "text-muted fs-6 fw-medium"}>Quantidade maxima de integrantes do grupo: </FormLabel>
+                                    <FormControl type="number" id="desenvolvimentoQnt" className="fw-medium"
+                                        style={{
+                                            width: '5rem',
+                                            backgroundColor: tiposAtivos.software ? '#FFFFFF' : '#E9ECEF', // Muda o fundo se desativado
+                                            cursor: tiposAtivos.software ? 'text' : 'not-allowed'
+
+                                        }} placeholder="0"
+                                        disabled={!tiposAtivos.software}
+                                        required={true} />
+
+                                </div>
                             </div>
                             {/* Monografia */}
-                            <div className="d-flex align-items-center gap-3 mb-3 ">
+                            <div className="d-flex align-items-center gap-2 mb-3 ">
                                 <FormCheck
-                                    className="fw-medium"
-                                    label={"Monografia".toUpperCase()}
                                     name="Monografia"
                                     type="checkbox"
                                     id="checkbox-monografia"
                                 />
-                                {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima do grupo: </FormLabel>
-                                <FormControl type="number" id="monografiaQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                <FormLabel htmlFor="checkbox-monografia" className='mb-0 fw-bold text-uppercase'>Monografia</FormLabel>
+
+                                <div className="d-flex align-items-center gap-2 ms-auto">
+                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
+                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
+                                    <FormControl type="number" id="monografiaQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+
+                                </div>
                             </div>
 
                             {/* Artigo */}
-                            <div className="d-flex align-items-center gap-3 mb-3">
+                            <div className="d-flex align-items-center gap-2 mb-3">
                                 <FormCheck
-                                    className="fw-medium"
-                                    label={"Artigo".toUpperCase()}
+
                                     name="Artigo"
                                     type="checkbox"
                                     id="checkbox-artigo"
                                 />
-                                {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima do grupo: </FormLabel>
-                                <FormControl type="number" id="artigoQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                <FormLabel htmlFor="checkbox-artigo" className='mb-0 fw-bold text-uppercase'>Artigo</FormLabel>
+
+                                <div className="d-flex align-items-center gap-2 ms-auto">
+                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
+                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
+                                    <FormControl type="number" id="artigoQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                </div>
                             </div>
 
                             {/* Plano de negócios */}
-                            <div className="d-flex align-items-center gap-3">
+                            <div className="d-flex align-items-center gap-2 fw-medium">
                                 <FormCheck
-                                    className="fw-medium"
-                                    label={"Plano de negócios".toUpperCase()}
+                                    className=""
                                     name="Plano de negócios"
                                     type="checkbox"
                                     id="checkbox-plano-negocios"
                                 />
-                                {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima do grupo: </FormLabel>
-                                <FormControl type="number" id="planoNegociosQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                <FormLabel htmlFor="checkbox-plano-negocios" className='mb-0 fw-bold text-uppercase'>Plano de negócios</FormLabel>
+
+                                <div className="d-flex align-items-center gap-2 ms-auto">
+                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
+                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
+                                    <FormControl type="number" id="planoNegociosQnt" className="fw-medium" style={{ width: '5rem' }} placeholder="0" required={true} />
+                                </div>
                             </div>
                         </div>
                     </FormGroup>

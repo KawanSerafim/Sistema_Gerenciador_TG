@@ -8,7 +8,7 @@ const Login = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Login</h2>
                 <Form
                     validated={true}
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
+                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
 
                     {/* Email */}
                     <Form.Group className="mb-3" controlId="formBasicEmail">

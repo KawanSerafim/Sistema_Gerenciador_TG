@@ -95,7 +95,7 @@ const CadastroAluno = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Aluno</h2>
                 <Form
                     onSubmit={handleSubmit(enviarParaBackend)} noValidate
-                    className='border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm no-success-icon'>
+                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm no-success-icon'>
                     {/* Nome */}
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label className='text-secondary fs-5 fw-medium'>Nome Completo</Form.Label>
