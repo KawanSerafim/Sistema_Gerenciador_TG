@@ -9,10 +9,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.edu.com.fateczl</groupId>
-	<artifactId>sistema.gerenciador.tcc</artifactId>
+	<artifactId>sistema.gerenciador.tg</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>sistema.gerenciador.tcc</name>
-	<description>Sistema responsável por automatizar e auxiliar no gerenciamento dos TCCs da faculdade Fatec Zona Leste.</description>
+	<name>sistema.gerenciador.tg</name>
+	<description>
+        Sistema responsável por automatizar e auxiliar no gerenciamento dos
+        TGs da faculdade Fatec Zona Leste.
+    </description>
 	<url/>
 	<licenses>
 		<license/>
