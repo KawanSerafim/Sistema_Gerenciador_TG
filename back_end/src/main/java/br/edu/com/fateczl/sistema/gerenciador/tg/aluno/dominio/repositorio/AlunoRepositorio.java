@@ -7,7 +7,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import java.util.Optional;
 
 public interface AlunoRepositorio {
-    void salvar(Aluno aluno);
+    Aluno salvar(Aluno aluno);
     Optional<Aluno> buscarPorMatricula(Matricula matricula);
     Optional<Aluno> buscarPorEmail(Email email);
 }
