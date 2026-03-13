@@ -1,6 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tcc.grupotcc.entidade;
 
-import br.edu.com.fateczl.sistema.gerenciador.tcc.aluno.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tcc.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tcc.compartilhado.excecoes.ValidacaoExcecao;
