@@ -1,14 +1,14 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.curso.entidade;
+package br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Turno;
-import br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor.CursoId;
-import br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor.ParametrosCurso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor.TipoTcc;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.ParametrosCurso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 
 public class Curso {
     private final CursoId id;
@@ -60,12 +60,12 @@ public class Curso {
         return parametros.validarTurno(turno);
     }
 
-    public boolean validarTipoTcc(TipoTcc tipoTcc) {
-        return parametros.validarTipoTcc(tipoTcc);
+    public boolean validarTipoTg(TipoTg tipoTg) {
+        return parametros.validarTipoTg(tipoTg);
     }
 
-    public boolean validarQtdAlunosGrupo(TipoTcc tipoTcc, Integer quantidade) {
-        return parametros.validarQtdAlunosGrupo(tipoTcc, quantidade);
+    public boolean validarQtdAlunosGrupo(TipoTg tipoTg, Integer quantidade) {
+        return parametros.validarQtdAlunosGrupo(tipoTg, quantidade);
     }
 
     // Métodos de Atualização --------------------------------------------------

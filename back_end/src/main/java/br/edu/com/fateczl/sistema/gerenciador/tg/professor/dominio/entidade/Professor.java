@@ -1,15 +1,15 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.professor.entidade;
+package br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.entidade.ContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor.StatusContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.objetosvalor.CargoProfessor;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.objetosvalor.ProfessorId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
 public class Professor implements Coorientador {
     private final ProfessorId id;

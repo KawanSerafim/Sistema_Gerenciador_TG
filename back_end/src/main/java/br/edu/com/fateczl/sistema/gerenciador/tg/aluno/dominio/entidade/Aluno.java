@@ -7,10 +7,10 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.RegraNeg
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.entidade.ContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor.StatusContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.entidade.Turma;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 
 import java.util.ArrayList;
 import java.util.Collections;

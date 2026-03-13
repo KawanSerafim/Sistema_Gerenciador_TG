@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
@@ -9,15 +9,15 @@ import java.util.List;
 
 public record ParametrosCurso(List<Turno> turnos,
                               List<Disciplina> disciplinas,
-                              List<AjusteTipoTcc> ajustesTipoTcc) {
+                              List<AjusteTipoTg> ajustesTipoTg) {
     public ParametrosCurso {
         validarLista(turnos, "turnos");
         validarLista(disciplinas, "disciplinas");
-        validarLista(ajustesTipoTcc, "ajustes de tipos de TCC");
+        validarLista(ajustesTipoTg, "ajustes de tipos de TG");
 
         turnos = List.copyOf(turnos);
         disciplinas = List.copyOf(disciplinas);
-        ajustesTipoTcc = List.copyOf(ajustesTipoTcc);
+        ajustesTipoTg = List.copyOf(ajustesTipoTg);
     }
 
     private void validarLista(List<?> lista, String campo) {
@@ -35,18 +35,18 @@ public record ParametrosCurso(List<Turno> turnos,
         return turnos.contains(turno);
     }
 
-    public boolean validarTipoTcc(TipoTcc tipoTcc) {
-        if(tipoTcc == null) return false;
+    public boolean validarTipoTg(TipoTg tipoTg) {
+        if(tipoTg == null) return false;
 
-        return ajustesTipoTcc.stream().anyMatch(ajuste -> ajuste.tipoTcc()
-                .equals(tipoTcc));
+        return ajustesTipoTg.stream().anyMatch(ajuste -> ajuste.tipoTg()
+                .equals(tipoTg));
     }
 
-    public boolean validarQtdAlunosGrupo(TipoTcc tipoTcc, Integer quantidade) {
-        if(quantidade == null || quantidade < 1 || tipoTcc == null) return false;
+    public boolean validarQtdAlunosGrupo(TipoTg tipoTg, Integer quantidade) {
+        if(quantidade == null || quantidade < 1 || tipoTg == null) return false;
 
-        return ajustesTipoTcc.stream()
-                .filter(ajuste -> ajuste.tipoTcc() == tipoTcc)
+        return ajustesTipoTg.stream()
+                .filter(ajuste -> ajuste.tipoTg() == tipoTg)
                 .findFirst()
                 .map(ajuste -> ajuste.validarQtdAlunosGrupo(quantidade))
                 .orElse(false);

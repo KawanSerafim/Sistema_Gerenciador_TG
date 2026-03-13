@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor;
 
 public enum StatusContaUsuario {
     VERIFICACAO_CODIGO_PENDENTE,

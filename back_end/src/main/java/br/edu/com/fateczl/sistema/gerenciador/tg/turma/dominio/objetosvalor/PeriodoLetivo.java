@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.turma.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;

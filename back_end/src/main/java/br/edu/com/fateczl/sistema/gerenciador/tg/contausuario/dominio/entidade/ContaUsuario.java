@@ -1,8 +1,8 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.entidade;
+package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.objetosvalor.*;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.*;
 
 public class ContaUsuario {
     private final Email email;

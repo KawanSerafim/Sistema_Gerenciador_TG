@@ -1,11 +1,11 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.entidade;
+package br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.objetosvalor.CoorientadorExternoId;
-import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.objetosvalor.Origem;
+import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.CoorientadorExternoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.Origem;
 
 public class CoorientadorExterno implements Coorientador {
     private final CoorientadorExternoId id;

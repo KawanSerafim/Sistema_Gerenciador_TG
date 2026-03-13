@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.professor.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor;
 
 public enum CargoProfessor {
     ORIENTADOR,

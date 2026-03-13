@@ -1,13 +1,13 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 
-public record AjusteTipoTg(TipoTcc tipoTcc, Integer maxAlunosGrupo) {
+public record AjusteTipoTg(TipoTg tipoTg, Integer maxAlunosGrupo) {
     public AjusteTipoTg {
-        if(tipoTcc == null) {
+        if(tipoTg == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "tipo de TCC");
+                    "tipo de TG");
         }
         if(maxAlunosGrupo == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,

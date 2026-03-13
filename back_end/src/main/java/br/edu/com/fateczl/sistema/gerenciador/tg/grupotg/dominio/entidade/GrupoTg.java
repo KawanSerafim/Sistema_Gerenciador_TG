@@ -6,11 +6,11 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.RegraNeg
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Disciplina;
-import br.edu.com.fateczl.sistema.gerenciador.tg.curso.entidade.Curso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.curso.objetosvalor.TipoTcc;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,42 +23,42 @@ public class GrupoTg {
     private final Curso curso;
     private Disciplina disciplina;
     private TemaTg temaTg;
-    private TipoTcc tipoTcc;
+    private TipoTg tipoTg;
     private List<Aluno> alunos;
 
     private GrupoTg(GrupoTgId id, Professor orientador,
                     Coorientador coorientador, Curso curso,
-                    Disciplina disciplina, TemaTg temaTg, TipoTcc tipoTcc,
+                    Disciplina disciplina, TemaTg temaTg, TipoTg tipoTg,
                     List<Aluno> alunos) {
         this.id = id;
         this.orientador = orientador;
         this.coorientador = coorientador;
         this.curso = assegurarPresenca(curso, "curso");
         this.disciplina = assegurarPresenca(disciplina, "disciplina");
-        this.temaTg = assegurarPresenca(temaTg, "tema de TCC");
-        this.tipoTcc = assegurarPresenca(tipoTcc, "tipo de TCC");
+        this.temaTg = assegurarPresenca(temaTg, "tema de TG");
+        this.tipoTg = assegurarPresenca(tipoTg, "tipo de TG");
         this.alunos = new ArrayList<>(validarAlunos(alunos));
     }
 
     // Métodos Factory ---------------------------------------------------------
 
     public static GrupoTg novo(Curso curso, Disciplina disciplina,
-                               TemaTg temaTg, TipoTcc tipoTcc,
+                               TemaTg temaTg, TipoTg tipoTg,
                                List<Aluno> alunos) {
         return new GrupoTg(null, null, null, curso, disciplina, temaTg,
-                tipoTcc, alunos);
+                tipoTg, alunos);
     }
 
     public static GrupoTg carregar(GrupoTgId id, Professor orientador,
                                    Coorientador coorientador, Curso curso,
                                    Disciplina disciplina, TemaTg temaTg,
-                                   TipoTcc tipoTcc, List<Aluno> alunos) {
+                                   TipoTg tipoTg, List<Aluno> alunos) {
         if(id == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
                     "ID do grupo");
         }
         return new GrupoTg(id, orientador, coorientador, curso, disciplina,
-                temaTg, tipoTcc, alunos);
+                temaTg, tipoTg, alunos);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -80,10 +80,10 @@ public class GrupoTg {
         // TODO: Caso seja necessário limitar o aluno a estar numa turma de
         //  mesma disciplina do grupo, fazer a devida validação.
 
-        if(!curso.validarQtdAlunosGrupo(tipoTcc, alunos.size())) {
+        if(!curso.validarQtdAlunosGrupo(tipoTg, alunos.size())) {
             throw new RegraNegocioExcecao(CodigoErro
                     .RN_004_LIMITE_ALUNOS_EXCEDIDO, alunos.size(),
-                    tipoTcc.name(),
+                    tipoTg.name(),
                     curso.nomeTexto());
         }
         return alunos;
@@ -117,12 +117,12 @@ public class GrupoTg {
         this.disciplina = assegurarPresenca(novaDisciplina, "disciplina");
     }
 
-    public void atualizarTemaTcc(TemaTg novoTemaTg) {
-        this.temaTg = assegurarPresenca(novoTemaTg, "tema de TCC");
+    public void atualizarTemaTg(TemaTg novoTemaTg) {
+        this.temaTg = assegurarPresenca(novoTemaTg, "tema de TG");
     }
 
-    public void atualizarTipoTcc(TipoTcc novoTipoTcc) {
-        this.tipoTcc = assegurarPresenca(novoTipoTcc, "tipo de TCC");
+    public void atualizarTipoTg(TipoTg novoTipoTg) {
+        this.tipoTg = assegurarPresenca(novoTipoTg, "tipo de TG");
     }
 
     public void atualizarAlunos(List<Aluno> novosAlunos) {
@@ -136,7 +136,7 @@ public class GrupoTg {
     public Coorientador coorientador() { return coorientador; }
     public Curso curso() { return curso; }
     public Disciplina disciplina() { return disciplina; }
-    public TemaTg temaTcc() { return temaTg; }
-    public TipoTcc tipoTcc() { return tipoTcc; }
+    public TemaTg temaTg() { return temaTg; }
+    public TipoTg tipoTg() { return tipoTg; }
     public List<Aluno> alunos() { return Collections.unmodifiableList(alunos); }
 }
