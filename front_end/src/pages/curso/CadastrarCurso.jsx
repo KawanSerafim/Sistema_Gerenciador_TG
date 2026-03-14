@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Container, Form, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Button } from "react-bootstrap";
-
+import "./cadastrarCurso.css"
 
 const CadastrarCurso = () => {
     //TODO: VALIDAÇÃO com o hook useForm
@@ -16,16 +16,27 @@ const CadastrarCurso = () => {
         setValidado(true);
     }
 
-    const [tiposAtivos, setTiposAtivos] = useState({
-        checkboxSoftware: false,
-        checkboxMonografia: false,
-        checkboxArtigo: false,
-        checkboxPlanoNegocios: false
-    });
+    // Opções de TGs
+    //MOCK, buscar do backend
+    const opcoesTrabalho = [
+        { id: 'checkboxSoftware', label: 'Desenvolvimento de Software' },
+        { id: 'checkboxMonografia', label: 'Monografia' },
+        { id: 'checkboxArtigo', label: 'Artigo' },
+        { id: 'checkboxPlanoNegocios', label: 'Plano de Negócios' }
+    ];
 
+    //Transforma a lista de objeto vinda do backend em objeto
+    const estadosTGs = Object.fromEntries(opcoesTrabalho)
+    //Cria um estado dos tipos ativos com o valor default de false
+    const [tiposAtivos, setTiposAtivos] = useState(
+        Object.fromEntries(
+            Object.entries(estadosTGs).map(([key]) => [key, false])
+        )
+    );
     // Função para alternar o estado
     const handleCheckboxChange = (e) => {
         const { id, checked } = e.target;
+        console.info(id)
         setTiposAtivos(prev => ({
             ...prev,
             [id]: checked
@@ -107,114 +118,32 @@ const CadastrarCurso = () => {
                     {/* Tipos de trab de graduacao */}
                     <FormGroup className="mb-3 d-flex flex-column" controlId="formBasicTipo">
                         <FormLabel className='text-secondary fs-5 fw-medium'>Tipo de Trabalho de Graduação</FormLabel>
-
-                        <div className="mb-3">
-                            {/* Desenvolvimento de Software */}
-                            <div className="d-flex align-items-center gap-2 mb-3">
-                                <FormCheck
-                                    name="Desenvolvimento de Software"
-                                    type="checkbox"
-                                    id="checkboxSoftware"
-                                    checked={tiposAtivos.checkboxSoftware}
-                                    onChange={handleCheckboxChange}
-                                />
-                                <FormLabel htmlFor="software" className='mb-0 fw-bold text-uppercase'>Desenvolvimento de Software </FormLabel>
-
-                                {/* Poderá selecionar o campo number apenas se o checkbox foi selecionado*/}
-                                <div className="d-flex align-items-center gap-2 ms-auto">
-                                    <FormLabel className={tiposAtivos.checkboxSoftware ? "text-dark fs-6 fw-medium" : "text-muted fs-6 fw-medium"}>Quantidade maxima de integrantes do grupo: </FormLabel>
-                                    <FormControl type="number" id="desenvolvimentoQnt" className="fw-medium"
-                                        style={{
-                                            width: '5rem',
-                                            backgroundColor: tiposAtivos.checkboxSoftware ? '#FFFFFF' : '#E9ECEF', // Muda o fundo se desativado
-                                            cursor: tiposAtivos.checkboxSoftware ? 'text' : 'not-allowed'
-
-                                        }} placeholder="0"
-                                        disabled={!tiposAtivos.checkboxSoftware}
+                        {/* Checkboxes de tipo tg e inputs de numero de integrantes */}
+                        <div className="">
+                            {opcoesTrabalho.map((opcao) => (
+                                <div key={opcao.id} className="d-flex align-items-center gap-3 mb-3 border-bottom pb-2">
+                                    <Form.Check
+                                        type="checkbox"
+                                        id={opcao.id}
+                                        label={opcao.label.toUpperCase()}
+                                        className="fw-bold"
+                                        checked={tiposAtivos[opcao.id]}
+                                        onChange={handleCheckboxChange}
                                     />
-
+                                    <div className="d-flex align-items-center gap-2 ms-auto">
+                                        <FormLabel
+                                            className='text-secondary fs-6 fw-bold'
+                                        >Quantidade maxima de integrantes do grupo: </FormLabel>
+                                        <Form.Control
+                                            type="number"
+                                            disabled={!tiposAtivos[opcao.id]}
+                                            className={tiposAtivos[opcao.id] ? "bg-white fw-medium" : "bg-light"}
+                                            style={{ width: '70px' }}
+                                            placeholder="0"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            {/* Monografia */}
-                            <div className="d-flex align-items-center gap-2 mb-3 ">
-                                <FormCheck
-                                    name="Monografia"
-                                    type="checkbox"
-                                    id="checkboxMonografia"
-                                    checked={tiposAtivos.checkboxMonografia}
-                                    onChange={handleCheckboxChange}
-                                />
-                                <FormLabel htmlFor="checkboxMonografia" className='mb-0 fw-bold text-uppercase'>Monografia</FormLabel>
-
-                                <div className="d-flex align-items-center gap-2 ms-auto">
-                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
-                                    <FormControl type="number" id="monografiaQnt" className="fw-medium" placeholder="0"
-                                        style={{
-                                            width: '5rem',
-                                            backgroundColor: tiposAtivos.checkboxMonografia ? '#FFFFFF' : '#E9ECEF', // Muda o fundo se desativado
-                                            cursor: tiposAtivos.checkboxMonografia ? 'text' : 'not-allowed'
-
-                                        }}
-                                        disabled={!tiposAtivos.checkboxMonografia}
-
-                                    />
-
-                                </div>
-                            </div>
-
-                            {/* Artigo */}
-                            <div className="d-flex align-items-center gap-2 mb-3">
-                                <FormCheck
-                                    name="Artigo"
-                                    type="checkbox"
-                                    id="checkboxArtigo"
-                                    checked={tiposAtivos.checkboxArtigo}
-                                    onChange={handleCheckboxChange}
-                                />
-                                <FormLabel htmlFor="checkboxArtigo" className='mb-0 fw-bold text-uppercase'>Artigo</FormLabel>
-
-                                <div className="d-flex align-items-center gap-2 ms-auto">
-                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
-                                    <FormControl type="number" id="artigoQnt" className="fw-medium" placeholder="0"
-                                        style={{
-                                            width: '5rem',
-                                            // Muda o fundo se desativado
-                                            backgroundColor: tiposAtivos.checkboxArtigo ? '#FFFFFF' : '#E9ECEF',
-                                            cursor: tiposAtivos.checkboxArtigo ? 'text' : 'not-allowed'
-
-                                        }}
-                                        disabled={!tiposAtivos.checkboxArtigo} />
-                                </div>
-                            </div>
-
-                            {/* Plano de negócios */}
-                            <div className="d-flex align-items-center gap-2 fw-medium">
-                                <FormCheck
-                                    className=""
-                                    name="Plano de negócios"
-                                    type="checkbox"
-                                    id="checkboxPlanoNegocios"
-                                    checked={tiposAtivos.checkboxPlanoNegocios}
-                                    onChange={handleCheckboxChange}
-                                />
-                                <FormLabel htmlFor="checkboxPlanoNegocios" className='mb-0 fw-bold text-uppercase'>Plano de negócios</FormLabel>
-
-                                <div className="d-flex align-items-center gap-2 ms-auto">
-                                    {/* TODO: Apenas exibir se o checkbox foi selecionado*/}
-                                    <FormLabel className='text-secondary fs-6 fw-medium'>Quantidade maxima de integrantes do grupo: </FormLabel>
-                                    <FormControl type="number" id="planoNegociosQnt" className="fw-medium" placeholder="0"
-                                        style={{
-                                            width: '5rem',
-                                            // Muda o fundo se desativado
-                                            backgroundColor: tiposAtivos.checkboxPlanoNegocios ? '#FFFFFF' : '#E9ECEF',
-                                            cursor: tiposAtivos.checkboxPlanoNegocios ? 'text' : 'not-allowed'
-
-                                        }}
-                                        disabled={!tiposAtivos.checkboxPlanoNegocios} />
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </FormGroup>
                     {/* Selecionar Coordenador */}
