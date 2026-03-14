@@ -3,3 +3,26 @@
     background-color: color-mix(in srgb, #333, transparent 80%) !important;
     transition: 0.3s !important;
 }
+
+.nav__link {
+    transition: all 0.3s ease;
+    padding: 8px 15px !important;
+}
+
+/* Garante que o container flexível se comporte bem em telas menores */
+.flex-1 {
+    flex: 1;
+}
+
+/* Diminui a fonte em celulares para a Navbar não quebrar */
+@media (max-width: 576px) {
+
+    .bg-primary .fs-3,
+    .bg-primary .fs-4 {
+        font-size: 1.1rem !important;
+    }
+
+    .nav__link {
+        padding: 5px 10px !important;
+    }
+}
