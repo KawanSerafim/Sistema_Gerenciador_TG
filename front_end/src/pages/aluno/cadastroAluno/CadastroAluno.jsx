@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
 import { useForm } from "../../../hooks/useForm"
 import { useState } from 'react';
+import { bloquearCaracteresInputNome, validarNome } from '../../../utils/utils';
 
 //Função pura que recebe os valores digitados e retorna um objeto com ois erros, caso não tenha erros retorna um objeto vazio
 const validarCadastro = (valores) => {
@@ -14,6 +15,10 @@ const validarCadastro = (valores) => {
             erros[key] = `${key.charAt(0).toUpperCase()}${key.slice(1).toLowerCase()} é um campo obrigatório`
         }
         //Validações especificas
+        //Nome
+        else if (key == "nome" && validarNome(value.trim()) == false) {
+            erros.nome = "Nome com caracteres invalidos."
+        }
         // Matricula
         else if (key == "matricula" && value.trim().length != 11) {
             erros.matricula = 'A matrícula tem que ter 11 dígitos.';
@@ -107,6 +112,7 @@ const CadastroAluno = () => {
                             value={values.nome}
                             className='bg-white text-black fw-normal fs-5'
                             onChange={handleChange}
+                            onKeyDown={bloquearCaracteresInputNome}
                             isInvalid={!!errors.nome}
                         />
 

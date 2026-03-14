@@ -2,7 +2,7 @@ import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl,
 import UserNavBar from "../../../../components/usernavbar/UserNavBar";
 import { useForm } from "../../../../hooks/useForm";
 import { useState } from "react";
-import { bloquearCaracteresEspeciais } from "../../../../utils/utils";
+import { bloquearCaracteresInputNumber } from "../../../../utils/utils";
 
 // Controlador do ano minimo 
 const anoAtual = new Date().getFullYear();
@@ -26,7 +26,7 @@ const validarCampos = (valores) => {
 
 
     // Validação das turmas: 
-    // Verificamos se todas as 6 combinações (3 turnos x 2 disciplinas) foram preenchidas
+    // Verifica se todas as 6 combinações (3 turnos x 2 disciplinas) foram preenchidas
     const disciplinas = ["TG1", "TG2"];
     const turnos = ["Noite", "Tarde", "Manhã"];
     let faltamProfessores = false;
@@ -78,7 +78,7 @@ const CadastrarTurma = () => {
     const optionsDisciplinas = curso.disciplinas
 
     // Professores e turmas
-    const [profGlobal, setProfGlobal] = useState("")
+    const [profUnico, setProfUnico] = useState("")
     //Controla o estado do btn radio de 1 prof apenas
     const [apenasUmProf, setApenasUmProf] = useState(false)
     //Mock de professores, dados reais viram do backend
@@ -95,8 +95,8 @@ const CadastrarTurma = () => {
         });
     };
     //Quando um usuário muda o prof no select do topo
-    const handleProfessorGlobal = (prof) => {
-        setProfGlobal(prof);
+    const handleProfessorUnico = (prof) => {
+        setProfUnico(prof);
         //Se esta ativo preenche todos os campos com o prof selecionado
         if (apenasUmProf) {
             const novaTurma = {}
@@ -114,8 +114,8 @@ const CadastrarTurma = () => {
         const checado = e.target.checked;
         setApenasUmProf(checado);
         // Se marcou e ja tem profGlobal aplica todos na hora
-        if (checado && profGlobal) {
-            handleProfessorGlobal(profGlobal);
+        if (checado && profUnico) {
+            handleProfessorUnico(profUnico);
         }
     }
 
@@ -168,7 +168,7 @@ const CadastrarTurma = () => {
                                     value={values.ano}
                                     onChange={handleChange}
                                     //Usa função do utils para bloquear caracteres
-                                    onKeyDown={bloquearCaracteresEspeciais}
+                                    onKeyDown={bloquearCaracteresInputNumber}
                                     isInvalid={!!errors.ano}
                                     //Impede que o usuario seleione anos anteriores ao atual
                                     min={anoAtual}
@@ -232,8 +232,8 @@ const CadastrarTurma = () => {
 
                         {/* Selecionar um Professor para todas as disciplina */}
                         <FormSelect className={apenasUmProf ? 'bg-dark-subtle text-black fw-medium fs-5 w-100' : 'bg-dark-subtle text-muted fw-medium fs-5 w-100'}
-                            value={profGlobal}
-                            onChange={(e) => handleProfessorGlobal(e.target.value)}
+                            value={profUnico}
+                            onChange={(e) => handleProfessorUnico(e.target.value)}
                             //Enquanto a opção de apenas 1 prof não for selecionada o select esta desativado
                             disabled={!apenasUmProf}
 
