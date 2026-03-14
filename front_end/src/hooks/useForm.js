@@ -1,5 +1,17 @@
 import { useState } from 'react';
-
+/**
+ * Hook para validações de forms
+ * No componente: 
+ * - Objeto com Nomes dos campos a serem validados e seus tipos: Ex: {nome : ""}
+ * - Importar como: const { values, errors, handleChange, handleSubmit } = useForm(
+         campos,
+         validarCadastro
+     );
+ * - Função pura que recebe os valores digitados e retorna um objeto com os erros, caso não tenha erros retorna um objeto vazio
+ * - No forms: noValidate e onSubmit={handleSubmit(funcaoPosEnvioSucesso)}
+ * - Nos campos a serem validados: value={values.nomeCampo}  onChange={handleChange} isInvalid={!!errors.nomeCampo}
+ * - Na linha abaixo do campo a ser validado: <Form.Control.Feedback type="invalid"> {errors.nomeCampo} </Form.Control.Feedback>
+ */
 export function useForm(initialValues, validateFunction) {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
