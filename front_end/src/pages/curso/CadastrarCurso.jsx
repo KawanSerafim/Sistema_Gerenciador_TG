@@ -25,12 +25,9 @@ const CadastrarCurso = () => {
         { id: 'checkboxPlanoNegocios', label: 'Plano de Negócios' }
     ];
 
-    //Transforma a lista de objeto vinda do backend em objeto
-    const estadosTGs = Object.fromEntries(opcoesTrabalho)
-    //Cria um estado dos tipos ativos com o valor default de false
+    //Cria um estado dos tipos ativos com a chave sendo o id da opcao e o valor default de false
     const [tiposAtivos, setTiposAtivos] = useState(
-        Object.fromEntries(
-            Object.entries(estadosTGs).map(([key]) => [key, false])
+        Object.fromEntries(opcoesTrabalho.map(opcao => [opcao.id, false])
         )
     );
     // Função para alternar o estado
@@ -127,7 +124,7 @@ const CadastrarCurso = () => {
                                         id={opcao.id}
                                         label={opcao.label.toUpperCase()}
                                         className="fw-bold"
-                                        checked={tiposAtivos[opcao.id]}
+                                        checked={tiposAtivos[opcao.id] || false}
                                         onChange={handleCheckboxChange}
                                     />
                                     <div className="d-flex align-items-center gap-2 ms-auto">
@@ -138,8 +135,9 @@ const CadastrarCurso = () => {
                                             type="number"
                                             disabled={!tiposAtivos[opcao.id]}
                                             className={tiposAtivos[opcao.id] ? "bg-white fw-medium" : "bg-light"}
-                                            style={{ width: '70px' }}
+                                            style={{ width: '3.5rem' }}
                                             placeholder="0"
+                                            min="0"
                                         />
                                     </div>
                                 </div>
