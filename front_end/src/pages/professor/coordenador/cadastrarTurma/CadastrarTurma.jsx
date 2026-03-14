@@ -1,14 +1,29 @@
-import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col } from "react-bootstrap";
+import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Alert } from "react-bootstrap";
 import UserNavBar from "../../../../components/usernavbar/UserNavBar";
 import { useForm } from "../../../../hooks/useForm";
 import { useState } from "react";
+import { bloquearCaracteresEspeciais } from "../../../../utils/utils";
 
+// Controlador do ano minimo 
+const anoAtual = new Date().getFullYear();
 //Função pura para validação dos campos
 const validarCampos = (valores) => {
     let erros = {};
+    const anoDigitado = parseInt(valores.ano);
     // Ano e Semestre
-    if (!valores.ano) erros.ano = "O ano é obrigatório.";
-    if (!valores.semestre) erros.semestre = "Selecione o semestre.";
+    if (!valores.ano) {
+        erros.ano = "O ano é obrigatório.";
+    }
+    else if (valores.ano.length !== 4) {
+        erros.ano = "O ano deve ter 4 dígitos.";
+    }
+    else if (anoDigitado < anoAtual || anoDigitado > (anoAtual + 2)) {
+        erros.ano = `O ano deve estar entre ${anoAtual} e ${anoAtual + 2}`
+    }
+    if (!valores.semestre) {
+        erros.semestre = "Selecione o semestre.";
+    }
+
 
     // Validação das turmas: 
     // Verificamos se todas as 6 combinações (3 turnos x 2 disciplinas) foram preenchidas
@@ -36,18 +51,20 @@ const validarCampos = (valores) => {
 const CadastrarTurma = () => {
     //TODO: Trocar mocks pelos dados do backend
 
+    //Estado para o sucesso
+    const [exibirSucesso, setExibirSucesso] = useState(false)
+
+
     //Usar hook de validação
 
     const campos = {
-        ano: new Date().getFullYear(),
+        ano: anoAtual.toString(),
         semestre: "",
         turmas: {}
     }
 
     const { values, errors, handleChange, handleSubmit } = useForm(campos, validarCampos)
 
-    // Controlador do ano minimo 
-    const anoAtual = new Date().getFullYear();
     //Mock de curso
     const curso = {
         id: 1,
@@ -62,7 +79,6 @@ const CadastrarTurma = () => {
 
     // Professores e turmas
     const [profGlobal, setProfGlobal] = useState("")
-    const [turmas, setTurmas] = useState({})
     //Controla o estado do btn radio de 1 prof apenas
     const [apenasUmProf, setApenasUmProf] = useState(false)
     //Mock de professores, dados reais viram do backend
@@ -89,7 +105,7 @@ const CadastrarTurma = () => {
                     novaTurma[`${disciplina}-${turno}`] = prof;
                 })
             });
-            setTurmas(novaTurma)
+            atualizarTurmasNoHook(novaTurma);
         }
     }
 
@@ -105,30 +121,35 @@ const CadastrarTurma = () => {
 
     //Função para os selects individuais
     const handleSelecionarProfIndividual = (chaveTurma, prof) => {
-        setTurmas(antiga => ({
-            ...antiga,
+        const novaTurma = {
+            ...values.turmas,
             [chaveTurma]: prof
-        }))
+        }
+        atualizarTurmasNoHook(novaTurma)
     }
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
         // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
         console.log("Enviando payload para a API:", dadosValidados);
+        //Ativa alerta de sucesso
+        setExibirSucesso(true);
+        //Esconde depois de alguns segundos
+        setTimeout(() => setExibirSucesso(false), 5000);
     };
-
 
 
     return (
         <>
             <UserNavBar
-                userName="Max"
+                userName="Coordenador"
             />
-            <Container className="mt-5" style={{ minWidth: '800px' }}>
+            <Container className="mt-5 px-3 px-md-0" style={{ maxWidth: '900px' }}>
+
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Turmas</h2>
                 <Form
                     noValidate
-                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'
+                    className='form-bg border border-dark border-top-0 p-2 p-md-4 rounded-bottom-4 shadow-sm'
                     id="formTurma"
                     onSubmit={handleSubmit(enviarParaBackend)}
 
@@ -136,25 +157,39 @@ const CadastrarTurma = () => {
                     {/* Primeira linha: Ano e semestre */}
                     <Row className="mt-2 d-flex justify-content-center align-items-center">
                         {/* Coluna ano*/}
-                        <Col md={3}>
+                        {/* Mobile=1, tablet=2, desktop=4 */}
+                        <Col xs={12} md={6} lg={3}>
                             <FormGroup controlId="formAno">
                                 {/* Ano */}
                                 <FormLabel className='text-secondary fs-6 fw-bold '>Ano </FormLabel>
                                 <FormControl
                                     type="number"
-                                    placeholder={anoAtual}
-                                    id="ano"
+                                    name="ano"
+                                    value={values.ano}
+                                    onChange={handleChange}
+                                    //Usa função do utils para bloquear caracteres
+                                    onKeyDown={bloquearCaracteresEspeciais}
+                                    isInvalid={!!errors.ano}
                                     //Impede que o usuario seleione anos anteriores ao atual
                                     min={anoAtual}
+                                    max={anoAtual + 3}
                                     className="fw-medium bg-white border-secondary"
-                                    style={{ maxWidth: '100px' }}
-                                    required={true} />
+                                    style={{ maxWidth: '6.6rem' }}
+                                />
+                                {/* Feedback de erro */}
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.ano}
+                                </Form.Control.Feedback>
+
 
                             </FormGroup>
                         </Col>
                         {/* Coluna do semestre */}
-                        <Col md={3}>
-                            <FormGroup controlId="formSemestre">
+                        {/* Mobile=1, tablet=2, desktop=4 */}
+                        <Col xs={12} md={6} lg={3}>
+                            <FormGroup controlId="formSemestre"
+                                value={values.semestre}
+                            >
                                 <FormLabel className='text-secondary fs-6 fw-bold d-block'>Semestre</FormLabel>
                                 <div className="d-flex gap-3 pt-2">
                                     <Form.Check
@@ -162,7 +197,10 @@ const CadastrarTurma = () => {
                                         label="1"
                                         name="semestre"
                                         type="radio"
-                                        id="semestre1"
+                                        value="1"
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.semestre}
+                                        checked={values.semestre === "1"}
                                         className="fw-bold"
                                     />
                                     <Form.Check
@@ -170,24 +208,30 @@ const CadastrarTurma = () => {
                                         label="2"
                                         name="semestre"
                                         type="radio"
-                                        id="semestre2"
+                                        value="2"
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.semestre}
+                                        checked={values.semestre === "2"}
                                         className="fw-bold"
                                     />
                                 </div>
+                                {errors.semestre && <small className="text-danger small mt-1">{errors.semestre}</small>}
+
                             </FormGroup>
                         </Col>
                     </Row>
                     {/* Linha 2: Seleção de um unico professor para a turma */}
-                    <div className="d-flex flex-column align-items-center my-4">
+                    <div className="d-flex flex-column flex-md-row align-items-center my-4 gap-2 gap-md-3">
                         <Form.Check
                             label="Unico professor para todas as turmas"
                             type="checkbox"
+                            id="checkUnicoProfessor"
                             onChange={(e) => handleUmProfessorParaTodas(e)}
-                            className="mb-2 fw-medium text-secondary"
+                            className="mb-2 fw-medium text-secondary text-nowrap"
                         />
 
                         {/* Selecionar um Professor para todas as disciplina */}
-                        <FormSelect className={apenasUmProf ? 'bg-dark-subtle text-black fw-medium fs-5 w-75' : 'bg-dark-subtle text-muted fw-medium fs-5 w-75'}
+                        <FormSelect className={apenasUmProf ? 'bg-dark-subtle text-black fw-medium fs-5 w-100' : 'bg-dark-subtle text-muted fw-medium fs-5 w-100'}
                             value={profGlobal}
                             onChange={(e) => handleProfessorGlobal(e.target.value)}
                             //Enquanto a opção de apenas 1 prof não for selecionada o select esta desativado
@@ -206,11 +250,14 @@ const CadastrarTurma = () => {
                     <hr className="my-4" />
                     {/* Linha 3: Opções de disciplinas e turnos */}
                     {optionsTurnos.map((turno) => (
-                        <Row key={turno} className="mb-3">
+                        <Row key={turno} className="gy-3 mb-3">
                             {/* Dentro da linha itera as disciplinas (colunas) */}
                             {optionsDisciplinas.map((disciplina) => {
                                 //id da turma para o estado
                                 const chaveTurma = `${disciplina}-${turno}`;
+                                //Verifica se existe erro em turma e se falta esse professor em especifico
+                                const campoEstaInvalido = !!errors.turmas && !values.turmas[chaveTurma];
+
                                 return (
                                     <Col md={6} key={`${chaveTurma}`}>
                                         <FormGroup>
@@ -219,10 +266,10 @@ const CadastrarTurma = () => {
                                                 {disciplina} {turno}
                                             </FormLabel>
                                             <FormSelect
-                                                required={true}
+                                                isInvalid={campoEstaInvalido}
                                                 className='bg-dark-subtle border-secondary-subtle text-black fw-medium fs-5'
                                                 //Garante que o valor venha do estado
-                                                value={turmas[chaveTurma] || ""}
+                                                value={values.turmas[chaveTurma] || ""}
                                                 onChange={(e) => handleSelecionarProfIndividual(chaveTurma, e.target.value)}
                                                 //Desativa os individuais se o "global" mandar
                                                 disabled={apenasUmProf}
@@ -233,11 +280,19 @@ const CadastrarTurma = () => {
                                                 ))}
                                             </FormSelect>
                                         </FormGroup>
+
                                     </Col>
                                 );
+
                             })}
                         </Row>
                     ))}
+                    {/* Mensagem de Erro Geral para as Turmas */}
+                    {errors.turmas && (
+                        <div className="text-danger text-center mt-2 small fw-bold">
+                            {errors.turmas}
+                        </div>
+                    )}
 
 
                     {/* Botão de Cadastrar */}
@@ -254,6 +309,12 @@ const CadastrarTurma = () => {
                         </Col>
                     </Row>
                 </Form>
+                {/* Renderiza o alerta de sucesso após passar nas validações */}
+                {exibirSucesso && (
+                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
+                        Turma cadastrada com sucesso!
+                    </Alert>
+                )}
             </Container >
         </>
     )
