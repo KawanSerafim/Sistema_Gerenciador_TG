@@ -22,11 +22,13 @@ import FinalizarDisciplinas from './pages/professor/finalizarDisciplinas/Finaliz
 import Login from './pages/utils/login/Login.jsx';
 import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrientacao.jsx';
 import Home from './pages/aluno/home/Home.jsx';
+import CadastrarProfessor from './pages/adm/CadastrarProfessor.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path="/adm/cadastarProfessor" element={<CadastrarProfessor />} />
         <Route path="/aluno/cadastro" element={<CadastroAluno />} />
         <Route path="/aluno/formarGrupo" element={<FormarGrupo />} />
         <Route path="/aluno/solicitarOrientacao" element={<SolicitarOrientacao />} />
