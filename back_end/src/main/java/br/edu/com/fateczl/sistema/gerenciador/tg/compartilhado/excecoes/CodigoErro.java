@@ -18,7 +18,7 @@ public enum CodigoErro {
 
     RN_001_ESTADO_INVALIDO_PARA_ACAO("RN", "O campo '%s' deve ter o estado " +
             "'%s' para ser considerado válido para essa ação."),
-    RN_002_REGISTRO_DUPLICADO("RN", "O campo '%s' tem valor duplicado."),
+    RN_002_REGISTRO_DUPLICADO("RN", "O campo '%s' já está cadastrado."),
     RN_003_CONDICAO_ACAO_NAO_ATENDIDA("RN", "O campo '%s' não atende a " +
             "condição '%s'."),
     RN_004_LIMITE_ALUNOS_EXCEDIDO("RN", "A quantidade '%d' excedeu o limite " +
