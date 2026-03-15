@@ -11,6 +11,8 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
+import java.util.UUID;
+
 public class Professor implements Coorientador {
     private final ProfessorId id;
     private final Nome nome;
@@ -33,7 +35,8 @@ public class Professor implements Coorientador {
     public static Professor novo(Nome nome, Matricula matricula,
                                  ContaUsuario contaUsuario,
                                  CargoProfessor cargo) {
-        return new Professor(null, nome, matricula, contaUsuario, cargo);
+        return new Professor(new ProfessorId(UUID.randomUUID()), nome,
+                matricula, contaUsuario, cargo);
     }
 
     public static Professor carregar(ProfessorId id, Nome nome,
@@ -94,6 +97,7 @@ public class Professor implements Coorientador {
     // Métodos Getters ---------------------------------------------------------
 
     public ProfessorId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
     public ContaUsuario contaUsuario() { return contaUsuario; }
