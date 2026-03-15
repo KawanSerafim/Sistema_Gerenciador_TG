@@ -1,8 +1,8 @@
 import { Button, Container, Modal, ModalBody, Stack } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import TableComponent from "../../../components/table/TableComponent"
-import { useModal } from "../../../hooks/useModal"
 import "../../../styles/ModalIntegrantes.css"
+import { useModal } from "../../../hooks/useModal/useModal"
 const GerarCertificado = () => {
 
     //Instancia o hook do modal
