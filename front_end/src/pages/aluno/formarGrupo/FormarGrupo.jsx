@@ -110,7 +110,7 @@ const FormarGrupo = () => {
 
     const adicionarIntegrante = () => {
         // Só adiciona se houver um aluno selecionado do dropdown ou se você permitir digitação livre
-        const alunoParaAdicionar = alunoSelecionado || (buscaAluno.trim() ? { id: Date.now(), nome: buscaAluno } : null);
+        const alunoParaAdicionar = alunoSelecionado;
 
         if (alunoParaAdicionar) {
             const novaLista = [...integrantes, alunoParaAdicionar];
@@ -201,7 +201,7 @@ const FormarGrupo = () => {
                                 value={buscaAluno}
                                 onChange={handleBuscaAluno}
                                 autoComplete="off"
-                                placeholder="Digite o nome do integrante"
+                                placeholder="Digite ou selecione o nome do integrante"
                                 className='bg-white text-black fw-bold fs-5'
                                 isInvalid={!!errors.aluno}
                             />
@@ -225,8 +225,14 @@ const FormarGrupo = () => {
                         <Col md={1}>
                             <img
                                 src={addIcon} alt="Add"
-                                style={{ cursor: 'pointer', width: '45px' }}
-                                onClick={adicionarIntegrante}
+                                style={{
+                                    cursor: alunoSelecionado ? 'pointer' : 'not-allowed',
+                                    width: '45px',
+                                    opacity: alunoSelecionado ? 1 : 0.4
+                                }}
+                                // Só clica se tiver selecionado
+                                onClick={adicionarIntegrante ? adicionarIntegrante : null}
+                                title="Adicionar integrante"
                             />
                         </Col>
                     </Row>
