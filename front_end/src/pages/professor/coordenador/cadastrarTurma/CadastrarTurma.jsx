@@ -231,7 +231,7 @@ const CadastrarTurma = () => {
                         />
 
                         {/* Selecionar um Professor para todas as disciplina */}
-                        <FormSelect className={apenasUmProf ? 'bg-dark-subtle text-black fw-medium fs-5 w-100' : 'bg-dark-subtle text-muted fw-medium fs-5 w-100'}
+                        <FormSelect className={apenasUmProf ? 'bg-white text-black fw-medium fs-5 w-100' : 'bg-dark-subtle text-muted fw-medium fs-5 w-100'}
                             value={profUnico}
                             onChange={(e) => handleProfessorUnico(e.target.value)}
                             //Enquanto a opção de apenas 1 prof não for selecionada o select esta desativado
@@ -267,12 +267,10 @@ const CadastrarTurma = () => {
                                             </FormLabel>
                                             <FormSelect
                                                 isInvalid={campoEstaInvalido}
-                                                className='bg-dark-subtle border-secondary-subtle text-black fw-medium fs-5'
+                                                className='bg-white text-black border-secondary-subtle fw-medium fs-5'
                                                 //Garante que o valor venha do estado
                                                 value={values.turmas[chaveTurma] || ""}
                                                 onChange={(e) => handleSelecionarProfIndividual(chaveTurma, e.target.value)}
-                                                //Desativa os individuais se o "global" mandar
-                                                disabled={apenasUmProf}
                                             >
                                                 <option value="" disabled>Selecione o professor de TG</option>
                                                 {todosProfessores.map((professor) => (
