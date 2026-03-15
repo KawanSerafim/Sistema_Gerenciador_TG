@@ -11,7 +11,7 @@ const TableComponent = ({ columns, data }) => {
     return (
         <Table responsive className="custom-table custom-table-hover">
             <thead>
-                <tr className='fs-3 fw-medium'>
+                <tr className='fs-4 fw-medium'>
                     {columns.map((col, index) => (
                         <th key={index} className="table-header">
                             {col.header}

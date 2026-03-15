@@ -25,7 +25,7 @@ const EnviarTurma = () => {
         }
     }
 
-    const columns = [
+    const colunas = [
         { header: "Nome do aluno", accessor: "nome" },
         { header: "RA", accessor: "ra" },
         { header: "Situação de Cadastro", accessor: "situacaoCadastro" }
@@ -96,7 +96,7 @@ const EnviarTurma = () => {
                 <div className="mt-5">
                     <TableComponent
 
-                        columns={columns}
+                        columns={colunas}
                         data={data}
                     />
                 </div>
