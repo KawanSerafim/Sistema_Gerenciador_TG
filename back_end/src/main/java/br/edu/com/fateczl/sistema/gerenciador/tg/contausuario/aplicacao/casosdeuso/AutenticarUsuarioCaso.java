@@ -24,7 +24,7 @@ public class AutenticarUsuarioCaso {
     public record Comando(String email, String senhaLimpa) {}
 
     public String executar(Comando comando) {
-        Email emailAlvo = new Email(comando.email);
+        Email emailAlvo = new Email(comando.email());
         ContaUsuario usuario = repositorio.buscarPorEmail(emailAlvo)
                 .orElseThrow(() -> new AutorizacaoExcecao(
                         CodigoErro.AU_001_CREDENCIAIS_INVALIDAS));
