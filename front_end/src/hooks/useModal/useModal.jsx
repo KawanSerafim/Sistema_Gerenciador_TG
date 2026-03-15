@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./useModal.css"
 
 /**
  * Hook para lidar com modal 
