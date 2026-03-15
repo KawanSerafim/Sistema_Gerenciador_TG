@@ -8,8 +8,9 @@ import { FormGroup } from "react-bootstrap";
 import { useForm } from '../../../hooks/useForm';
 import { useState } from 'react';
 import TableComponent from '../../../components/table/TableComponent';
+import UserNavBar from '../../../components/usernavbar/UserNavBar';
 
-const validarGrupo = (valores) => {
+const validarCampos = (valores) => {
     let erros = {};
     if (!valores.tema.trim()) erros.tema = "O tema é obrigatório.";
     if (!valores.tipoTG) erros.tipoTG = "Selecione o tipo de TG.";
@@ -29,7 +30,9 @@ const FormarGrupo = () => {
         integrantes: [] // Referência para validação
     };
 
-    const { values, errors, handleChange, handleSubmit } = useForm(campos, validarGrupo);
+    const { values, errors, handleChange, handleSubmit } = useForm(campos, validarCampos);
+
+    const [exibirSucesso, setExibirSucesso] = useState(false)
 
     //Mock de alunos, TODO: pegar do backend
 
@@ -70,6 +73,9 @@ const FormarGrupo = () => {
         setBuscaAluno(termo);
         setAlunoSelecionado(null); // Reseta a seleção se o usuário voltar a digitar
 
+        const opcoesDisponiveis = listaAlunosDB.
+            filter(aluno => !integrantes.some(i => i.id === aluno.id))
+
         if (termo.length > 1) { // Só filtra após digitar 2 letras
             const filtrados = listaAlunosDB.filter(aluno =>
                 aluno.nome.toLowerCase().includes(termo.toLowerCase()) &&
@@ -77,7 +83,8 @@ const FormarGrupo = () => {
             );
             setSugestoes(filtrados);
         } else {
-            setSugestoes([]);
+            //Se apagar tudo exibe as 3 primeiras opcoes
+            setSugestoes(opcoesDisponiveis.slice(0, 3));
         }
 
         // Sincroniza com o useForm para validações
@@ -89,6 +96,24 @@ const FormarGrupo = () => {
         setAlunoSelecionado(aluno);
         setSugestoes([]);
     };
+
+    const handleSugestoesFocus = () => {
+        // Quando clica no input, se estiver vazio, mostra os 5 primeiros disponíveis
+        if (buscaAluno.length === 0) {
+            const opcoesDisponiveis = listaAlunosDB.
+                filter(aluno => !integrantes.some((i) => i.id === aluno.id))
+                .slice(0, 3)
+            //Exibe as primeiras 3 opções
+            setSugestoes(opcoesDisponiveis)
+        }
+    }
+
+    const handleSugestoesBlur = () => {
+        setTimeout(() => {
+            setSugestoes([])
+        }, 200)
+
+    }
     // Tabela
     const colunas = [
         { header: "Nome do aluno", accessor: "nome" },
@@ -109,7 +134,7 @@ const FormarGrupo = () => {
     ]
 
     const adicionarIntegrante = () => {
-        // Só adiciona se houver um aluno selecionado do dropdown ou se você permitir digitação livre
+        // Só adiciona se houver um aluno selecionado do dropdown
         const alunoParaAdicionar = alunoSelecionado;
 
         if (alunoParaAdicionar) {
@@ -134,16 +159,26 @@ const FormarGrupo = () => {
         });
     };
 
-    const enviarDados = (dados) => {
-        console.log("Grupo Criado:", { ...dados, integrantes });
+    // A função mock que realmente envia os dados caso passe na validação do frontend
+    const enviarParaBackend = (dadosValidados) => {
+        // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
+        console.log("Enviando payload para a API:", dadosValidados);
+        //Ativa alerta de sucesso
+        setExibirSucesso(true);
+        //Esconde depois de alguns segundos
+        setTimeout(() => setExibirSucesso(false), 5000);
     };
     return (
         <>
-            <Container className="mt-5"  >
+            <UserNavBar
+                userName='Aluno'
+                maxWidth='1200px'
+            />
+            <Container className="mt-5" style={{ maxWidth: "1200px" }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Formar Grupo</h2>
                 <Form
                     noValidate
-                    onSubmit={handleSubmit(enviarDados)}
+                    onSubmit={handleSubmit(enviarParaBackend)}
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
 
                     {/* Tema */}
@@ -200,6 +235,8 @@ const FormarGrupo = () => {
                                 name="aluno"
                                 value={buscaAluno}
                                 onChange={handleBuscaAluno}
+                                onFocus={handleSugestoesFocus}
+                                onBlur={handleSugestoesBlur}
                                 autoComplete="off"
                                 placeholder="Digite ou selecione o nome do integrante"
                                 className='bg-white text-black fw-bold fs-5'
@@ -208,13 +245,14 @@ const FormarGrupo = () => {
 
                             {/* Lista de Sugestões */}
                             {sugestoes.length > 0 && (
-                                <ul className="list-group position-absolute w-100 shadow-lg" style={{ zIndex: 1000, top: '100%' }}>
+                                <ul className="list-group position-absolute shadow-lg" style={{ zIndex: 1000, top: '100%', width: "95%" }}>
                                     {sugestoes.map(aluno => (
                                         <ListGroup.Item
                                             key={aluno.id}
                                             action
                                             className="list-group-item list-group-item-action cursor-pointer py-2"
                                             onClick={() => selecionarSugestao(aluno)}
+
                                             style={{ cursor: 'pointer' }}
                                         >
                                             {aluno.nome}
@@ -264,6 +302,12 @@ const FormarGrupo = () => {
                     </FormGroup>
 
                 </Form>
+                {/* Renderiza o alerta de sucesso após passar nas validações */}
+                {exibirSucesso && (
+                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
+                        Turma cadastrada com sucesso!
+                    </Alert>
+                )}
             </Container >
         </>
     );
