@@ -1,7 +1,8 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes;
 
 public abstract sealed class DominioExcecao extends RuntimeException
-    permits ValidacaoExcecao, RegraNegocioExcecao, AutorizacaoExcecao {
+    permits ValidacaoExcecao, RegraNegocioExcecao, AutorizacaoExcecao,
+        GenericaExcecao {
 
     private final CodigoErro codigoErro;
 
