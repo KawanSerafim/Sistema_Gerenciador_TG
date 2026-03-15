@@ -174,7 +174,7 @@ const FormarGrupo = () => {
                 userName='Aluno'
                 maxWidth='1200px'
             />
-            <Container className="mt-5" style={{ maxWidth: "1200px" }}>
+            <Container className="mt-5 text-center" style={{ maxWidth: "1200px" }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Formar Grupo</h2>
                 <Form
                     noValidate
@@ -212,9 +212,9 @@ const FormarGrupo = () => {
                                 value={values.tipoTG}
                                 onChange={handleChange}
                                 isInvalid={!!errors.tipoTG}
-                                className='bg-white text-black fw-bolder fs-5 text-center'
+                                className='bg-white text-black fw-bolder fs-5'
                             >
-                                <option value="" disabled>Selecione o tipo de tg do seu trabalho</option>
+                                <option value="" disabled>Selecione o tipo de trabalho</option>
                                 <option value="monografia">Monografia</option>
                                 <option value="desenvolvimento">Desenvolvimento</option>
                                 <option value="artigo">Artigo</option>
@@ -226,7 +226,7 @@ const FormarGrupo = () => {
                     </Row>
 
                     {/* Aluno */}
-                    <Row className="mb-5 align-items-center">
+                    <Row className="mb-5 d-flex align-items-center">
                         <Col md={3} className="text-end">
                             <FormLabel className='text-secondary fs-4 fw-bold m-0'>Aluno:</FormLabel>
                         </Col>
@@ -239,7 +239,7 @@ const FormarGrupo = () => {
                                 onBlur={handleSugestoesBlur}
                                 autoComplete="off"
                                 placeholder="Digite ou selecione o nome do integrante"
-                                className='bg-white text-black fw-bold fs-5'
+                                className='bg-white text-black fw-bold fs-5 '
                                 isInvalid={!!errors.aluno}
                             />
 
@@ -250,10 +250,8 @@ const FormarGrupo = () => {
                                         <ListGroup.Item
                                             key={aluno.id}
                                             action
-                                            className="list-group-item list-group-item-action cursor-pointer py-2"
+                                            className="list-group-item list-group-item-action cursor-pointer py-2 fs-6"
                                             onClick={() => selecionarSugestao(aluno)}
-
-                                            style={{ cursor: 'pointer' }}
                                         >
                                             {aluno.nome}
                                         </ListGroup.Item>

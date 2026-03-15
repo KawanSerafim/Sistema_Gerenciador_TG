@@ -128,7 +128,7 @@ const SolicitarOrientacao = () => {
                                 onBlur={handleSugestoesBlur}
                                 autoComplete="off"
                                 placeholder="Digite ou selecione o nome do orientador"
-                                className='bg-white text-black fw-bold fs-5 text-center'
+                                className='bg-white text-black fw-bold fs-5 '
                                 isInvalid={!!errors.orientador}
                             />
 
@@ -139,9 +139,8 @@ const SolicitarOrientacao = () => {
                                         <ListGroup.Item
                                             key={orientador.id}
                                             action
-                                            className="list-group-item list-group-item-action cursor-pointer py-2"
+                                            className="list-group-item list-group-item-action cursor-pointer py-2 fs-6"
                                             onClick={() => selecionarSugestao(orientador)}
-                                            style={{ cursor: 'pointer' }}
                                         >
                                             {orientador.nome}
                                         </ListGroup.Item>
@@ -173,7 +172,7 @@ const SolicitarOrientacao = () => {
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {exibirSucesso && (
                     <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                        Turma cadastrada com sucesso!
+                        {`Solicitação de orientação enviada com sucesso`}
                     </Alert>
                 )}
             </Container>
