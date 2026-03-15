@@ -11,10 +11,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
-
-import java.util.UUID;
 
 public class CadastrarProfessorCaso {
     private final ProfessorRepositorio professorRepositorio;
@@ -55,10 +52,13 @@ public class CadastrarProfessorCaso {
         ContaUsuario novaConta = gerarNovaConta(emailAlvo,
                 comando.senhaLimpa());
         Professor novoProfessor = gerarNovoProfessor(nome, matriculaAlvo,
-                novaConta, comando.cargo);
+                novaConta, comando.cargo());
+
+        contaUsuarioRepositorio.salvar(novaConta);
+        professorRepositorio.salvar(novoProfessor);
 
         return new Resposta(novoProfessor.idTexto(), nome.valor(),
-                matriculaAlvo.valor(), comando.cargo);
+                matriculaAlvo.valor(), comando.cargo());
     }
 
     private void validarEmail(Email email) {
@@ -85,9 +85,6 @@ public class CadastrarProfessorCaso {
     private Professor gerarNovoProfessor(Nome nome, Matricula matricula,
                                          ContaUsuario conta,
                                          CargoProfessor cargo) {
-        Professor novoProfessor = Professor.novo(nome, matricula, conta, cargo);
-        professorRepositorio.salvar(novoProfessor);
-
-        return novoProfessor;
+        return Professor.novo(nome, matricula, conta, cargo);
     }
 }
