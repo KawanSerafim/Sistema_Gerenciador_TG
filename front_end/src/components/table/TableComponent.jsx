@@ -21,7 +21,7 @@ const TableComponent = ({ columns, data }) => {
             </thead>
             <tbody>
                 {data.map((row, rowIndex) => (
-                    <tr key={row.id || rowIndex} className='fs-4 fw-medium'>
+                    <tr key={row.id || rowIndex} className='fs-5 fw-medium'>
                         {/* Para cada row itere sobre as colunas e preencha com o accessor adequado*/}
                         {columns.map((col, colIndex) => (
                             <td key={`${row.id}-${colIndex}`}>
