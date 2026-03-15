@@ -1,7 +1,7 @@
 import addIcon from '../../../assets/add.svg'
 import CancelIcon from '../../../assets/Cancel.svg'
 import "./formarGrupo.css"
-import { Col, Container, FormControl, FormLabel, FormSelect, Row, Stack, Table } from 'react-bootstrap';
+import { Col, Container, FormControl, FormLabel, FormSelect, ListGroup, Row, Stack, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
@@ -14,7 +14,7 @@ const validarGrupo = (valores) => {
     if (!valores.tema.trim()) erros.tema = "O tema é obrigatório.";
     if (!valores.tipoTG) erros.tipoTG = "Selecione o tipo de TG.";
 
-    // Validação opcional: verificar se há pelo menos um integrante na lista
+    // verificar se há pelo menos um integrante na lista
     if (valores.integrantes.length === 0) {
         erros.aluno = "Adicione pelo menos um integrante ao grupo.";
     }
@@ -210,14 +210,15 @@ const FormarGrupo = () => {
                             {sugestoes.length > 0 && (
                                 <ul className="list-group position-absolute w-100 shadow-lg" style={{ zIndex: 1000, top: '100%' }}>
                                     {sugestoes.map(aluno => (
-                                        <li
+                                        <ListGroup.Item
                                             key={aluno.id}
+                                            action
                                             className="list-group-item list-group-item-action cursor-pointer py-2"
                                             onClick={() => selecionarSugestao(aluno)}
                                             style={{ cursor: 'pointer' }}
                                         >
                                             {aluno.nome}
-                                        </li>
+                                        </ListGroup.Item>
                                     ))}
                                 </ul>
                             )}
