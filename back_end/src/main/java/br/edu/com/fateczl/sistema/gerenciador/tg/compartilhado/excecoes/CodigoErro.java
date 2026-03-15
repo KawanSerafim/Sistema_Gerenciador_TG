@@ -23,6 +23,8 @@ public enum CodigoErro {
             "condição '%s'."),
     RN_004_LIMITE_ALUNOS_EXCEDIDO("RN", "A quantidade '%d' excedeu o limite " +
             "para o tipo '%s' no curso '%s'."),
+    RN_005_CODIGO_CONFIRMACAO_INVALIDA_EXPIRADO("RN", "O código '%s' é " +
+            "inválido ou já expirou"),
 
     // AUTORIZAÇÃO -------------------------------------------------------------
 
