@@ -1,12 +1,24 @@
-import { Button, Container, Modal, Stack } from 'react-bootstrap';
+import { Alert, Button, Container, Modal, Stack } from 'react-bootstrap';
 import TableComponent from '../../../components/table/TableComponent'
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
 import "../../../styles/ModalIntegrantes.css"
-import { useModal } from '../../../hooks/useModal';
+import { useModal } from '../../../hooks/useModal/useModal';
+import { useState } from 'react';
 
 const VisaoSolicitacaoOrientacao = () => {
-    //TODO: //columns = buscara do backend  //data = buscara do backend
 
+    const [exibirAprovacao, setExibirAprovacao] = useState(false)
+    const [grupoSelecionado, setGrupoSelecionado] = useState(null)
+    const [resultadoPedido, setResultadoPedido] = useState(false)
+
+    const handlePedidoOrientacao = (aluno, resultado) => {
+        const dadosGrupo = data.filter(i => i.aluno == aluno).at(0)
+        setGrupoSelecionado(dadosGrupo)
+        setResultadoPedido(resultado)
+        setExibirAprovacao(true)
+    }
+
+    //TODO: //columns = buscara do backend  //data = buscara do backend   
     //Modal integrantes
     //Usando hook do modal
     const {
@@ -42,12 +54,12 @@ const VisaoSolicitacaoOrientacao = () => {
                 <Stack direction="horizontal" gap={5} className="justify-content-center">
                     <Button variant="success" size="lm"
                         className="fs-5"
-                        onClick={() => alert(`Aceitou ${row.aluno}`)}>
+                        onClick={() => handlePedidoOrientacao(row.aluno, true)}>
                         Aceitar
                     </Button>
                     <Button variant="danger" size="lm"
                         className="fs-5 text-black"
-                        onClick={() => alert(`Recusou ${row.aluno}`)}>
+                        onClick={() => handlePedidoOrientacao(row.aluno, false)}>
                         Recusar
                     </Button>
                 </Stack>
@@ -83,7 +95,7 @@ const VisaoSolicitacaoOrientacao = () => {
 
             <UserNavBar
                 /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
-                userName='Sam'
+                userName='Orientador'
             />
 
             <Container className="mt-5" style={{ minWidth: '800px' }}>
@@ -91,22 +103,18 @@ const VisaoSolicitacaoOrientacao = () => {
                     columns={columns}
                     data={data}
                 />
+                {/* MODAL DE INTEGRANTES */}
                 <Modal
                     show={show}
                     onHide={handleClose}
 
                     contentClassName="custom-modal-content"
                 >
-                    <Modal.Header className="custom-modal-header" >
+                    <Modal.Header className="d-flex justify-content-center" closeButton >
                         <div className="custom-modal-title">
                             <h5>Integrantes:</h5>
                         </div>
-                        <Button variant="secondary"
-                            onClick={handleClose}
-                            className="custom-close-btn"
-                        >
-                            Fechar
-                        </Button>
+
                     </Modal.Header>
                     <Modal.Body className="p-0">
                         <ul className="m-0 p-0">
@@ -124,6 +132,12 @@ const VisaoSolicitacaoOrientacao = () => {
                         </ul>
                     </Modal.Body>
                 </Modal>
+                {/* Renderiza o alerta de sucesso após passar nas validações */}
+                {exibirAprovacao && (
+                    <Alert variant="success" onClose={() => setExibirAprovacao(false)} dismissible className="mt-3" >
+                        {`Orientação do grupo do aluno: ${grupoSelecionado.aluno} foi ${resultadoPedido ? "aceita" : "recusada"} com sucesso`}
+                    </Alert>
+                )}
             </Container>
         </>
     )
