@@ -1,45 +1,63 @@
-import { useState } from "react";
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
-import { Button, Container, Modal } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import TableComponent from "../../../components/table/TableComponent";
+import { useModal } from "../../../hooks/useModal/useModal";
+import { useMemo, useState } from "react";
 
 const VisaoGrupos = () => {
+
+    // Estado para o nosso filtro específico da página
+    const [somenteSemGrupo, setSomenteSemGrupo] = useState(false);
+
     //TODO: Buscar do backend os grupos
     //columns = buscara do backend
     //data = buscara do backend
     //Modal integrantes
-    const [show, setShow] = useState(false);
-    const [selectedMembers, setSelectedMembers] = useState([]);
-    const handleClose = () => setShow(false);
-    const handleShowMembers = (members) => {
-        //Salva os integrantes a serem exibidos
-        setSelectedMembers(members);
-        //Exibe o modal
-        setShow(true);
-    }
+
+    const {
+        show,
+        selectedData: selectedMembers,
+        handleOpen,
+        handleClose
+    } = useModal();
     //Mocks temporarios
-    const columns = [
-        { header: "IdGrupo", accessor: "id" },
-        { header: "Tipo de TG", accessor: "tipoTg" },
-        { header: "Tema", accessor: "tema" },
+    const columns = useMemo(() => [
+        { header: "IdGrupo", accessor: "id", filtravel: true, tipoFiltro: "text" },
+        { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
+        { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
         {
             header: "Grupo",
-            // Render customizado para o botão vermelho
-            render: (row) => (
-                <Button variant='primary'
-                    size='lm'
-                    className="px-2"
-                    //Passa a lista dos integrantes do grupo da linha selecionada
-                    onClick={() => handleShowMembers(row.grupo)}
-                >
-                    Visualizar Integrantes
-                </Button>
-            )
+            accessor: "grupo",
+            filtravel: true,
+            tipoFiltro: "text",
+            render: (row) => {
+                // Se não tem tema definido, consideramos que é um aluno avulso
+                const isSemGrupo = !row.tema || row.tema.trim() === "";
+
+                if (isSemGrupo) {
+                    // Exibe o nome direto em texto, sem botão
+                    // Como row.grupo é um array, pega a primeira posição [0]
+                    return <span className="fw-medium text-black fs-6">{row.grupo[0]}</span>;
+                }
+
+                // Se for um grupo normal, exibe o botão
+                return (
+                    <Button
+                        variant='primary'
+                        size='sm'
+                        className="px-2"
+                        onClick={() => handleOpen(row.grupo)}
+                    >
+                        Visualizar Integrantes
+                    </Button>
+                );
+            }
         },
-        { header: "Orientador", accessor: "orientador" }
-    ]
-    //TODO: Lidar com casos onde orientador esteja vazio
-    const data = [
+        { header: "Orientador", accessor: "orientador", filtravel: true, tipoFiltro: "select" }
+    ], [handleOpen]); // Depende do handleOpen do modal
+
+    // TODO: Quando integrar com o backend, isso vai virar um: const [data, setData] = useState([])
+    const data = useMemo(() => [
         {
             id: 1,
             tipoTg: "Artigo",
@@ -60,39 +78,62 @@ const VisaoGrupos = () => {
             tema: "Os perigos do Vibe Coding",
             grupo: ["Mariana Silva", "Samuel", "Geraldo"],
             orientador: "Sem orientador"
+        },
+        {
+            id: "-",
+            tipoTg: "",
+            tema: "",
+            grupo: ["Thiago Oliveira"], // O nome do aluno sozinho
+            orientador: ""
         }
-    ]
+    ], []); // Array de dependências vazio = cria esse mock apenas 1 vez ao carregar a página
+
+    const dadosFiltrados = useMemo(() => {
+        if (somenteSemGrupo) {
+            // Filtra apenas onde não tem tema ou não tem orientador definido formalmente
+            return data.filter(item => !item.tema || item.tema.trim() === "");
+        }
+        return data; // Se o check estiver desligado, retorna todos (a tabela cuida dos outros filtros)
+    }, [somenteSemGrupo, data])
+
+
     return (
         <>
             <UserNavBar
                 /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
-                userName='Sam'
+                userName='Professor de TG'
+                maxWidth="1200px"
             />
 
-            <Container className="mt-5" style={{ minWidth: '800px' }}>
+            <Container className="mt-3" style={{ maxWidth: '1200px' }}>
 
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Visão dos Grupos</h2>
 
-                <TableComponent
-                    columns={columns}
-                    data={data}
-                />
-                <Modal
-                    show={show}
-                    onHide={handleClose}
+                {/* Filtro específico da página (Fora da tabela) */}
+                <Row className="mb-4">
+                    <Col className="d-flex justify-content-end">
+                        <Form.Check
+                            type="switch"
+                            id="switch-sem-grupo"
+                            label="Exibir apenas alunos sem grupo"
+                            className="fs-5 fw-bold text-secondary"
+                            checked={somenteSemGrupo}
+                            onChange={(e) => setSomenteSemGrupo(e.target.checked)}
+                        />
+                    </Col>
+                </Row>
 
-                    contentClassName="custom-modal-content"
-                >
-                    <Modal.Header className="custom-modal-header" >
+                <TableComponent
+                    colunas={columns}
+                    dados={dadosFiltrados}
+                />
+                {/* Modal integrantes */}
+                <Modal show={show} onHide={handleClose} contentClassName="custom-modal-content">
+
+                    <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <h5>Integrantes:</h5>
+                            <h5>{somenteSemGrupo ? "Aluno:" : "Integrantes:"}</h5>
                         </div>
-                        <Button variant="secondary"
-                            onClick={handleClose}
-                            className="custom-close-btn"
-                        >
-                            Fechar
-                        </Button>
                     </Modal.Header>
                     <Modal.Body className="p-0">
                         <ul className="m-0 p-0">
