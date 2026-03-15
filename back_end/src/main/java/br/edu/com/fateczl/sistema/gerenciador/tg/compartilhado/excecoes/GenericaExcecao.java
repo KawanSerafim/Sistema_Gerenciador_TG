@@ -1,7 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes;
 
-public class GenericaExcecao extends RuntimeException {
-    public GenericaExcecao(String message) {
-        super(message);
+public final class GenericaExcecao extends DominioExcecao {
+    public GenericaExcecao(CodigoErro codigoErro, Object... args) {
+        super(codigoErro, args);
     }
 }
