@@ -24,6 +24,10 @@ public enum CodigoErro {
     RN_004_LIMITE_ALUNOS_EXCEDIDO("RN", "A quantidade '%d' excedeu o limite " +
             "para o tipo '%s' no curso '%s'."),
 
+    // AUTORIZAÇÃO -------------------------------------------------------------
+
+    AU_001_CREDENCIAIS_INVALIDAS("AU", "E-mail ou senha inválidos."),
+
     // GENÉRICO ----------------------------------------------------------------
 
     GN_001_REGISTRO_NAO_ENCONTRADO("GN", "O registro não foi encontrado.");
