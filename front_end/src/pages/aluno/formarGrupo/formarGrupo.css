@@ -1,0 +1,6 @@
+.list-group-item-action:hover {
+    background-color: #f8f9fa;
+    color: #B20000;
+    /* Use sua cor primária */
+    font-weight: bold;
+}
