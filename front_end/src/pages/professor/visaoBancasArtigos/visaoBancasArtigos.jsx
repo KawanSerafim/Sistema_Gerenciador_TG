@@ -5,11 +5,11 @@ import { useMemo, useState } from "react";
 import { useModal } from "../../../hooks/useModal/useModal";
 import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
-const validarCampos = (valores) => {
-    let erros = {}
-    const nota = parseInt(valores.nota)
-    //TODO: Lidar com validacao do campo nota, em casos que não é enviado nota
-}
+// const validarCampos = (valores) => {
+//     let erros = {}
+//     const nota = parseInt(valores.nota)
+//     //TODO: Lidar com validacao do campo nota, em casos que não é enviado nota
+// }
 
 const VisaoBancasArtigos = () => {
     //TODO: usar hook de validação
@@ -29,7 +29,7 @@ const VisaoBancasArtigos = () => {
             header: "Grupo",
             accessor: "grupo",
             filtravel: true,
-            tipoFiltro: "text",
+            tipoFiltro: "autocomplete",
             // Render customizado para o botão vermelho
             render: (row) => (
                 <Button variant='primary'
@@ -52,6 +52,8 @@ const VisaoBancasArtigos = () => {
         {
             header: "Membros da Banca",
             accessor: "membros",
+            filtravel: true,
+            tipoFiltro: "autocomplete",
             // Render customizado para o botão vermelho
             render: (row) => (
                 <Button variant='primary'
@@ -59,13 +61,14 @@ const VisaoBancasArtigos = () => {
                     className="px-2"
                     disabled={!row.membros || row.membros.length === 0}
                     //Passa um objeto com o tipo do modal que será aberto
-                    onClick={() => handleOpen({ type: "MEMBROS", row })}
+                    onClick={() =>
+                        handleOpen({ type: "MEMBROS", row })
+                    }
                 >
                     Visualizar Membros
                 </Button>
             ),
-            filtravel: true,
-            tipoFiltro: "text"
+
         },
         {
             header: "Situação",
