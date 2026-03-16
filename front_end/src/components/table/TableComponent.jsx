@@ -58,7 +58,7 @@ const TableComponent = ({ colunas, dados }) => {
                     dadosFiltrados.map((linha, index) => (
                         <tr key={linha.id || index}>
                             {colunas.map(col => (
-                                <td key={col.accessor}>
+                                <td key={col.accessor} data-label={col.header}>
                                     {col.render ? col.render(linha) : linha[col.accessor]}
                                 </td>
                             ))}
@@ -66,7 +66,7 @@ const TableComponent = ({ colunas, dados }) => {
                     ))
                 ) : (
                     <tr>
-                        <td colSpan={colunas.length} className="text-center py-4 text-muted">
+                        <td colSpan={colunas.length} className="text-center py-4 text-muted" >
                             Nenhum registro encontrado.
                         </td>
                     </tr>
