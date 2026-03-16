@@ -41,7 +41,7 @@ const TableFilter = ({ coluna, dados, aoFiltrar }) => {
             <AutocompleteFilter
                 opcoesDisponiveis={valoresUnicos}
                 aoFiltrar={(valorEnviado) => aoFiltrar(coluna.accessor, valorEnviado)}
-                placeholder={`Buscar...`}
+                placeholder={`Selecione...`}
             />
         );
     }
