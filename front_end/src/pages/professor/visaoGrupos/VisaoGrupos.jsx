@@ -20,10 +20,11 @@ const VisaoGrupos = () => {
         handleOpen,
         handleClose
     } = useModal();
+
     //Mocks temporarios
     const columns = useMemo(() => [
         { header: "IdGrupo", accessor: "id", filtravel: true, tipoFiltro: "text" },
-        { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
+        { header: "Tipo de TG", accessor: "tipoTG", filtravel: true, tipoFiltro: "select" },
         { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
         {
             header: "Grupo",
@@ -60,28 +61,28 @@ const VisaoGrupos = () => {
     const data = useMemo(() => [
         {
             id: 1,
-            tipoTg: "Artigo",
+            tipoTG: "Artigo",
             tema: "Ética no desenvolvimento de IA",
             grupo: ["Joe", "Miranda", "Nat"],
             orientador: "Cristina"
         },
         {
             id: 2,
-            tipoTg: "Monografia",
+            tipoTG: "Monografia",
             tema: "A importância da Cibersegurança",
             grupo: ["Ana Maria", "Ashlhey", "James"],
             orientador: "Luciano"
         },
         {
             id: 3,
-            tipoTg: "Monografia",
+            tipoTG: "Monografia",
             tema: "Os perigos do Vibe Coding",
             grupo: ["Mariana Silva", "Samuel", "Geraldo"],
             orientador: "Sem orientador"
         },
         {
             id: "-",
-            tipoTg: "",
+            tipoTG: "",
             tema: "",
             grupo: ["Thiago Oliveira"], // O nome do aluno sozinho
             orientador: ""
@@ -126,6 +127,7 @@ const VisaoGrupos = () => {
                 <TableComponent
                     colunas={columns}
                     dados={dadosFiltrados}
+
                 />
                 {/* Modal integrantes */}
                 <Modal show={show} onHide={handleClose} contentClassName="custom-modal-content">
