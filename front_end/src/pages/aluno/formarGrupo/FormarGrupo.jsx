@@ -279,8 +279,8 @@ const FormarGrupo = () => {
                     <FormGroup className="mb-3 d-flex flex-column" controlId="formBasicConfirmPassword">
                         <FormLabel className='text-secondary fs-4 fw-bold text-center'>Integrantes do Grupo</FormLabel>
                         <TableComponent
-                            columns={colunas}
-                            data={integrantes}
+                            colunas={colunas}
+                            dados={integrantes}
                         />
                         {/* Exibe erro de validação se a lista estiver vazia */}
                         {errors.aluno && (
