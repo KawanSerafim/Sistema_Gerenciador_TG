@@ -36,9 +36,9 @@ const MarcarBanca = () => {
 
     // Mocks
     const grupos = [
-        { grupoId: 1, tema: "Sistemas Distribuídos", alunos: [{ nome: "João" }, { nome: "Maria" }] },
-        { grupoId: 2, tema: "Inteligência Artificial", alunos: [{ nome: "Carlos" }, { nome: "Ana" }] },
-        { grupoId: 3, tema: "Cibersegurança", alunos: [{ nome: "Pedro" }, { nome: "Lucas" }] }
+        { grupoId: 1, tema: "Os riscos do vibe code", tipoTG: "Artigo", disciplina: "TG1", alunos: [{ nome: "João" }, { nome: "Maria" }] },
+        { grupoId: 2, tema: "Inteligência Artificial como auxiliadora da gestão financeira", tipoTG: "Desenvolvimento de Software", disciplina: "TG2", alunos: [{ nome: "Carlos" }, { nome: "Ana" }] },
+        { grupoId: 3, tema: "Cibersegurança na era da Inteligência Artificial", tipoTG: "Monografia", disciplina: "TG2", alunos: [{ nome: "Pedro" }, { nome: "Lucas" }] }
     ];
 
     const professores = [
@@ -171,10 +171,10 @@ const MarcarBanca = () => {
 
                     </Form.Group>
 
-                    {/*Após selecionado exibir o tema e preencher a tabela com os nomes dos alunos*/}
+                    {/*Após selecionado exibir o infos do grupo e preencher a tabela com os nomes dos alunos*/}
                     {selectedGrupo && (
                         <div className="text-center mb-4">
-                            <h5 className="text-secondary fs-5 fw-bold">[{selectedGrupo.tema}]</h5>
+                            <h5 className="text-secondary fs-5 fw-bold">{selectedGrupo.tema} | {selectedGrupo.disciplina} | {selectedGrupo.tipoTG}</h5>
                             <div className="mt-3">
                                 {/* Tabela de Integrantes do grupo */}
                                 <TableComponent
