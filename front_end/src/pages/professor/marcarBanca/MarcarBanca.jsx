@@ -139,9 +139,20 @@ const MarcarBanca = () => {
                         <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Membro Externo: </Form.Label>
                         <Form.Control
                             type="email"
+                            placeholder="Digite o nome do membro externo"
+                            className="bg-white text-black fw-normal fs-5 flex-grow-1 "
+                        />
+                        <Form.Control
+                            type="email"
                             placeholder="Digite o email do membro externo"
                             value={emailExterno}
                             onChange={(e) => setEmailExterno(e.target.value)}
+                            className="bg-white text-black fw-normal fs-5 flex-grow-1 "
+                        />
+                        <Form.Control
+                            type="tel"
+                            placeholder="Digite o telefone do membro externo"
+                            pattern="[0-9]{2}-[9]{1}-[0-9]{8}"
                             className="bg-white text-black fw-normal fs-5 flex-grow-1 "
                         />
                         <Button variant="link" className="p-0 text-primary"
@@ -171,12 +182,12 @@ const MarcarBanca = () => {
                             <Form.Control type="time" placeholder="HH:MM" />
                         </div>
                         <div className="d-flex align-items-center gap-2">
-                            <Form.Label className="m-0 fw-bold fs-5">Sala:</Form.Label>
-                            <Form.Select defaultValue="" className="bg-white text-black fw-normal fs-5">
-                                <option value="" disabled selected>Selecione a sala</option>
-                                <option value="1">Sala 1</option>
-                                <option value="2">Sala 2</option>
-                            </Form.Select>
+                            <Form.Label className="m-0 fw-bold fs-5">Local:</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Ex: 2° Andar, Sala 111"
+                                className="bg-white text-black fw-normal fs-5 flex-grow-1 "
+                            />
                         </div>
                     </div>
                     <div className="d-flex justify-content-center mt-5">
