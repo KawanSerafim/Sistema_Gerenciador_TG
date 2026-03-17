@@ -1,4 +1,4 @@
-import { Alert, Button, Container, Form } from "react-bootstrap"
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap"
 import TableComponent from "../../../components/table/TableComponent"
 import AddIcon from "../../../assets/add.svg"
 import CancelIcon from "../../../assets/Cancel.svg"
@@ -212,15 +212,14 @@ const MarcarBanca = () => {
                         </Button>
                     </div>
                     {/* Membro Externo */}
-                    <div className="d-flex align-items-center mb-4 gap-2">
-                        {/* TODO: Verificar se é necessario pegar o nome do membro externo ou se será aceito apenas quem esta no sistema */}
+                    <div className="d-flex align-items-center mb-2 gap-2">
                         <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Membro Externo: </Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Nome completo"
                             value={nomeExterno}
                             onChange={(e) => setNomeExterno(e.target.value)}
-                            className="bg-white text-black fw-normal fs-5 flex-grow-1 "
+                            className="bg-white text-black fw-normal fs-5"
                         />
                         <Form.Control
                             type="email"
@@ -261,8 +260,8 @@ const MarcarBanca = () => {
                     </div>
                     <hr className="my-4 border-secondary" />
                     {/* Horario e Local */}
-                    <div className="d-flex align-items-center justify-content-between mb-4 gap-2 fw-bold text-secondary">
-                        <div className="d-flex align-items-center gap-2">
+                    <Row className="mb-4 g-3 align-items-start">
+                        <Col md={4}>
                             <Form.Group>
 
                                 <Form.Label className="m-0 fw-bold fs-5">Data:</Form.Label>
@@ -272,13 +271,13 @@ const MarcarBanca = () => {
                                     value={values.data}
                                     onChange={handleChange}
                                     isInvalid={!!errors.data}
+                                    className="bg-white text-black fw-normal fs-5 "
                                 />
                                 <Form.Control.Feedback type="invalid">{errors.data}</Form.Control.Feedback>
                             </Form.Group>
-                        </div>
-                        <div className="d-flex align-items-center gap-2">
+                        </Col>
+                        <Col md={3}>
                             <Form.Group>
-
                                 <Form.Label className="m-0  fw-bold fs-5">Hora:</Form.Label>
                                 <Form.Control
                                     type="time"
@@ -286,11 +285,13 @@ const MarcarBanca = () => {
                                     value={values.hora}
                                     onChange={handleChange}
                                     isInvalid={!!errors.hora}
+                                    className="bg-white text-black fw-normal fs-5 "
                                 />
                                 <Form.Control.Feedback type="invalid">{errors.hora}</Form.Control.Feedback>
                             </Form.Group>
-                        </div>
-                        <div className="d-flex align-items-center gap-2">
+                        </Col>
+
+                        <Col md={5}>
                             <Form.Group>
 
                                 <Form.Label className="m-0 fw-bold fs-5">Local:</Form.Label>
@@ -301,25 +302,26 @@ const MarcarBanca = () => {
                                     value={values.local}
                                     onChange={handleChange}
                                     isInvalid={!!errors.local}
-                                    className="bg-white text-black fw-normal fs-5 flex-grow-1 "
+                                    className="bg-white text-black fw-normal fs-5 "
                                 />
                                 <Form.Control.Feedback type="invalid">{errors.local}</Form.Control.Feedback>
                             </Form.Group>
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
                     {/* Btn de envio */}
                     <div className="d-flex justify-content-center mt-5">
-                        <Button type="submit" variant="primary" className="w-50 fw-bold fs-5 py-2">
-                            Marcar banca
+                        <Button type="submit" variant="primary" className="w-50 fw-bold fs-5 py-2">Marcar banca
                         </Button>
                     </div>
-                </Form>
+                </Form >
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado && (
-                    <Alert variant={resultado === "" ? "success" : "danger"} onClose={() => setExibirResultado(false)} dismissible className="mt-3" >
-                        Banca marcada com sucesso!                    </Alert>
-                )}
-            </Container>
+                {
+                    exibirResultado && (
+                        <Alert variant={resultado === "" ? "success" : "danger"} onClose={() => setExibirResultado(false)} dismissible className="mt-3" >
+                            Banca marcada com sucesso!                    </Alert>
+                    )
+                }
+            </Container >
         </>
     )
 }
