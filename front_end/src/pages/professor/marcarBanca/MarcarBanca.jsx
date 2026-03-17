@@ -2,6 +2,7 @@ import { Button, Container, Form } from "react-bootstrap"
 import TableComponent from "../../../components/table/TableComponent"
 import AddIcon from "../../../assets/add.svg"
 import { useState } from "react"
+import UserNavBar from "../../../components/usernavbar/UserNavBar"
 
 const MarcarBanca = () => {
 
@@ -66,19 +67,23 @@ const MarcarBanca = () => {
 
     return (
         <>
+            <UserNavBar
+                userName="Orientador"
+                maxWidth="800px"
+            />
             <Container className="mt-5" style={{ minWidth: "800px" }}  >
-                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Marcar banca</h2>
+                <h2 className='bg-primary text-white p-3 fs-2 rounded-top-4 text-center m-0'>Marcar banca</h2>
                 <Form
                     validated={true}
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'>
 
                     {/* Grupo */}
                     <div className="d-flex justify-content-center align-items-center mb-4 gap-2">
-                        <Form.Label className="m-0 fw-bold text-secondary">Grupo:</Form.Label>
+                        <Form.Label className="m-0 fw-bold fs-5 text-secondary">Grupo:</Form.Label>
                         <Form.Select
                             defaultValue=""
                             onChange={handleSelectedGrupo}
-                            className="w-50 bg-primary border-primary text-white fw-bold"
+                            className="w-50 bg-white text-black fw-normal fs-5 fs-5"
                         >
                             <option value="" disabled selected>Selecione o grupo</option>
                             {
@@ -92,26 +97,26 @@ const MarcarBanca = () => {
                     {/*Após selecionado exibir o tema e preencher a tabela com os nomes dos alunos*/}
                     {selectedGrupo && (
                         <div className="text-center mb-4">
-                            <h5 className="text-primary fw-bold">[{selectedGrupo.tema}]</h5>
+                            <h5 className="text-secondary fs-5 fw-bold">[{selectedGrupo.tema}]</h5>
                             <div className="mt-3">
                                 {/* Tabela de Integrantes do grupo */}
                                 <TableComponent
-                                    columns={colunaTabelaGupo}
-                                    data={selectedGrupo.alunos}
+                                    colunas={colunaTabelaGupo}
+                                    dados={selectedGrupo.alunos}
                                 />
                             </div>
                         </div>
                     )}
 
-                    <h6 className="fw-bold text-primary mt-4 mb-3">Membros da banca: </h6>
+                    <h6 className="fw-bold text-secondary fs-5 mt-4 mb-3 text-center">Membros da banca: </h6>
 
                     {/* Professor */}
                     <div className="d-flex align-items-center mb-3 gap-2">
-                        <Form.Label className="m-0 fw-bold text-primary" style={{ width: "130px" }}>Professor: </Form.Label>
+                        <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Professor: </Form.Label>
                         <Form.Select
                             defaultValue=""
                             onChange={(e) => setProfSelecionado(e.target.value)}
-                            className="border-primary text-white bg-primary flex-grow-1"
+                            className="bg-white text-black fw-normal fs-5 flex-grow-1"
                         >
                             <option value="" disabled selected>Selecione o professor</option>
                             {
@@ -131,13 +136,13 @@ const MarcarBanca = () => {
                     {/* Membro Externo */}
                     <div className="d-flex align-items-center mb-4 gap-2">
                         {/* TODO: Verificar se é necessario pegar o nome do membro externo ou se será aceito apenas quem esta no sistema */}
-                        <Form.Label className="m-0 fw-bold text-primary" style={{ width: "130px" }}>Membro Externo: </Form.Label>
+                        <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Membro Externo: </Form.Label>
                         <Form.Control
                             type="email"
                             placeholder="Digite o email do membro externo"
                             value={emailExterno}
                             onChange={(e) => setEmailExterno(e.target.value)}
-                            className="flex-grow-1"
+                            className="bg-white text-black fw-normal fs-5 flex-grow-1 "
                         />
                         <Button variant="link" className="p-0 text-primary"
                             onClick={handleAddMembroExterno}>
@@ -156,18 +161,18 @@ const MarcarBanca = () => {
                     )}
 
                     {/* Horario e Local */}
-                    <div className="d-flex align-items-center justify-content-between mb-4 gap-2 fw-bold text-primary">
+                    <div className="d-flex align-items-center justify-content-between mb-4 gap-2 fw-bold text-secondary">
                         <div className="d-flex align-items-center gap-2">
-                            <Form.Label className="m-0">Data:</Form.Label>
+                            <Form.Label className="m-0 fw-bold fs-5">Data:</Form.Label>
                             <Form.Control type="date" placeholder="DD/MM/AAA" />
                         </div>
                         <div className="d-flex align-items-center gap-2">
-                            <Form.Label className="m-0">Hora:</Form.Label>
+                            <Form.Label className="m-0  fw-bold fs-5">Hora:</Form.Label>
                             <Form.Control type="time" placeholder="HH:MM" />
                         </div>
                         <div className="d-flex align-items-center gap-2">
-                            <Form.Label className="m-0">Sala:</Form.Label>
-                            <Form.Select defaultValue="" className="bg-primary text-white border-primary">
+                            <Form.Label className="m-0 fw-bold fs-5">Sala:</Form.Label>
+                            <Form.Select defaultValue="" className="bg-white text-black fw-normal fs-5">
                                 <option value="" disabled selected>Selecione a sala</option>
                                 <option value="1">Sala 1</option>
                                 <option value="2">Sala 2</option>
