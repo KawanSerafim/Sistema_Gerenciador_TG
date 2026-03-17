@@ -29,9 +29,6 @@ const validarCampos = (valores) => {
         else if (key == "email" && !/\S+@\S+\.\S+/.test(value)) {
             erros.email = 'Formato de email inválido.';
         }
-        else if (key == "telefone" && value.trim().length != 11) {
-            erros.telefone = "Telefone invalido"
-        }
         //Senha e ConfirmarSenha
         else if (key == "confirmarSenha" && value !== valores.senha) {
             erros.confirmarSenha = "Senha e Confirmar Senha devem ser iguais"
@@ -54,7 +51,6 @@ const CadastrarProfessor = () => {
         nome: "",
         matricula: "",
         email: "",
-        telefone: "",
         senha: "",
         confirmarSenha: "",
         cargo: ""
