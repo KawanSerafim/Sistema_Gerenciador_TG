@@ -30,11 +30,14 @@ const VisaoSolicitacaoOrientacao = () => {
 
     //Mocks temporarios
     const columns = [
-        { header: "Aluno solicitante", accessor: "aluno" },
-        { header: "Tema", accessor: "tema" },
-        { header: "Tipo de TG", accessor: "tipoTg" },
+        { header: "Aluno solicitante", accessor: "aluno", filtravel: true, tipoFiltro: "autocomplete" },
+        { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
+        { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
         {
             header: "Grupo",
+            accessor: "grupo",
+            filtravel: true,
+            tipoFiltro: "autocomplete",
             // Render customizado para o botão vermelho
             render: (row) => (
                 <Button variant='primary'
@@ -100,8 +103,8 @@ const VisaoSolicitacaoOrientacao = () => {
 
             <Container className="mt-5" style={{ minWidth: '800px' }}>
                 <TableComponent
-                    columns={columns}
-                    data={data}
+                    colunas={columns}
+                    dados={data}
                 />
                 {/* MODAL DE INTEGRANTES */}
                 <Modal

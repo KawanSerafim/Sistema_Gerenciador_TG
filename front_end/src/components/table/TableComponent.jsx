@@ -37,7 +37,7 @@ const TableComponent = ({ colunas, dados }) => {
     return (
         <Table responsive className="custom-table custom-table-hover">
             <thead className="text-nowrap">
-                <tr className='fs-4 fw-medium'>
+                <tr className='fs-5 fw-medium'>
                     {colunas.map((col) => (
                         <th key={col.accessor} className="table-header">
                             <div className="">
@@ -58,7 +58,7 @@ const TableComponent = ({ colunas, dados }) => {
                     dadosFiltrados.map((linha, index) => (
                         <tr key={linha.id || index}>
                             {colunas.map(col => (
-                                <td key={col.accessor} data-label={col.header}>
+                                <td key={col.accessor} data-label={col.header} className='fs-5'>
                                     {col.render ? col.render(linha) : linha[col.accessor]}
                                 </td>
                             ))}
