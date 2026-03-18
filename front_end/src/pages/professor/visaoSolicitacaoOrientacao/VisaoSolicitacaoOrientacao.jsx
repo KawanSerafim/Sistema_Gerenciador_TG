@@ -210,6 +210,7 @@ const VisaoSolicitacaoOrientacao = () => {
                 <Modal
                     show={show}
                     onHide={handleClose}
+                    centered
                     contentClassName="custom-modal-content"
                 >
                     {renderModalContent()}

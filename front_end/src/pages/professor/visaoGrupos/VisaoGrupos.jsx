@@ -131,7 +131,7 @@ const VisaoGrupos = () => {
                     />
                 </div>
                 {/* Modal integrantes */}
-                <Modal show={show} onHide={handleClose} contentClassName="custom-modal-content">
+                <Modal show={show} onHide={handleClose} centered contentClassName="custom-modal-content">
 
                     <Modal.Header closeButton>
                         <div className="custom-modal-title text-center">

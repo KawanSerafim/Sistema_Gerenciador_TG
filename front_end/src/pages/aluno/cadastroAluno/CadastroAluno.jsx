@@ -96,15 +96,16 @@ const CadastroAluno = () => {
     };
     return (
         <>
-            <Container className="mt-5" style={{ maxWidth: '800px' }}>
+            <Container className="mt-5" style={{ maxWidth: '1000px' }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Aluno</h2>
                 <Form
                     onSubmit={handleSubmit(enviarParaBackend)}
                     noValidate
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm no-success-icon'>
+
                     {/* Nome */}
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Nome Completo</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Nome Completo</Form.Label>
                         <Form.Control
                             type="text"
                             name="nome"
@@ -123,7 +124,7 @@ const CadastroAluno = () => {
 
                     {/* Matrícula */}
                     <FormGroup className="mb-3" controlId="formBasicMatricula">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Matrícula</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Matrícula</Form.Label>
                         <Form.Control
                             type="text" placeholder="Digite sua matrícula"
                             required={true}
@@ -140,7 +141,7 @@ const CadastroAluno = () => {
 
                     {/* Email */}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Email</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Email</Form.Label>
                         <Form.Control
                             type="email" placeholder="Digite seu email"
                             required={true}
@@ -157,7 +158,7 @@ const CadastroAluno = () => {
 
                     {/* Contato */}
                     <Form.Group className="mb-3">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Telefone</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Telefone</Form.Label>
                         <Form.Control
                             type="tel" placeholder="11912345678"
                             required={true}
@@ -176,11 +177,11 @@ const CadastroAluno = () => {
                     {/* Redes Sociais */}
 
                     <Form.Group className="mb-4" controlId="formRedes">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Redes Sociais: </Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Redes Sociais</Form.Label>
 
                         <Form.Select
                             required={false}
-                            className='bg-white fw-medium fs-5 w-75 text-center mb-3'
+                            className='bg-white fw-medium fs-5 w-100 text-center mb-3'
                             onChange={handleRedeSelecionada}
                             defaultValue=""
                         >
@@ -195,17 +196,18 @@ const CadastroAluno = () => {
                         {redesSelecionadas.map((rede, index) => (
                             <InputGroup className="mb-2 w75" key={index}>
                                 {/* Exibe o nome da rede com a primeira letra maiúscula */}
-                                <InputGroup.Text className="text-capitalize fw-bold" >
+                                <InputGroup.Text className="text-capitalize fw-bold fs-5" >
                                     {rede.rede}
                                 </InputGroup.Text>
 
                                 <Form.Control
                                     type="url"
+                                    className='fs-5 text-black'
                                     placeholder={`Cole o link do seu ${rede.rede}`}
                                     value={rede.url}
                                     onChange={(e) => handleAtualizarUrl(index, e.target.value)}
                                 />
-                                <Button variant='outline-danger' onClick={() => handleRemoverRede(index)}>
+                                <Button variant='outline-primary' className="fs-5" title='Clique aqui para remover essa rede social' onClick={() => handleRemoverRede(index)}>
                                     Remover
                                 </Button>
                             </InputGroup>
@@ -214,7 +216,7 @@ const CadastroAluno = () => {
 
                     {/* Senha */}
                     <Form.Group className="mb-4" controlId="formBasicPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Senha</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Senha</Form.Label>
                         <Form.Control
                             type="password" placeholder="Digite sua senha"
                             required={true}
@@ -232,7 +234,7 @@ const CadastroAluno = () => {
 
                     {/* Confirmar Senha */}
                     <FormGroup className="mb-4" controlId="formBasicConfirmPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Confirmar Senha</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Confirmar Senha</Form.Label>
                         <Form.Control
                             type="password" placeholder="Confirme sua senha"
                             required={true}
@@ -252,7 +254,7 @@ const CadastroAluno = () => {
                         <Button
                             variant="primary"
                             type="submit"
-                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
+                            id='btn-cadastro' className='mb-2 fs-4 fw-medium w-100'
                         >
                             Cadastrar
                         </Button>

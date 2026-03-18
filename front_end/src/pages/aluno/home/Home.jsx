@@ -8,8 +8,9 @@ const Home = () => {
             <UserNavBar
                 userName={nomeAluno}
                 opcoes={["sair"]}
+
             />
-            <Container className="mt-5 " style={{ minWidth: '800px' }}>
+            <Container className="mt-5 " style={{ maxWidth: '1200px' }}>
                 <div className="border border-dark rounded-4 shadow-sm">
 
                     <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center mb-5'>Seja Bem vindo, {nomeAluno} </h2>

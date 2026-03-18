@@ -14,11 +14,12 @@ const GerarCertificado = () => {
     } = useModal();
 
     const columns = [
-        { header: "Tema", accessor: "tema" },
-        { header: "Tipo de TG", accessor: "tipoTG" },
+        { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
+        { header: "Tipo de TG", accessor: "tipoTG", filtravel: true, tipoFiltro: "select" },
         {
             header: "Grupo",
             accessor: "grupo",
+            filtravel: true, tipoFiltro: "autocomplete",
             render: (row) => (
 
                 <Button variant="primary"
@@ -69,30 +70,26 @@ const GerarCertificado = () => {
     return (
         <>
             <UserNavBar
-                userName="Cristina"
+                userName="Orientador"
+                maxWidth="1500px"
             />
-            <Container className="mt-3">
+            <Container className="mt-3" style={{ maxWidth: "1500px" }}>
                 <h2 className='text-black p-3 fs-1 text-center mb-3'>Certificados</h2>
                 {/* Tabela */}
                 <TableComponent
-                    columns={columns}
-                    data={grupos}
+                    colunas={columns}
+                    dados={grupos}
                 />
                 {/* Modal */}
                 <Modal
                     show={show}
                     onHide={handleClose}
+                    centered
                     contentClassName="custom-modal-content">
-                    <Modal.Header className="custom-modal-header">
+                    <Modal.Header closeButton>
                         <div className="custom-modal-title">
                             <h5>Integrantes:</h5>
                         </div>
-                        <Button variant="secondary"
-                            onClick={handleClose}
-                            className="custom-close-btn"
-                        >
-                            Fechar
-                        </Button>
                     </Modal.Header>
                     <ModalBody className="p-0">
                         <ul className="m-0 p-0">

@@ -162,13 +162,13 @@ const VisaoBancasArtigos = () => {
             return (
                 <>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
-                        <div className="custom-modal-title">
+                        <div className="custom-modal-title fs-5">
                             <h5>{title}</h5>
                         </div>
                     </Modal.Header>
                     <ul className="list-group list-group-flush text-center">
                         {listData.map((item, index) => (
-                            <li key={index} className="list-group-item" style={{ backgroundColor: '#ffecd9' }}>
+                            <li key={index} className="list-group-item fs-6 fw-bold" style={{ backgroundColor: '#ffecd9' }}>
                                 {item}
                             </li>
                         ))}
@@ -181,18 +181,18 @@ const VisaoBancasArtigos = () => {
                 <>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <span className="fw-bold">{`${data.tema} - ${data.disciplina.toUpperCase()}`}</span>
+                            <span className="fw-bold fs-5">{`${data.tema} - ${data.disciplina.toUpperCase()}`}</span>
                         </div>
                     </Modal.Header>
 
                     <Row className="m-0 text-center">
                         <Col xs={6} className="p-0 border-end border-dark">
-                            <div className="fw-bold p-2 border-bottom border-dark" style={{ backgroundColor: '#ffe5cc' }}>
+                            <div className="fw-bold p-2 border-dark fs-5" style={{ backgroundColor: '#ffe5cc' }}>
                                 Integrantes
                             </div>
-                            <ul className="list-group list-group-flush">
+                            <ul className="list-group list-group-flush fs-6">
                                 {data.grupo.map((aluno, idx) => (
-                                    <li key={idx} className="list-group-item" style={{ backgroundColor: '#ffecd9' }}>{aluno}</li>
+                                    <li key={idx} className="list-group-item fw-bold" style={{ backgroundColor: '#ffecd9' }}>{aluno}</li>
                                 ))}
                             </ul>
                         </Col>
@@ -206,6 +206,7 @@ const VisaoBancasArtigos = () => {
                                     defaultValue={0}
                                     min={0}
                                     max={10}
+                                    title="Digite a nota do grupo"
                                     onKeyDown={bloquearCaracteresInputNumber}
                                     className="text-center w-50"
                                 />
@@ -229,10 +230,10 @@ const VisaoBancasArtigos = () => {
             <UserNavBar
                 /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
                 userName='Orientador'
-                maxWidth="1250px"
+                maxWidth="1500px"
             />
 
-            <Container className="mt-5" style={{ maxWidth: '1250px' }}>
+            <Container className="mt-5" style={{ maxWidth: '1500px' }}>
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Visão das Bancas</h2>
                 <TableComponent
                     colunas={columns}
@@ -243,8 +244,6 @@ const VisaoBancasArtigos = () => {
                     onHide={handleClose}
                     centered
                     contentClassName="custom-modal-content"
-                    // Fundo bege claro
-                    style={{ '--bs-modal-bg': '#ffecd9' }}
                 >
                     {renderModalContent()}
                 </Modal>

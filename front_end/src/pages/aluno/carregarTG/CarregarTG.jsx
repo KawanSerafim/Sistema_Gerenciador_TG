@@ -4,6 +4,7 @@ import "./CarregarTG.css"
 import { useState } from "react"
 
 const CarregarTG = () => {
+    //TODO: Colocar hook de validação
     const [fileName, setFileName] = useState("");
 
     const handleFileChange = (e) => {
@@ -17,11 +18,13 @@ const CarregarTG = () => {
         <>
             <UserNavBar
                 userName="Aluno"
+                maxWidth="1000px"
             ></UserNavBar>
-            <Container className="mt-5 text-center">
+            <Container className="mt-5 text-center" style={{ maxWidth: "1000px" }}>
+
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Envio de Trabalho de Graduação</h2>
                 <Form
-                    validated={true}
+                    noValidate
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
 
                     {/* O input original */}
@@ -48,7 +51,7 @@ const CarregarTG = () => {
                         <Button
                             variant="primary"
                             type="submit"
-                            id='btn-cadastro' className='mb-2 fs-4 fw-medium w-25'
+                            id='btn-cadastro' className='my-3 fs-4 fw-medium w-25'
                         >
                             Enviar
                         </Button>

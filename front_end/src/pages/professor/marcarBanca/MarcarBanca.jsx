@@ -68,6 +68,7 @@ const MarcarBanca = () => {
                     <img
                         src={CancelIcon}
                         alt="Remover"
+                        title={"Clique aqui para remover " + row.nome + " da banca"}
                         style={{ cursor: 'pointer', width: '30px' }}
                         onClick={() => handleRemoverMembro(row.id)}
                     />
@@ -137,10 +138,10 @@ const MarcarBanca = () => {
         <>
             <UserNavBar
                 userName="Orientador"
-                maxWidth="800px"
+                maxWidth="1500px"
             />
-            <Container className="mt-5" style={{ minWidth: "800px" }}  >
-                <h2 className='bg-primary text-white p-3 fs-2 rounded-top-4 text-center m-0'>Marcar banca</h2>
+            <Container className="mt-5" style={{ maxWidth: "1500px" }}  >
+                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Marcar banca</h2>
                 <Form
                     noValidate
                     onSubmit={handleSubmit(enviarParaBackend)}
@@ -149,9 +150,9 @@ const MarcarBanca = () => {
                     {/* Grupo */}
                     <Form.Group className="mb-4">
                         <div className="d-flex justify-content-center align-items-center mb-4 gap-2">
-                            <Form.Label className="m-0 fw-bold fs-5 text-secondary">Grupo:</Form.Label>
+                            <Form.Label className="m-0 fw-bold fs-4 text-secondary">Grupo:</Form.Label>
                             <Form.Select
-                                defaultValue=""
+                                title="Selecione o grupo"
                                 name="grupoId"
                                 value={values.grupoId}
                                 onChange={handleChange}
@@ -174,7 +175,7 @@ const MarcarBanca = () => {
                     {/*Após selecionado exibir o infos do grupo e preencher a tabela com os nomes dos alunos*/}
                     {selectedGrupo && (
                         <div className="text-center mb-4">
-                            <h5 className="text-secondary fs-5 fw-bold">{selectedGrupo.tema} | {selectedGrupo.disciplina} | {selectedGrupo.tipoTG}</h5>
+                            <h5 className="text-secondary fs-4 fw-bold">{selectedGrupo.tema} - {selectedGrupo.disciplina} - {selectedGrupo.tipoTG}</h5>
                             <div className="mt-3">
                                 {/* Tabela de Integrantes do grupo */}
                                 <TableComponent
@@ -185,13 +186,14 @@ const MarcarBanca = () => {
                         </div>
                     )}
 
-                    {/* <h6 className="fw-bold text-secondary fs-5 mt-4 mb-3 text-center">Membros da banca: </h6> */}
+
                     <hr className="my-4 border-secondary" />
                     <h6 className="fw-bold text-secondary fs-4 mb-4 text-center">Composição da Banca</h6>
                     {/* Professor */}
                     <div className="d-flex align-items-center mb-3 gap-2">
                         <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Professor: </Form.Label>
                         <Form.Select
+                            title="Selecione os professores que participaram da banca"
                             value={profSelecionado}
                             onChange={(e) => setProfSelecionado(e.target.value)}
                             className="bg-white text-black fw-normal fs-5 flex-grow-1"
@@ -205,6 +207,7 @@ const MarcarBanca = () => {
                         </Form.Select>
                         <Button
                             variant="link"
+                            title="Clique aqui para adicionar o professor a banca"
                             className="p-0 text-primary"
                             onClick={handleAddProfessor}
                         >
@@ -216,6 +219,7 @@ const MarcarBanca = () => {
                         <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Membro Externo: </Form.Label>
                         <Form.Control
                             type="text"
+                            title="Digite o nome completo do membro externo"
                             placeholder="Nome completo"
                             value={nomeExterno}
                             onChange={(e) => setNomeExterno(e.target.value)}
@@ -223,6 +227,7 @@ const MarcarBanca = () => {
                         />
                         <Form.Control
                             type="email"
+                            title="Digite o email do membro externo"
                             placeholder="Email"
                             value={emailExterno}
                             onChange={(e) => setEmailExterno(e.target.value)}
@@ -230,13 +235,16 @@ const MarcarBanca = () => {
                         />
                         <Form.Control
                             type="tel"
+                            title="Digite o nome telefone do membro externo"
                             placeholder="Telefone"
                             value={telExterno}
                             onChange={(e) => setTelExterno(e.target.value)}
                             className="bg-white text-black fw-normal fs-5 flex-grow-1 "
                         />
                         <Button variant="link" className="p-0 text-primary"
-                            onClick={handleAddMembroExterno}>
+                            onClick={handleAddMembroExterno}
+                            title="Clique aqui para adicionar o membro externo a banca"
+                        >
                             <img src={AddIcon} alt="Adicionar membro" width={'55rem'} />
                         </Button>
                     </div>
@@ -264,10 +272,11 @@ const MarcarBanca = () => {
                         <Col md={4}>
                             <Form.Group>
 
-                                <Form.Label className="m-0 fw-bold fs-5">Data:</Form.Label>
+                                <Form.Label className="m-0 fw-bold text-secondary fs-4">Data:</Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="data"
+                                    title="Digite a data da banca"
                                     value={values.data}
                                     onChange={handleChange}
                                     isInvalid={!!errors.data}
@@ -278,10 +287,11 @@ const MarcarBanca = () => {
                         </Col>
                         <Col md={3}>
                             <Form.Group>
-                                <Form.Label className="m-0  fw-bold fs-5">Hora:</Form.Label>
+                                <Form.Label className="m-0 fw-bold text-secondary fs-4">Hora:</Form.Label>
                                 <Form.Control
                                     type="time"
                                     name="hora"
+                                    title="Digite a hora da banca"
                                     value={values.hora}
                                     onChange={handleChange}
                                     isInvalid={!!errors.hora}
@@ -294,10 +304,11 @@ const MarcarBanca = () => {
                         <Col md={5}>
                             <Form.Group>
 
-                                <Form.Label className="m-0 fw-bold fs-5">Local:</Form.Label>
+                                <Form.Label className="m-0 fw-bold text-secondary fs-4">Local:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="local"
+                                    title="Digite a o local da banca"
                                     placeholder="Ex: Sala 111 ou Link Teams"
                                     value={values.local}
                                     onChange={handleChange}
@@ -310,7 +321,7 @@ const MarcarBanca = () => {
                     </Row>
                     {/* Btn de envio */}
                     <div className="d-flex justify-content-center mt-5">
-                        <Button type="submit" variant="primary" className="w-50 fw-bold fs-5 py-2">Marcar banca
+                        <Button type="submit" variant="primary" className="w-50 fw-bold fs-4 py-2" title="Clique aqui para marcar a banca">Marcar banca
                         </Button>
                     </div>
                 </Form >
@@ -318,7 +329,8 @@ const MarcarBanca = () => {
                 {
                     exibirResultado && (
                         <Alert variant={resultado === "" ? "success" : "danger"} onClose={() => setExibirResultado(false)} dismissible className="mt-3" >
-                            Banca marcada com sucesso!                    </Alert>
+                            Banca marcada com sucesso!
+                        </Alert>
                     )
                 }
             </Container >

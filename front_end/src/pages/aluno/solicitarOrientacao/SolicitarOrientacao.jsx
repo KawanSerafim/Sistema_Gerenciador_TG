@@ -118,7 +118,7 @@ const SolicitarOrientacao = () => {
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'
                     onSubmit={handleSubmit(enviarParaBackend)}
                 >
-                    <Row className="mb-5 d-flex flex-column align-items-center">
+                    <Row className="mb-4 d-flex flex-column align-items-center">
                         <Col md={6} style={{ position: 'relative' }}> {/* Importante: relative para o dropdown */}
                             <FormControl
                                 name="orientador"
@@ -128,7 +128,7 @@ const SolicitarOrientacao = () => {
                                 onBlur={handleSugestoesBlur}
                                 autoComplete="off"
                                 placeholder="Digite ou selecione o nome do orientador"
-                                className='bg-white text-black fw-bold fs-5 '
+                                className='bg-white text-black fw-bold fs-5'
                                 isInvalid={!!errors.orientador}
                             />
 
@@ -158,7 +158,7 @@ const SolicitarOrientacao = () => {
                     <Button
                         variant="primary"
                         type="submit" id='btn-select'
-                        className='mb-2 p-2 fs-5 fw-medium'
+                        className='mb-2 p-2 fs-4 fw-medium'
                         style={{
                             cursor: orientadorSelecionado ? 'pointer' : 'not-allowed',
                             opacity: orientadorSelecionado ? 1 : 0.4
