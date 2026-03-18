@@ -3,13 +3,13 @@ import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import TableComponent from "../../../components/table/TableComponent"
 
 const VisaoAlunosEnviados = () => {
-
+    //todo: Add hook de validação
     //TODO: Criar logica para preencher a tabela com os alunos quando a turma for selecionada
 
     const columns = [
-        { header: "Nome do aluno", accessor: "nome" },
-        { header: "RA", accessor: "ra" },
-        { header: "Situação de Cadastro", accessor: "situacaoCadastro" }
+        { header: "Nome do aluno", accessor: "nome", filtravel: true, tipoFiltro: "autocomplete" },
+        { header: "RA", accessor: "ra", filtravel: true, tipoFiltro: "text" },
+        { header: "Situação de Cadastro", accessor: "situacaoCadastro", filtravel: true, tipoFiltro: "select" }
     ]
     //TODO: Filtrar pelo idTurma
     const data = [
@@ -42,19 +42,22 @@ const VisaoAlunosEnviados = () => {
     return (
         <>
             <UserNavBar
-                userName="Cristina"
+                userName="Professor de TG"
+                maxWidth="1500px"
             ></UserNavBar>
-            <Container className="mt-5">
-                <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-2'>Alunos enviados: </h2>
+            <Container className="mt-5" style={{ maxWidth: "1500px" }}>
+                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Alunos enviados: </h2>
+
                 <Form
-                    validated={true}
-                    className='form-bg p-4'>
+                    noValidate
+                    className='form-bg border border-dark border-top-0 p-2 p-md-4 rounded-bottom-4 shadow-sm'>
 
                     {/* Seleção de turma */}
-                    <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSelectTurma">
+                    <FormGroup className="my-3 d-flex justify-content-center gap-3" controlId="formSelectTurma">
                         <FormSelect
                             required={true}
-                            className='bg-primary text-white fw-bold fs-5 w-50 text-center'
+                            title="Selecione a turma que deseja exibir"
+                            className='bg-white text-black fw-medium fs-4 w-50 text-center'
                         >
                             <option value="" disabled selected>Selecione a turma que deseja exibir</option>
                             <option value="TG1N">TG1 - Noite</option>
@@ -66,8 +69,8 @@ const VisaoAlunosEnviados = () => {
                 </Form>
                 <div className="mt-5">
                     <TableComponent
-                        columns={columns}
-                        data={data}
+                        colunas={columns}
+                        dados={data}
                     />
                 </div>
             </Container>

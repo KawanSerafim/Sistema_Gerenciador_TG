@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Form, FormCheck, FormControl, FormGroup, FormLabel, FormSelect, Button } from "react-bootstrap";
 import "./cadastrarCurso.css"
+import UserNavBar from "../../components/usernavbar/UserNavBar";
 
 const CadastrarCurso = () => {
     //TODO: VALIDAÇÃO com o hook useForm
@@ -43,6 +44,10 @@ const CadastrarCurso = () => {
 
     return (
         <>
+            <UserNavBar
+                userName="Administrador"
+                maxWidth="800px"
+            />
             <Container className="mt-5" style={{ maxWidth: '800px' }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Curso</h2>
                 <Form
@@ -54,7 +59,7 @@ const CadastrarCurso = () => {
                 >
                     {/* Nome */}
                     <FormGroup className="mb-3 d-flex flex-column" controlId="formBasicName">
-                        <FormLabel className='text-secondary fs-5 fw-medium'>Nome do Curso</FormLabel>
+                        <FormLabel className='text-secondary fs-4 fw-medium'>Nome do Curso</FormLabel>
                         <FormControl type="text" placeholder="Digite o nome do curso" required={true} className='bg-white text-black fw-normal fs-5' />
                     </FormGroup>
                     {/* Turno e Disciplinas */}
@@ -63,10 +68,11 @@ const CadastrarCurso = () => {
                             {/* Turno */}
                             <div className="col-md-6">
 
-                                <FormLabel className='text-secondary fs-5 fw-medium d-block mb-2'>Turno</FormLabel>
-                                <div className="mb-2 fw-medium fs-6">
+                                <FormLabel className='text-secondary fs-4 fw-medium d-block mb-2'>Turno</FormLabel>
+                                <div className="mb-2 fw-medium fs-5">
                                     <FormCheck
                                         inline
+                                        title="Manhã"
                                         label="Manhã"
                                         name="Manhã"
                                         type="checkbox"
@@ -75,6 +81,7 @@ const CadastrarCurso = () => {
                                     />
                                     <FormCheck
                                         inline
+                                        title="Tarde"
                                         label="Tarde"
                                         name="Tarde"
                                         type="checkbox"
@@ -82,6 +89,7 @@ const CadastrarCurso = () => {
                                     />
                                     <FormCheck
                                         inline
+                                        title="Noite"
                                         label="Noite"
                                         name="Noite"
                                         type="checkbox"
@@ -91,10 +99,11 @@ const CadastrarCurso = () => {
                             </div>
                             {/* Disciplinas */}
                             <div className="col-md-6">
-                                <FormLabel className='text-secondary fs-5 fw-medium d-block mb-2'>Disciplinas</FormLabel>
-                                <div className="mb-3 fw-medium fs-6">
+                                <FormLabel className='text-secondary fs-4 fw-medium d-block mb-2'>Disciplinas</FormLabel>
+                                <div className="mb-3 fw-medium fs-5">
                                     <FormCheck
                                         inline
+                                        title="TG1"
                                         label="TG1"
                                         name="TG1"
                                         type="checkbox"
@@ -102,6 +111,7 @@ const CadastrarCurso = () => {
                                     />
                                     <FormCheck
                                         inline
+                                        title="TG2"
                                         label="TG2"
                                         name="TG2"
                                         type="checkbox"
@@ -114,13 +124,14 @@ const CadastrarCurso = () => {
 
                     {/* Tipos de trab de graduacao */}
                     <FormGroup className="mb-3 d-flex flex-column" controlId="formBasicTipo">
-                        <FormLabel className='text-secondary fs-5 fw-medium'>Tipo de Trabalho de Graduação</FormLabel>
+                        <FormLabel className='text-secondary fs-4 fw-medium'>Tipo de Trabalho de Graduação</FormLabel>
                         {/* Checkboxes de tipo tg e inputs de numero de integrantes */}
                         <div className="">
                             {opcoesTrabalho.map((opcao) => (
                                 <div key={opcao.id} className="d-flex align-items-center gap-3 mb-3 border-bottom pb-2">
                                     <Form.Check
                                         type="checkbox"
+                                        title={opcao.label}
                                         id={opcao.id}
                                         label={opcao.label.toUpperCase()}
                                         className="fw-bold"
@@ -130,9 +141,11 @@ const CadastrarCurso = () => {
                                     <div className="d-flex align-items-center gap-2 ms-auto">
                                         <FormLabel
                                             className='text-secondary fs-6 fw-bold'
+                                            title={'Quantidade maxima de ' + opcao.label}
                                         >Quantidade maxima de integrantes do grupo: </FormLabel>
                                         <Form.Control
                                             type="number"
+                                            title={'Quantidade maxima de ' + opcao.label}
                                             disabled={!tiposAtivos[opcao.id]}
                                             className={tiposAtivos[opcao.id] ? "bg-white fw-medium" : "bg-light"}
                                             style={{ width: '3.5rem' }}
@@ -146,8 +159,8 @@ const CadastrarCurso = () => {
                     </FormGroup>
                     {/* Selecionar Coordenador */}
                     <FormGroup className="mb-3" controlId="formCoordenador">
-                        <FormLabel className='text-secondary fs-5 fw-medium'>Coordenador do Curso</FormLabel>
-                        <FormSelect required={true} className='bg-dark-subtle text-black fw-medium fs-5'>
+                        <FormLabel className='text-secondary fs-4 fw-medium'>Coordenador do Curso</FormLabel>
+                        <FormSelect required={true} className='bg-white text-black fw-normal fs-5'>
                             <option key='blankChoice' hidden value=''>Digite ou selecione o coordenador do curso</option>
                             <option key='coord1' value='coord1'>Coordenador 1</option>
                         </FormSelect>

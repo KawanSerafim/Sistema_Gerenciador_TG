@@ -5,6 +5,7 @@ import TableComponent from "../../../components/table/TableComponent"
 import "./EnviarTurma.css"
 
 const EnviarTurma = () => {
+    //TODO: Add hook de validação
 
     const [fileName, setFileName] = useState("");
 
@@ -27,8 +28,7 @@ const EnviarTurma = () => {
 
     const colunas = [
         { header: "Nome do aluno", accessor: "nome" },
-        { header: "RA", accessor: "ra" },
-        { header: "Situação de Cadastro", accessor: "situacaoCadastro" }
+        { header: "RA", accessor: "ra" }
     ]
 
     const data = [{}]
@@ -36,19 +36,22 @@ const EnviarTurma = () => {
     return (
         <>
             <UserNavBar
-                userName="Cristina"
+                userName="Professor de TG"
+                maxWidth="1200px"
+
             ></UserNavBar>
-            <Container className="mt-5">
+            <Container className="mt-5" style={{ maxWidth: "1200px" }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Envio de planilha de alunos</h2>
                 <Form
-                    validated={true}
+                    noValidate
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
 
                     {/* Seleção de turma */}
                     <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSelectTurma">
                         <FormSelect
                             required={true}
-                            className='bg-primary text-white fw-bold fs-5 w-50 text-center'
+                            title="Selecionar turma de TG"
+                            className='bg-white text-black fw-medium fs-4 w-50 text-center'
                             onChange={(e) => handleSelectChange(e)}
                         >
                             <option value="" disabled selected>Selecione a turma que deseja exibir</option>
@@ -71,6 +74,7 @@ const EnviarTurma = () => {
                                     required={true} className='input-send text-black fw-bold fs-4 w-75' />
                                 {/* Label personalizada como botão */}
                                 <FormLabel
+                                    title="Clique aqui para escolher o arquivo .xlsx da turma"
                                     htmlFor="input-arquivo-turma"
                                     className="btn btn-lg input-send py-3 fw-bold fs-4 w-75 fw-bold shadow"
                                     style={{ cursor: "pointer" }}
@@ -83,9 +87,10 @@ const EnviarTurma = () => {
                                 <Button
                                     variant="primary"
                                     type="submit"
+                                    title="Enviar turma"
                                     id='btn-cadastro' className='mb-2 fs-4 fw-medium w-25'
                                 >
-                                    Cadastrar Turma
+                                    Enviar Turma
                                 </Button>
                             </FormGroup>
                             {fileName && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
@@ -95,9 +100,8 @@ const EnviarTurma = () => {
                 </Form>
                 <div className="mt-5">
                     <TableComponent
-
-                        columns={colunas}
-                        data={data}
+                        colunas={colunas}
+                        dados={data}
                     />
                 </div>
             </Container>

@@ -24,7 +24,7 @@ const TableFilter = ({ coluna, dados, aoFiltrar }) => {
         const valoresUnicos = extrairValoresUnicos();
 
         return (
-            <Form.Select size="sm" className="mt-1" onChange={(e) => aoFiltrar(coluna.accessor, e.target.value)}>
+            <Form.Select size="sm" className="mt-1 fs-6" onChange={(e) => aoFiltrar(coluna.accessor, e.target.value)}>
                 <option value="">Todos</option>
                 {valoresUnicos.map(val => (
                     <option key={val} value={val}>{val}</option>
@@ -52,7 +52,7 @@ const TableFilter = ({ coluna, dados, aoFiltrar }) => {
         <Form.Control
             size="sm"
             type="text"
-            className="mt-1"
+            className="mt-1 fs-6"
             placeholder={`Filtrar...`}
             onChange={(e) => aoFiltrar(coluna.accessor, e.target.value)}
         />

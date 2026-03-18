@@ -46,7 +46,7 @@ const VisaoGrupos = () => {
                     <Button
                         variant='primary'
                         size='sm'
-                        className="px-2"
+                        className="px-2 fs-5"
                         onClick={() => handleOpen(row.grupo)}
                     >
                         Visualizar Integrantes
@@ -103,38 +103,39 @@ const VisaoGrupos = () => {
             <UserNavBar
                 /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
                 userName='Professor de TG'
-                maxWidth="1200px"
+                maxWidth="1500px"
             />
 
-            <Container className="mt-3" style={{ maxWidth: '1200px' }}>
+            <Container className="mt-3" style={{ maxWidth: '1500px' }}>
 
-                <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Visão dos Grupos</h2>
+                <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-3'>Visão dos Grupos</h2>
 
                 {/* Filtro específico da página (Fora da tabela) */}
                 <Row className="mb-4">
-                    <Col className="d-flex justify-content-end">
+                    <Col className="d-flex justify-content-start">
                         <Form.Check
                             type="switch"
                             id="switch-sem-grupo"
                             label="Exibir apenas alunos sem grupo"
-                            className="fs-5 fw-bold text-secondary"
+                            className="fs-4 fw-bold text-secondary"
                             checked={somenteSemGrupo}
                             onChange={(e) => setSomenteSemGrupo(e.target.checked)}
                         />
                     </Col>
                 </Row>
+                <div className="mt-5">
+                    <TableComponent
+                        colunas={columns}
+                        dados={dadosFiltrados}
 
-                <TableComponent
-                    colunas={columns}
-                    dados={dadosFiltrados}
-
-                />
+                    />
+                </div>
                 {/* Modal integrantes */}
                 <Modal show={show} onHide={handleClose} contentClassName="custom-modal-content">
 
-                    <Modal.Header className="d-flex justify-content-center" closeButton>
-                        <div className="custom-modal-title">
-                            <h5>{somenteSemGrupo ? "Aluno:" : "Integrantes:"}</h5>
+                    <Modal.Header closeButton>
+                        <div className="custom-modal-title text-center">
+                            <h5>Integrantes</h5>
                         </div>
                     </Modal.Header>
                     <Modal.Body className="p-0">

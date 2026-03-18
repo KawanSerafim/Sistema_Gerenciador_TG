@@ -90,7 +90,7 @@ const VisaoSolicitacaoOrientacao = () => {
                 <Button
                     variant="primary"
                     size='lm'
-                    className="px-2  text-decoration-none"
+                    className="px-2"
                     onClick={() => handleOpen({ type: "CONTATO", row })}
                 >
                     Visualizar meios de contato
@@ -159,9 +159,11 @@ const VisaoSolicitacaoOrientacao = () => {
                                         </li>
                                     </>
                                 ) : (
-                                    <div className="fw-bold p-2 border-bottom border-dark" style={{ backgroundColor: '#ffe5cc' }}>
-                                        Não informado
-                                    </div>
+                                    <li className="list-group-item fs-5" style={{ backgroundColor: '#ffecd9' }}>
+                                        <div className="fw-bold p-2 border-dark" style={{ backgroundColor: '#ffe5cc' }}>
+                                            Não informado
+                                        </div>
+                                    </li>
                                 )}
                             </ul>
                         </Col>
@@ -195,9 +197,10 @@ const VisaoSolicitacaoOrientacao = () => {
             <UserNavBar
                 /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
                 userName='Orientador'
+                maxWidth='1500px'
             />
 
-            <Container className="mt-5" style={{ minWidth: '800px' }}>
+            <Container className="mt-5" style={{ maxWidth: '1500px' }}>
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Solicitações de Orientações</h2>
                 <TableComponent
                     colunas={columns}
@@ -207,7 +210,6 @@ const VisaoSolicitacaoOrientacao = () => {
                 <Modal
                     show={show}
                     onHide={handleClose}
-
                     contentClassName="custom-modal-content"
                 >
                     {renderModalContent()}
