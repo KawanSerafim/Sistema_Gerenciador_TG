@@ -90,7 +90,7 @@ const CadastrarProfessor = () => {
             ></UserNavBar>
             <Container className="mt-5" style={{ maxWidth: '800px' }}>
 
-                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastro de Professor</h2>
+                <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Cadastrar Professor</h2>
                 <Form
                     noValidate
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'
@@ -98,10 +98,10 @@ const CadastrarProfessor = () => {
                 >
                     {/* Nome */}
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Nome Completo</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Nome Completo</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Digite seu nome completo"
+                            placeholder="Digite o nome completo do professor"
                             name="nome"
                             value={values.nome}
                             onChange={handleChange}
@@ -117,9 +117,9 @@ const CadastrarProfessor = () => {
 
                     {/* Matrícula */}
                     <FormGroup className="mb-3" controlId="formBasicMatricula">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Matrícula</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Matrícula</Form.Label>
                         <Form.Control
-                            type="text" placeholder="Digite sua matrícula"
+                            type="text" placeholder="Digite a matrícula do professor"
                             name="matricula"
                             value={values.matricula}
                             onChange={handleChange}
@@ -132,10 +132,10 @@ const CadastrarProfessor = () => {
 
                     {/* Email */}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Email</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Email</Form.Label>
                         <Form.Control
                             type="email"
-                            placeholder="Digite seu email"
+                            placeholder="Digite o email do professor"
                             name="email"
                             value={values.email}
                             onChange={handleChange}
@@ -149,8 +149,8 @@ const CadastrarProfessor = () => {
 
                     {/* Senha */}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Digite sua senha"
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Senha</Form.Label>
+                        <Form.Control type="password" placeholder="Digite a senha do professor"
                             name="senha"
                             value={values.senha}
                             onChange={handleChange}
@@ -163,8 +163,8 @@ const CadastrarProfessor = () => {
 
                     {/* Confirmar Senha */}
                     <FormGroup className="mb-3" controlId="formBasicConfirmPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Confirmar Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Confirme sua senha"
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Confirmar Senha</Form.Label>
+                        <Form.Control type="password" placeholder="Confirme a senha digitada"
                             name="confirmarSenha"
                             value={values.confirmarSenha}
                             onChange={handleChange}
@@ -177,14 +177,14 @@ const CadastrarProfessor = () => {
 
                     {/* Selecionar Cargo */}
                     <FormGroup className="mb-3" controlId="formBasicRole">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Cargo</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Cargo</Form.Label>
                         <Form.Select
                             name="cargo"
                             value={cargoSelecionado}
                             onChange={handleCargoSelecionado}
                             isInvalid={!!errors.cargo}
                             className='bg-white text-black fw-normal fs-5'>
-                            <option value="" disabled selected>Selecione seu cargo</option>
+                            <option value="" disabled selected>Selecione qual será o cargo do professor</option>
                             <option value="professor">Professor de TG</option>
                             <option value="coordenador">Coordenador</option>
                             <option value="orientador">Orientador</option>
@@ -199,7 +199,7 @@ const CadastrarProfessor = () => {
                         <Button
                             variant="primary"
                             type="submit"
-                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
+                            id='btn-cadastro' className='mb-2 fs-4 fw-medium w-100'
                         >
                             Cadastrar
                         </Button>

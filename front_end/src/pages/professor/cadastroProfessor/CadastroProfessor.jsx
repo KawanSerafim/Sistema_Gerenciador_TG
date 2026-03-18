@@ -91,7 +91,7 @@ const CadastroProfessor = () => {
                 >
                     {/* Nome */}
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Nome Completo</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Nome Completo</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite seu nome completo"
@@ -110,7 +110,7 @@ const CadastroProfessor = () => {
 
                     {/* Matrícula */}
                     <FormGroup className="mb-3" controlId="formBasicMatricula">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Matrícula</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Matrícula</Form.Label>
                         <Form.Control
                             type="text" placeholder="Digite sua matrícula"
                             name="matricula"
@@ -125,7 +125,7 @@ const CadastroProfessor = () => {
 
                     {/* Email */}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Email</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Email</Form.Label>
                         <Form.Control
                             type="email"
                             placeholder="Digite seu email"
@@ -142,7 +142,7 @@ const CadastroProfessor = () => {
 
                     {/* Senha */}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Senha</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Senha</Form.Label>
                         <Form.Control type="password" placeholder="Digite sua senha"
                             name="senha"
                             value={values.senha}
@@ -156,7 +156,7 @@ const CadastroProfessor = () => {
 
                     {/* Confirmar Senha */}
                     <FormGroup className="mb-3" controlId="formBasicConfirmPassword">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Confirmar Senha</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Confirmar Senha</Form.Label>
                         <Form.Control type="password" placeholder="Confirme sua senha"
                             name="confirmarSenha"
                             value={values.confirmarSenha}
@@ -170,7 +170,7 @@ const CadastroProfessor = () => {
 
                     {/* Selecionar Cargo */}
                     <FormGroup className="mb-3" controlId="formBasicRole">
-                        <Form.Label className='text-secondary fs-5 fw-medium'>Cargo</Form.Label>
+                        <Form.Label className='text-secondary fs-4 fw-medium'>Cargo</Form.Label>
                         <Form.Select
                             name="cargo"
                             value={cargoSelecionado}
@@ -192,7 +192,7 @@ const CadastroProfessor = () => {
                         <Button
                             variant="primary"
                             type="submit"
-                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
+                            id='btn-cadastro' className='mb-2 fs-4 fw-medium w-100'
                         >
                             Cadastrar
                         </Button>

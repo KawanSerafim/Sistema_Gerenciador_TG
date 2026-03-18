@@ -61,14 +61,14 @@ const ConfirmarEmail = () => {
                         value={values.codigo}
                         onChange={handleChange}
                         isInvalid={!!errors.codigo}
-                        className='text-black fw-bold fs-3 w-75 mb-4 text-center'
+                        className='text-black fw-bold fs-4 w-75 mb-4 text-center'
                     />
                     {/* Feedback de erro */}
                     <Form.Control.Feedback type="invalid">
                         {errors.codigo}
                     </Form.Control.Feedback>
 
-                    <Button variant="primary" type="submit" size="lg" className='fw-bold fs-5 text-white py-3 rounded-3'>
+                    <Button variant="primary" type="submit" size="lg" className='fw-bold fs-4 text-white py-3 rounded-3'>
                         Confirmar Email
                     </Button>
                 </Form>
