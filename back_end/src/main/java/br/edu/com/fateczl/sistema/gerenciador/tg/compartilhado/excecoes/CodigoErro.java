@@ -32,7 +32,8 @@ public enum CodigoErro {
 
     // GENÉRICO ----------------------------------------------------------------
 
-    GN_001_REGISTRO_NAO_ENCONTRADO("GN", "O registro não foi encontrado.");
+    GN_001_REGISTRO_NAO_ENCONTRADO("GN", "O registro do campo '%s' não foi " +
+            "encontrado.");
 
     // CONSTRUTOR E COMPORTAMENTOS ---------------------------------------------
 
