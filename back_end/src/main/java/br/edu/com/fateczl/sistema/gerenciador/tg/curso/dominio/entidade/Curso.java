@@ -10,6 +10,8 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.Para
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 
+import java.util.UUID;
+
 public class Curso {
     private final CursoId id;
     private Nome nome;
@@ -28,7 +30,8 @@ public class Curso {
 
     public static Curso novo(Nome nome, ParametrosCurso parametros,
                              Professor coordenador) {
-        return new Curso(null, nome, parametros, coordenador);
+        return new Curso(new CursoId(UUID.randomUUID()), nome, parametros,
+                coordenador);
     }
 
     public static Curso carregar(CursoId id, Nome nome,
@@ -85,6 +88,7 @@ public class Curso {
     // Métodos Getters ---------------------------------------------------------
 
     public CursoId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public Nome nome() { return nome; }
     public String nomeTexto() { return nome.valor(); }
     public ParametrosCurso parametros() { return parametros; }
