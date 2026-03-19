@@ -100,6 +100,7 @@ public class Professor implements Coorientador {
     public String idTexto() { return id.valor().toString(); }
     public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
+    public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuario contaUsuario() { return contaUsuario; }
     public CargoProfessor cargo() { return cargo; }
 }
