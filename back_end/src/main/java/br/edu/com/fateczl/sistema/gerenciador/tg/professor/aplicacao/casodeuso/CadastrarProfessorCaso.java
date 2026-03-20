@@ -1,5 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
@@ -17,13 +19,16 @@ public class CadastrarProfessorCaso {
     private final ProfessorRepositorio professorRepositorio;
     private final ContaUsuarioRepositorio contaUsuarioRepositorio;
     private final CriptografoSenhas criptografo;
+    private final PublicadorEventos publicador;
 
     public CadastrarProfessorCaso(ProfessorRepositorio professorRepositorio,
                                   ContaUsuarioRepositorio contaUsuarioRepositorio,
-                                  CriptografoSenhas criptografo) {
+                                  CriptografoSenhas criptografo,
+                                  PublicadorEventos publicador) {
         this.professorRepositorio = professorRepositorio;
         this.contaUsuarioRepositorio = contaUsuarioRepositorio;
         this.criptografo = criptografo;
+        this.publicador = publicador;
     }
 
     public record Comando(
@@ -56,6 +61,9 @@ public class CadastrarProfessorCaso {
 
         contaUsuarioRepositorio.salvar(novaConta);
         professorRepositorio.salvar(novoProfessor);
+
+        publicador.publicar(new ContaPendenteCriadaEvento(
+                novaConta.emailTexto()));
 
         return new Resposta(novoProfessor.idTexto(), nome.valor(),
                 matriculaAlvo.valor(), comando.cargo());
