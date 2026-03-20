@@ -50,6 +50,7 @@ public class ContaUsuario {
     // Métodos Getters ---------------------------------------------------------
 
     public Email email() { return email; }
+    public String emailTexto() { return email.valor(); }
     public Senha senha() { return senha; }
     public StatusContaUsuario status() { return status; }
 }
