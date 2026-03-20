@@ -1,10 +1,10 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.RegraNegocioExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Disciplina;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Turno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;

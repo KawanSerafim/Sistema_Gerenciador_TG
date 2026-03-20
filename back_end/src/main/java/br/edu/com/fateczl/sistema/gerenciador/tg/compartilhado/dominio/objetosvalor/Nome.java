@@ -1,7 +1,7 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor;
+package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 
 public record Nome(String valor) {
     public Nome {

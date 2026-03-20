@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes;
+package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes;
 
 public enum CodigoErro {
     // VALIDAÇÃO ---------------------------------------------------------------

@@ -1,7 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.CodigoErro;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 
 public record CoorientadorExternoId(Long valor) {
     public CoorientadorExternoId {

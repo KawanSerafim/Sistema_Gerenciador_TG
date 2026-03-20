@@ -1,6 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.objetosvalor.Nome;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 
