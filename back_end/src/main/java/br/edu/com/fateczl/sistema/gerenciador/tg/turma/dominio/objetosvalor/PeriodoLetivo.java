@@ -22,4 +22,7 @@ public record PeriodoLetivo(Ano ano, Semestre semestre) {
                     "período letivo", "não pode ser um semestre passado");
         }
     }
+
+    public Integer anoValor() { return ano.valor(); }
+    public Integer semestreValor() { return semestre.valor(); }
 }
