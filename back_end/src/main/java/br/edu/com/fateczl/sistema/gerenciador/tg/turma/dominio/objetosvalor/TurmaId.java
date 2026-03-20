@@ -3,15 +3,13 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 
-public record TurmaId(Long valor) {
+import java.util.UUID;
+
+public record TurmaId(UUID valor) {
     public TurmaId {
         if(valor == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
                     "ID da turma");
-        }
-        if(valor <= 0) {
-            throw new ValidacaoExcecao(CodigoErro.VD_002_FORMATO_INVALIDO,
-                    "ID da turma", "valor positivo");
         }
     }
 }
