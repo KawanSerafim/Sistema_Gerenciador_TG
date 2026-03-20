@@ -12,10 +12,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Aluno {
     private final AlunoId id;
@@ -45,7 +42,7 @@ public class Aluno {
                     "turma inicial");
         }
 
-        return new Aluno(null, nome, matricula, null,
+        return new Aluno(new AlunoId(UUID.randomUUID()), nome, matricula, null,
                 StatusAluno.PRE_CADASTRO, List.of(turmaInicial));
     }
 
@@ -131,7 +128,9 @@ public class Aluno {
     // Métodos Getters ---------------------------------------------------------
 
     public AlunoId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public Nome nome() { return nome; }
+    public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
     public ContaUsuario contaUsuario() { return contaUsuario; }
     public StatusAluno status() { return status; }
