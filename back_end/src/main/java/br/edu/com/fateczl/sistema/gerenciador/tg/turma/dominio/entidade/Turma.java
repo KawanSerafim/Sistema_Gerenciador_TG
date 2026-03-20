@@ -10,6 +10,8 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Prof
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
+import java.util.UUID;
+
 public class Turma {
     private final TurmaId id;
     private final Curso curso;
@@ -33,8 +35,8 @@ public class Turma {
     public static Turma novo(Curso curso, Disciplina disciplina, Turno turno,
                              PeriodoLetivo periodoLetivo,
                              Professor professorTg) {
-        return new Turma(null, curso, disciplina, turno, periodoLetivo,
-                professorTg);
+        return new Turma(new TurmaId(UUID.randomUUID()), curso, disciplina,
+                turno, periodoLetivo, professorTg);
     }
 
     public static Turma carregar(TurmaId id, Curso curso,
@@ -100,6 +102,7 @@ public class Turma {
     // Métodos Getters ---------------------------------------------------------
 
     public TurmaId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public Curso curso() { return curso; }
     public Disciplina disciplina() { return disciplina; }
     public Turno turno() { return turno; }
