@@ -9,6 +9,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.Curs
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.ParametrosCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
 import java.util.UUID;
 
@@ -84,6 +85,10 @@ public class Curso {
     public void atualizarCoordenador(Professor novoCoordenador) {
         this.coordenador = assegurarPresenca(novoCoordenador, "coordenador");
     }
+
+    // Métodos Getters de Delegação --------------------------------------------
+
+    public ProfessorId idCoordenador() { return coordenador.id(); }
 
     // Métodos Getters ---------------------------------------------------------
 
