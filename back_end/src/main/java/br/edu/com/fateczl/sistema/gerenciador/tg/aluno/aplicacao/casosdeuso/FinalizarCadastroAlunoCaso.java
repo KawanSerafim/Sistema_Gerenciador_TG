@@ -58,7 +58,7 @@ public class FinalizarCadastroAlunoCaso {
         return new Resposta(aluno.idTexto(), aluno.nomeTexto(), email.valor());
     }
 
-    // FLUXO ESPECIALIZADOS ----------------------------------------------------
+    // FLUXOS ESPECIALIZADOS ---------------------------------------------------
 
     private void validarUnicidadeEmail(Email email) {
         contaUsuarioRepositorio.buscarPorEmail(email).ifPresent(conta -> {
