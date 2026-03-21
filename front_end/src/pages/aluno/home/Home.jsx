@@ -2,7 +2,7 @@ import { Button, Container } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 
 const Home = () => {
-    const nomeAluno = "Max"
+    const nomeAluno = "Aluno"
     return (
         <>
             <UserNavBar
