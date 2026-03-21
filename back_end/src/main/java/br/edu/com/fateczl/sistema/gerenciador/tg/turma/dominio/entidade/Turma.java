@@ -7,6 +7,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
@@ -97,6 +98,16 @@ public class Turma {
 
     public void atualizarProfessorTg(Professor novoProfessor) {
         this.professorTg = assegurarPresenca(novoProfessor, "professor de TG");
+    }
+
+    // Métodos Getters de Delegação --------------------------------------------
+
+    public String nomeCursoTexto() { return curso.nomeTexto(); }
+    public ProfessorId idProfessorTg() { return professorTg.id(); }
+    public ProfessorId idCoordenadorCurso() { return curso.idCoordenador(); }
+    public Integer anoLetivoValor() { return periodoLetivo.anoValor(); }
+    public Integer semestreLetivoValor() {
+        return periodoLetivo.semestreValor();
     }
 
     // Métodos Getters ---------------------------------------------------------
