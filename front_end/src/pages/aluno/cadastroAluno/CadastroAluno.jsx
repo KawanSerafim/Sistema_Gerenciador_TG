@@ -2,92 +2,78 @@ import { Container, InputGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
-import { useForm } from "../../../hooks/useForm"
-import { useState } from 'react';
+
 import { bloquearCaracteresInputNome, validarNome } from '../../../utils/utils';
 
-//Função pura que recebe os valores digitados e retorna um objeto com ois erros, caso não tenha erros retorna um objeto vazio
-const validarCadastro = (valores) => {
-    let erros = {};
-    for (const [key, value] of Object.entries(valores)) {
-        //Validações gênericas do campo vazio
-        if (!value || typeof value === "string" && value.trim() === '') {
-            erros[key] = `${key.charAt(0).toUpperCase()}${key.slice(1).toLowerCase()} é um campo obrigatório`
-        }
-        //Validações especificas
-        //Nome
-        else if (key == "nome" && validarNome(value.trim()) == false) {
-            erros.nome = "Nome com caracteres invalidos."
-        }
-        // Matricula
-        else if (key == "matricula" && value.trim().length != 11) {
-            erros.matricula = 'A matrícula tem que ter 11 dígitos.';
-        }
-        //Email
-        else if (key == "email" && !/\S+@\S+\.\S+/.test(value)) {
-            erros.email = 'Formato de email inválido.';
-        }
-        else if (key == "telefone" && value.trim().length != 11) {
-            erros.telefone = "Telefone invalido"
-        }
-        //Senha e ConfirmarSenha
-        else if (key == "confirmarSenha" && value !== valores.senha) {
-            erros.confirmarSenha = "Senha e Confirmar Senha devem ser iguais"
-        }
+// Zod e RHF (react hook form)
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, useFieldArray } from "react-hook-form";
 
-    }
-
-
-    return erros;
-};
+//Schema de validação zod
+const alunoSchema = z.object({
+    nome: z.string()
+        .min(1, "Nome é um campo obrigatório")
+        .refine(validarNome, "Nome com caracteres invalidos"),
+    matricula: z.string()
+        .length(11, "A matricula tem que ter 11 dígitos"),
+    email: z.email("Formato de email inválido")
+        .min(1, "Email é um campo obrigatório"),
+    telefone: z.string()
+        .length(11, "Telefone inválido"),
+    senha: z.string()
+        //TODO: Verificar no backend a regra de minimo
+        .min(6, "A senha deve ter no mínimo 6 caracteres"),
+    confirmarSenha: z.string()
+        .min(1, "Confirme sua senha"),
+    // Array de Redes
+    redes: z.array(z.object({
+        rede: z.string(),
+        url: z.url("Formato de URL inválido. Insira o link completo (http://...)")
+    }))
+}).refine((data) => data.senha === data.confirmarSenha, {
+    message: "Senha e Confirmar Senha devem ser iguais",
+    // Apota o erro para o campo de confirmação
+    path: ["confirmarSenha"]
+})
 
 
 const CadastroAluno = () => {
-    //Nomes dos campos a serem validados
-    const campos = {
-        nome: "",
-        matricula: "",
-        email: "",
-        telefone: "",
-        senha: "",
-        confirmarSenha: "",
-    }
-    const { values, errors, handleChange, handleSubmit } = useForm(
-        campos,
-        validarCadastro
-    );
+
+    // Inicializa react hook form
+    const {
+        register,
+        control,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(alunoSchema),
+        defaultValues: {
+            nome: "", matricula: "", email: "",
+            telefone: "", senha: "", confirmarSenha: "",
+        }
+    });
+
+    //Gerenciamento de arrays dinâmicos(substitui useStates manuais)
+    const { fields, append, remove } = useFieldArray({
+        control,
+        //Nome do array no Schema
+        name: "redes"
+    });
+
 
     // Redes Sociais
-    const [redesSelecionadas, setRedesSelecionadas] = useState([]);
-
     const handleRedeSelecionada = (e) => {
         const redeEscolhida = e.target.value;
 
         // Evita adicionar se não escolheu nada ou se já adicionou aquela rede (opcional)
         if (redeEscolhida) {
-            setRedesSelecionadas(
-                [
-                    ...redesSelecionadas,
-                    { rede: redeEscolhida, url: "" }
-                ]);
+            append({ rede: redeEscolhida, url: "" });
             //Reseta o select
             e.target.value = ""
         }
     };
 
-    //Atualiza URL do input
-    const handleAtualizarUrl = (index, valor) => {
-        const novasRedes = [...redesSelecionadas];
-        novasRedes[index].url = valor;
-        setRedesSelecionadas(novasRedes)
-    }
-
-    //Remove rede social
-    const handleRemoverRede = (index) => {
-        const novasRedes = [...redesSelecionadas];
-        novasRedes.splice(index, 1);
-        setRedesSelecionadas(novasRedes);
-    }
 
     // A função que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
@@ -110,15 +96,15 @@ const CadastroAluno = () => {
                             type="text"
                             name="nome"
                             placeholder="Digite seu nome completo" required={true}
-                            value={values.nome}
+                            //Conecta input ao RHF
+                            {...register("nome")}
                             className='bg-white text-black fw-normal fs-5'
-                            onChange={handleChange}
                             onKeyDown={bloquearCaracteresInputNome}
                             isInvalid={!!errors.nome}
                         />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.nome}
+                            {errors.nome?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -127,15 +113,14 @@ const CadastroAluno = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Matrícula</Form.Label>
                         <Form.Control
                             type="text" placeholder="Digite sua matrícula"
-                            required={true}
                             className='bg-white text-black fw-normal fs-5'
                             name="matricula"
-                            value={values.matricula}
-                            onChange={handleChange}
+                            //Conecta input ao RHF
+                            {...register("matricula")}
                             isInvalid={!!errors.matricula} />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.matricula}
+                            {errors.matricula?.message}
                         </Form.Control.Feedback>
                     </FormGroup>
 
@@ -144,15 +129,13 @@ const CadastroAluno = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Email</Form.Label>
                         <Form.Control
                             type="email" placeholder="Digite seu email"
-                            required={true}
                             className='bg-white text-black fw-normal fs-5'
                             name="email"
-                            value={values.email}
-                            onChange={handleChange}
+                            {...register("email")}
                             isInvalid={!!errors.email} />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.email}
+                            {errors.email?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -161,16 +144,14 @@ const CadastroAluno = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Telefone</Form.Label>
                         <Form.Control
                             type="tel" placeholder="11912345678"
-                            required={true}
                             className='bg-white text-black fw-normal fs-5'
                             pattern="[0-9]{2}-[9]{1}-[0-9]{8}"
                             name="telefone"
-                            value={values.telefone}
-                            onChange={handleChange}
+                            {...register("telefone")}
                             isInvalid={!!errors.telefone} />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.telefone}
+                            {errors.telefone?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -192,25 +173,33 @@ const CadastroAluno = () => {
                             <option value="facebook">Facebook</option>
                         </Form.Select>
 
-                        {/*Lista dinamica de inputs de URL */}
-                        {redesSelecionadas.map((rede, index) => (
-                            <InputGroup className="mb-2 w75" key={index}>
-                                {/* Exibe o nome da rede com a primeira letra maiúscula */}
-                                <InputGroup.Text className="text-capitalize fw-bold fs-5" >
-                                    {rede.rede}
-                                </InputGroup.Text>
+                        {/*Array dinamico gerenciado pelo RHF  */}
+                        {fields.map((rede, index) => (
+                            <div key={rede.id} className="mb-2">
+                                <InputGroup className="w75" key={index}>
+                                    {/* Exibe o nome da rede com a primeira letra maiúscula */}
+                                    <InputGroup.Text className="text-capitalize fw-bold fs-5" >
+                                        {rede.rede}
+                                    </InputGroup.Text>
 
-                                <Form.Control
-                                    type="url"
-                                    className='fs-5 text-black'
-                                    placeholder={`Cole o link do seu ${rede.rede}`}
-                                    value={rede.url}
-                                    onChange={(e) => handleAtualizarUrl(index, e.target.value)}
-                                />
-                                <Button variant='outline-primary' className="fs-5" title='Clique aqui para remover essa rede social' onClick={() => handleRemoverRede(index)}>
-                                    Remover
-                                </Button>
-                            </InputGroup>
+                                    <Form.Control
+                                        type="url"
+                                        className='fs-5 text-black'
+                                        placeholder={`Ex: https://${rede.rede}.com/in/seu-perfil`}
+                                        {...register(`redes.${index}.url`)}
+                                        isInvalid={!!errors.redes?.[index]?.url}
+                                    />
+                                    <Button variant='outline-primary' className="fs-5" title='Clique aqui para remover essa rede social' onClick={() => remove(index)}>
+                                        Remover
+                                    </Button>
+                                </InputGroup>
+                                {/* Erro da URL da rede específica */}
+                                {errors.redes?.[index]?.url && (
+                                    <div className="text-danger mt-1 small fw-bold">
+                                        {errors.redes[index].url.message}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </Form.Group>
 
@@ -219,16 +208,14 @@ const CadastroAluno = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Senha</Form.Label>
                         <Form.Control
                             type="password" placeholder="Digite sua senha"
-                            required={true}
                             className='bg-white text-black fw-normal fs-5'
                             name="senha"
-                            value={values.senha}
-                            onChange={handleChange}
+                            {...register("senha")}
                             isInvalid={!!errors.senha}
                         />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.senha}
+                            {errors.senha?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -240,12 +227,11 @@ const CadastroAluno = () => {
                             required={true}
                             className='bg-white text-black fw-normal fs-5'
                             name="confirmarSenha"
-                            value={values.confirmarSenha}
-                            onChange={handleChange}
+                            {...register("confirmarSenha")}
                             isInvalid={!!errors.confirmarSenha}
                         />
                         <Form.Control.Feedback type="invalid">
-                            {errors.confirmarSenha}
+                            {errors.confirmarSenha?.message}
                         </Form.Control.Feedback>
                     </FormGroup>
 
