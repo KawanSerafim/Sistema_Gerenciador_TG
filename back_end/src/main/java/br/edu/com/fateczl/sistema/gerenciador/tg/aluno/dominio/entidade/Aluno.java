@@ -132,6 +132,7 @@ public class Aluno {
     public Nome nome() { return nome; }
     public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
+    public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuario contaUsuario() { return contaUsuario; }
     public StatusAluno status() { return status; }
     public List<Turma> turmas() { return Collections.unmodifiableList(turmas); }
