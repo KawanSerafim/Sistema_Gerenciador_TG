@@ -11,10 +11,10 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GrupoTg {
     private final GrupoTgId id;
@@ -45,8 +45,8 @@ public class GrupoTg {
     public static GrupoTg novo(Curso curso, Disciplina disciplina,
                                TemaTg temaTg, TipoTg tipoTg,
                                List<Aluno> alunos) {
-        return new GrupoTg(null, null, null, curso, disciplina, temaTg,
-                tipoTg, alunos);
+        return new GrupoTg(new GrupoTgId(UUID.randomUUID()), null, null,
+                curso, disciplina, temaTg, tipoTg, alunos);
     }
 
     public static GrupoTg carregar(GrupoTgId id, Professor orientador,
@@ -77,8 +77,22 @@ public class GrupoTg {
                     "alunos");
         }
 
-        // TODO: Caso seja necessário limitar o aluno a estar numa turma de
-        //  mesma disciplina do grupo, fazer a devida validação.
+        Set<Disciplina> disciplinasMolde = alunos.getFirst().turmas().stream()
+                .map(Turma::disciplina)
+                .collect(Collectors.toSet());
+
+        for(Aluno aluno : alunos) {
+            Set<Disciplina> disciplinasDesteAluno = aluno.turmas().stream()
+                    .map(Turma::disciplina)
+                    .collect(Collectors.toSet());
+
+            if(!disciplinasDesteAluno.equals(disciplinasMolde)) {
+                throw new RegraNegocioExcecao(
+                        CodigoErro.RN_003_CONDICAO_ACAO_NAO_ATENDIDA,
+                        "alunos do grupo", "estar matriculado exatamente na " +
+                        "mesma composição de disciplinas");
+            }
+        }
 
         if(!curso.validarQtdAlunosGrupo(tipoTg, alunos.size())) {
             throw new RegraNegocioExcecao(CodigoErro
