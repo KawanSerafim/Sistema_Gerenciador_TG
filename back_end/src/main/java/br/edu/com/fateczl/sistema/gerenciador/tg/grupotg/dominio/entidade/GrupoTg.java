@@ -146,6 +146,7 @@ public class GrupoTg {
     // Métodos Getters ---------------------------------------------------------
 
     public GrupoTgId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public Professor orientador() { return orientador; }
     public Coorientador coorientador() { return coorientador; }
     public Curso curso() { return curso; }
