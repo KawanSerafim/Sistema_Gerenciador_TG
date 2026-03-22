@@ -7,9 +7,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 
 import java.util.*;
@@ -18,17 +16,17 @@ public class Aluno {
     private final AlunoId id;
     private final Nome nome;
     private final Matricula matricula;
-    private ContaUsuario contaUsuario;
+    private ContaUsuarioId contaUsuarioId;
     private StatusAluno status;
     private List<Turma> turmas;
 
     private Aluno(AlunoId id, Nome nome, Matricula matricula,
-                  ContaUsuario contaUsuario, StatusAluno status,
+                  ContaUsuarioId contaUsuarioId, StatusAluno status,
                   List<Turma> turmas) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
-        this.contaUsuario = contaUsuario;
+        this.contaUsuarioId = contaUsuarioId;
         this.status = assegurarPresenca(status, "status");
         this.turmas = new ArrayList<>(assegurarPresenca(turmas, "turmas"));
     }
@@ -47,9 +45,9 @@ public class Aluno {
     }
 
     public static Aluno carregar(AlunoId id, Nome nome, Matricula matricula,
-                                 ContaUsuario contaUsuario,
+                                 ContaUsuarioId contaUsuarioId,
                                  StatusAluno status, List<Turma> turmas) {
-        return new Aluno(id, nome, matricula, contaUsuario, status, turmas);
+        return new Aluno(id, nome, matricula, contaUsuarioId, status, turmas);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -84,40 +82,28 @@ public class Aluno {
         this.turmas.add(novaTurma);
     }
 
-    public void finalizarCadastro(ContaUsuario contaUsuario) {
-        if(contaUsuario.status() != StatusContaUsuario.EMAIL_CONFIRMADO) {
+    public void concluirCadastro() {
+        if(status != StatusAluno.AGUARDANDO_CONFIRMACAO) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
-                    "status da conta de usuário", "email confirmado");
+                    "status do aluno", "AGUARDANDO_CONFIRMACAO");
         }
-        atualizarContaUsuario(contaUsuario);
-        contaUsuario.atualizarStatus(StatusContaUsuario.ATIVO);
-        atualizarStatus(StatusAluno.CADASTRADO);
+        this.status = StatusAluno.CADASTRADO;
     }
 
     // Métodos de Atualização --------------------------------------------------
 
-    public void atualizarStatus(StatusAluno novoStatus) {
-        this.status = assegurarPresenca(novoStatus, "status");
-    }
+    public void vincularConta(ContaUsuarioId novaContaUsuarioId) {
+        this.contaUsuarioId = assegurarPresenca(novaContaUsuarioId,
+                "ID da conta de usuário");
 
-    public void atualizarContaUsuario(ContaUsuario novaContaUsuario) {
-        this.contaUsuario = assegurarPresenca(novaContaUsuario,
-                "conta de usuário");
+        if(status == StatusAluno.PRE_CADASTRO) {
+            this.status = StatusAluno.AGUARDANDO_CONFIRMACAO;
+        }
     }
 
     public void atualizarTurmas(List<Turma> novasTurmas) {
         this.turmas = new ArrayList<>(assegurarPresencaTurmas(novasTurmas));
-    }
-
-    // Métodos Getters de Delegação --------------------------------------------
-
-    public Email emailContaUsuario() {
-        return (contaUsuario != null) ? contaUsuario.email() : null;
-    }
-
-    public StatusContaUsuario statusContaUsuario() {
-        return (contaUsuario != null) ? contaUsuario.status() : null;
     }
 
     // Métodos Getters ---------------------------------------------------------
@@ -128,7 +114,7 @@ public class Aluno {
     public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
     public String matriculaTexto() { return matricula.valor(); }
-    public ContaUsuario contaUsuario() { return contaUsuario; }
+    public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
     public StatusAluno status() { return status; }
     public List<Turma> turmas() { return Collections.unmodifiableList(turmas); }
 }
