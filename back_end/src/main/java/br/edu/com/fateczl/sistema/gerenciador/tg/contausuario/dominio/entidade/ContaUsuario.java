@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.*;
 
@@ -42,11 +43,38 @@ public class ContaUsuario {
         return objeto;
     }
 
-    // Métodos de Atualização --------------------------------------------------
+    // Métodos de Alteração de Status ------------------------------------------
 
-    public void atualizarStatus(StatusContaUsuario novoStatus) {
-        this.status = assegurarPresenca(novoStatus, "status");
+    public void confirmarEmail() {
+        if(status != StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "status de conta de usuário",
+                    "VERIFICACAO_CODIGO_PENDENTE");
+        }
+        this.status = StatusContaUsuario.EMAIL_CONFIRMADO;
     }
+
+    public void ativar() {
+        if(status != StatusContaUsuario.EMAIL_CONFIRMADO) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "status de conta de usuário", "EMAIL_CONFIRMADO");
+        }
+        this.status = StatusContaUsuario.ATIVO;
+    }
+
+    public void inativar() {
+        if(status == StatusContaUsuario.INATIVO) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "status de conta de usuário", "ATIVO ou demais, sem ser " +
+                    "INATIVO");
+        }
+        this.status = StatusContaUsuario.INATIVO;
+    }
+
+    // Métodos de Atualização --------------------------------------------------
 
     public void atualizarEmail(Email novoEmail) {
         this.email = assegurarPresenca(novoEmail, "email");
