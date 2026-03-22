@@ -5,9 +5,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.identificadores.Coorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
@@ -15,32 +13,32 @@ public class Professor implements Coorientador {
     private final ProfessorId id;
     private final Nome nome;
     private final Matricula matricula;
-    private final ContaUsuario contaUsuario;
+    private final ContaUsuarioId contaUsuarioId;
     private CargoProfessor cargo;
 
     private Professor(ProfessorId id, Nome nome, Matricula matricula,
-                      ContaUsuario contaUsuario,
-                      CargoProfessor cargo) {
+                      ContaUsuarioId contaUsuarioId, CargoProfessor cargo) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
-        this.contaUsuario = assegurarPresenca(contaUsuario, "conta de usuário");
+        this.contaUsuarioId = assegurarPresenca(contaUsuarioId, "ID da conta " +
+                "de usuário");
         this.cargo = assegurarPresenca(cargo, "cargo");
     }
 
     // Métodos Factory ---------------------------------------------------------
 
     public static Professor novo(ProfessorId id, Nome nome, Matricula matricula,
-                                 ContaUsuario contaUsuario,
+                                 ContaUsuarioId contaUsuarioId,
                                  CargoProfessor cargo) {
-        return new Professor(id, nome, matricula, contaUsuario, cargo);
+        return new Professor(id, nome, matricula, contaUsuarioId, cargo);
     }
 
     public static Professor carregar(ProfessorId id, Nome nome,
                                      Matricula matricula,
-                                     ContaUsuario contaUsuario,
+                                     ContaUsuarioId contaUsuarioId,
                                      CargoProfessor cargo) {
-        return new Professor(id, nome, matricula, contaUsuario, cargo);
+        return new Professor(id, nome, matricula, contaUsuarioId, cargo);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -76,16 +74,6 @@ public class Professor implements Coorientador {
     @Override public Nome nome() { return nome; }
     @Override public String identificacao() { return this.matricula.valor(); }
 
-    // Métodos Getters de Delegação --------------------------------------------
-
-    public Email email() {
-        return contaUsuario.email();
-    }
-
-    public StatusContaUsuario statusContaUsuario() {
-        return contaUsuario.status();
-    }
-
     // Métodos Getters ---------------------------------------------------------
 
     public ProfessorId id() { return id; }
@@ -93,6 +81,6 @@ public class Professor implements Coorientador {
     public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
     public String matriculaTexto() { return matricula.valor(); }
-    public ContaUsuario contaUsuario() { return contaUsuario; }
+    public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
     public CargoProfessor cargo() { return cargo; }
 }

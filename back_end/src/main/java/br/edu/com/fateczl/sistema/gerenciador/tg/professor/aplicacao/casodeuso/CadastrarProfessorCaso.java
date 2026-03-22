@@ -8,6 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
@@ -60,7 +61,7 @@ public class CadastrarProfessorCaso {
         ContaUsuario novaConta = gerarNovaConta(emailAlvo,
                 comando.senhaLimpa());
         Professor novoProfessor = gerarNovoProfessor(nome, matriculaAlvo,
-                novaConta, comando.cargo());
+                novaConta.id(), comando.cargo());
 
         contaUsuarioRepositorio.salvar(novaConta);
         professorRepositorio.salvar(novoProfessor);
@@ -90,13 +91,14 @@ public class CadastrarProfessorCaso {
 
     private ContaUsuario gerarNovaConta(Email email, String senhaLimpa) {
         Senha senhaCriptografada = criptografo.criptografar(senhaLimpa);
-        return ContaUsuario.novo(email, senhaCriptografada);
+        return ContaUsuario.novo(new ContaUsuarioId(UUID.randomUUID()), email,
+                senhaCriptografada);
     }
 
     private Professor gerarNovoProfessor(Nome nome, Matricula matricula,
-                                         ContaUsuario conta,
+                                         ContaUsuarioId contaId,
                                          CargoProfessor cargo) {
         return Professor.novo(new ProfessorId(UUID.randomUUID()), nome,
-                matricula, conta, cargo);
+                matricula, contaId, cargo);
     }
 }
