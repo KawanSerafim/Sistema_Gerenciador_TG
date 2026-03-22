@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.portas.LeitorArquivoAlunos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
@@ -132,7 +133,8 @@ public class ImportarAlunosCaso {
             if(aluno != null) {
                 aluno.matricularEmTurma(turma);
             } else {
-                aluno = Aluno.novo(nome, matricula, turma);
+                aluno = Aluno.novo(new AlunoId(UUID.randomUUID()), nome,
+                        matricula, turma);
             }
 
             alunoRepositorio.salvar(aluno);

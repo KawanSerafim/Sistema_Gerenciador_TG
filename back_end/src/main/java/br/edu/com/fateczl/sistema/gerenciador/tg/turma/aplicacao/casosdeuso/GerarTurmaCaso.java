@@ -16,7 +16,10 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Ano;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Semestre;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
+
+import java.util.UUID;
 
 public class GerarTurmaCaso {
     private final TurmaRepositorio turmaRepositorio;
@@ -62,8 +65,9 @@ public class GerarTurmaCaso {
         Professor coordenador = buscarEValidarCoordenador(emailCoordenador);
         Curso curso = buscarCursoDoCoordenador(coordenador);
         Professor professorTg = buscarEValidarProfessorTg(matriculaProfessorTg);
-        Turma novaTurma = Turma.novo(curso, comando.disciplina(),
-                comando.turno(), periodoLetivo, professorTg);
+        Turma novaTurma = Turma.novo(new TurmaId(UUID.randomUUID()), curso,
+                comando.disciplina(), comando.turno(), periodoLetivo,
+                professorTg);
 
         turmaRepositorio.salvar(novaTurma);
 

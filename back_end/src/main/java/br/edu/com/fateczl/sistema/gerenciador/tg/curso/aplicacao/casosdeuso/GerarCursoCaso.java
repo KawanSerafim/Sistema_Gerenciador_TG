@@ -10,6 +10,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.AjusteTipoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.ParametrosCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
@@ -17,6 +18,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Prof
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 
 import java.util.List;
+import java.util.UUID;
 
 public class GerarCursoCaso {
     private final CursoRepositorio cursoRepositorio;
@@ -56,7 +58,8 @@ public class GerarCursoCaso {
         Professor coordenador = buscarEValidarCoordenador(matriculaCoordenador);
         ParametrosCurso parametros = gerarParametros(comando);
 
-        Curso novoCurso = Curso.novo(nome, parametros, coordenador);
+        Curso novoCurso = Curso.novo(new CursoId(UUID.randomUUID()), nome,
+                parametros, coordenador);
         cursoRepositorio.salvar(novoCurso);
 
         return new Resposta(novoCurso.idTexto(), novoCurso.nomeTexto(),
