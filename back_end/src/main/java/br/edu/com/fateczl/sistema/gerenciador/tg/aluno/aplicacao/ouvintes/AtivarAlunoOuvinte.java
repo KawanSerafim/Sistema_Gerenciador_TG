@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.ouvintes;
+package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.ouvintes;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaAtividadeEvento;
