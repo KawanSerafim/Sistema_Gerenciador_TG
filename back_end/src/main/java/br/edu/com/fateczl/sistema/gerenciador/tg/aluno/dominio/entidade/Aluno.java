@@ -25,7 +25,7 @@ public class Aluno {
     private Aluno(AlunoId id, Nome nome, Matricula matricula,
                   ContaUsuario contaUsuario, StatusAluno status,
                   List<Turma> turmas) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
         this.contaUsuario = contaUsuario;
@@ -35,25 +35,20 @@ public class Aluno {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static Aluno novo(Nome nome, Matricula matricula,
+    public static Aluno novo(AlunoId id, Nome nome, Matricula matricula,
                              Turma turmaInicial) {
         if(turmaInicial == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
                     "turma inicial");
         }
 
-        return new Aluno(new AlunoId(UUID.randomUUID()), nome, matricula, null,
-                StatusAluno.PRE_CADASTRO, List.of(turmaInicial));
+        return new Aluno(id, nome, matricula, null, StatusAluno.PRE_CADASTRO,
+                List.of(turmaInicial));
     }
 
     public static Aluno carregar(AlunoId id, Nome nome, Matricula matricula,
                                  ContaUsuario contaUsuario,
                                  StatusAluno status, List<Turma> turmas) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID do aluno");
-        }
-
         return new Aluno(id, nome, matricula, contaUsuario, status, turmas);
     }
 

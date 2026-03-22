@@ -14,24 +14,20 @@ public class CoorientadorExterno implements Coorientador {
 
     private CoorientadorExterno(CoorientadorExternoId id, Nome nome,
                                 Origem origem) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.origem = assegurarPresenca(origem, "origem");
     }
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static CoorientadorExterno novo(Nome nome, Origem origem) {
-        return new CoorientadorExterno(null, nome, origem);
+    public static CoorientadorExterno novo(CoorientadorExternoId id, Nome nome,
+                                           Origem origem) {
+        return new CoorientadorExterno(id, nome, origem);
     }
 
     public static CoorientadorExterno carregar(CoorientadorExternoId id,
                                                Nome nome, Origem origem) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID do coorientador externo");
-        }
-
         return new CoorientadorExterno(id, nome, origem);
     }
 

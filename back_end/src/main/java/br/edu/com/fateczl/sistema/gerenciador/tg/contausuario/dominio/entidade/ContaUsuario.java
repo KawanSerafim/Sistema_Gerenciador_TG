@@ -5,11 +5,14 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.*;
 
 public class ContaUsuario {
-    private final Email email;
+    private final ContaUsuarioId id;
+    private Email email;
     private Senha senha;
     private StatusContaUsuario status;
 
-    private ContaUsuario(Email email, Senha senha, StatusContaUsuario status) {
+    private ContaUsuario(ContaUsuarioId id, Email email, Senha senha,
+                         StatusContaUsuario status) {
+        this.id = assegurarPresenca(id, "ID");
         this.email = assegurarPresenca(email, "email");
         this.senha = assegurarPresenca(senha, "senha");
         this.status = assegurarPresenca(status, "status");
@@ -17,14 +20,16 @@ public class ContaUsuario {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static ContaUsuario novo(Email email, Senha senha) {
-        return new ContaUsuario(email, senha,
+    public static ContaUsuario novo(ContaUsuarioId id, Email email,
+                                    Senha senha) {
+        return new ContaUsuario(id, email, senha,
                 StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE);
     }
 
-    public static ContaUsuario carregar(Email email, Senha senha,
+    public static ContaUsuario carregar(ContaUsuarioId id, Email email,
+                                        Senha senha,
                                         StatusContaUsuario status) {
-        return new ContaUsuario(email, senha, status);
+        return new ContaUsuario(id, email, senha, status);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -43,12 +48,18 @@ public class ContaUsuario {
         this.status = assegurarPresenca(novoStatus, "status");
     }
 
+    public void atualizarEmail(Email novoEmail) {
+        this.email = assegurarPresenca(novoEmail, "email");
+    }
+
     public void atualizarSenha(Senha novaSenha) {
         this.senha = assegurarPresenca(novaSenha, "senha");
     }
 
     // Métodos Getters ---------------------------------------------------------
 
+    public ContaUsuarioId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
     public Email email() { return email; }
     public String emailTexto() { return email.valor(); }
     public Senha senha() { return senha; }

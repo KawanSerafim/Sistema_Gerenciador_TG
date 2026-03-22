@@ -11,8 +11,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
-import java.util.UUID;
-
 public class Turma {
     private final TurmaId id;
     private final Curso curso;
@@ -23,7 +21,7 @@ public class Turma {
 
     private Turma(TurmaId id, Curso curso, Disciplina disciplina, Turno turno,
                   PeriodoLetivo periodoLetivo, Professor professorTg) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.curso = assegurarPresenca(curso, "curso");
         this.disciplina = validarDisciplina(disciplina, curso);
         this.turno = validarTurno(turno, curso);
@@ -33,22 +31,17 @@ public class Turma {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static Turma novo(Curso curso, Disciplina disciplina, Turno turno,
+    public static Turma novo(TurmaId id, Curso curso, Disciplina disciplina,
+                             Turno turno,
                              PeriodoLetivo periodoLetivo,
                              Professor professorTg) {
-        return new Turma(new TurmaId(UUID.randomUUID()), curso, disciplina,
-                turno, periodoLetivo, professorTg);
+        return new Turma(id, curso, disciplina, turno, periodoLetivo,
+                professorTg);
     }
 
-    public static Turma carregar(TurmaId id, Curso curso,
-                                 Disciplina disciplina, Turno turno,
-                                 PeriodoLetivo periodoLetivo,
+    public static Turma carregar(TurmaId id, Curso curso, Disciplina disciplina,
+                                 Turno turno, PeriodoLetivo periodoLetivo,
                                  Professor professorTg) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID da turma");
-        }
-
         return new Turma(id, curso, disciplina, turno, periodoLetivo,
                 professorTg);
     }

@@ -11,8 +11,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.Tipo
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
-import java.util.UUID;
-
 public class Curso {
     private final CursoId id;
     private Nome nome;
@@ -21,7 +19,7 @@ public class Curso {
 
     private Curso(CursoId id, Nome nome, ParametrosCurso parametros,
                   Professor coordenador) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.parametros = assegurarPresenca(parametros, "parâmetros");
         this.coordenador = assegurarPresenca(coordenador, "coordenador");
@@ -29,20 +27,14 @@ public class Curso {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static Curso novo(Nome nome, ParametrosCurso parametros,
+    public static Curso novo(CursoId id, Nome nome, ParametrosCurso parametros,
                              Professor coordenador) {
-        return new Curso(new CursoId(UUID.randomUUID()), nome, parametros,
-                coordenador);
+        return new Curso(id, nome, parametros, coordenador);
     }
 
     public static Curso carregar(CursoId id, Nome nome,
                                  ParametrosCurso parametros,
                                  Professor coordenador) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID do curso");
-        }
-
         return new Curso(id, nome, parametros, coordenador);
     }
 

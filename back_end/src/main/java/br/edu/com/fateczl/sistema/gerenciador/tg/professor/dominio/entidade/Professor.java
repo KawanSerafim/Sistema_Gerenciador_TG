@@ -11,8 +11,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
-import java.util.UUID;
-
 public class Professor implements Coorientador {
     private final ProfessorId id;
     private final Nome nome;
@@ -23,7 +21,7 @@ public class Professor implements Coorientador {
     private Professor(ProfessorId id, Nome nome, Matricula matricula,
                       ContaUsuario contaUsuario,
                       CargoProfessor cargo) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
         this.contaUsuario = assegurarPresenca(contaUsuario, "conta de usuário");
@@ -32,22 +30,16 @@ public class Professor implements Coorientador {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static Professor novo(Nome nome, Matricula matricula,
+    public static Professor novo(ProfessorId id, Nome nome, Matricula matricula,
                                  ContaUsuario contaUsuario,
                                  CargoProfessor cargo) {
-        return new Professor(new ProfessorId(UUID.randomUUID()), nome,
-                matricula, contaUsuario, cargo);
+        return new Professor(id, nome, matricula, contaUsuario, cargo);
     }
 
     public static Professor carregar(ProfessorId id, Nome nome,
                                      Matricula matricula,
                                      ContaUsuario contaUsuario,
                                      CargoProfessor cargo) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID do professor");
-        }
-
         return new Professor(id, nome, matricula, contaUsuario, cargo);
     }
 

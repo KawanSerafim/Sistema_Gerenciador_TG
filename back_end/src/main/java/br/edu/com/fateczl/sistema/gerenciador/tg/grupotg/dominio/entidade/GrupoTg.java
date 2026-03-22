@@ -30,7 +30,7 @@ public class GrupoTg {
                     Coorientador coorientador, Curso curso,
                     Disciplina disciplina, TemaTg temaTg, TipoTg tipoTg,
                     List<Aluno> alunos) {
-        this.id = id;
+        this.id = assegurarPresenca(id, "ID");
         this.orientador = orientador;
         this.coorientador = coorientador;
         this.curso = assegurarPresenca(curso, "curso");
@@ -42,21 +42,17 @@ public class GrupoTg {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static GrupoTg novo(Curso curso, Disciplina disciplina,
+    public static GrupoTg novo(GrupoTgId id, Curso curso, Disciplina disciplina,
                                TemaTg temaTg, TipoTg tipoTg,
                                List<Aluno> alunos) {
-        return new GrupoTg(new GrupoTgId(UUID.randomUUID()), null, null,
-                curso, disciplina, temaTg, tipoTg, alunos);
+        return new GrupoTg(id, null, null, curso, disciplina, temaTg, tipoTg,
+                alunos);
     }
 
     public static GrupoTg carregar(GrupoTgId id, Professor orientador,
                                    Coorientador coorientador, Curso curso,
                                    Disciplina disciplina, TemaTg temaTg,
                                    TipoTg tipoTg, List<Aluno> alunos) {
-        if(id == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "ID do grupo");
-        }
         return new GrupoTg(id, orientador, coorientador, curso, disciplina,
                 temaTg, tipoTg, alunos);
     }
