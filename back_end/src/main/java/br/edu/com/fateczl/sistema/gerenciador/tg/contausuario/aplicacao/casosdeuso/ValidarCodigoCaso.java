@@ -1,22 +1,26 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaAtividadeEvento;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GerenciadorCacheCodigo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 
 public class ValidarCodigoCaso {
     private final ContaUsuarioRepositorio repositorio;
     private final GerenciadorCacheCodigo cache;
+    private final PublicadorEventos publicador;
 
     public ValidarCodigoCaso(ContaUsuarioRepositorio repositorio,
-                             GerenciadorCacheCodigo cache) {
+                             GerenciadorCacheCodigo cache,
+                             PublicadorEventos publicador) {
         this.repositorio = repositorio;
         this.cache = cache;
+        this.publicador = publicador;
     }
 
     public record Comando(String email, String codigoInformado) {}
@@ -26,9 +30,12 @@ public class ValidarCodigoCaso {
         String codigoSalvo = cache.buscarCodigo(emailAlvo);
         validarCodigo(codigoSalvo, comando.codigoInformado);
 
-        ContaUsuario conta = procurarEValidarContaUsuario(emailAlvo);
-        conta.atualizarStatus(StatusContaUsuario.ATIVO);
+        ContaUsuario conta = buscarContaUsuario(emailAlvo);
+        conta.confirmarEmail();
+        conta.ativar();
+
         repositorio.salvar(conta);
+        publicador.publicar(new ContaAtividadeEvento(conta.id()));
         cache.removerCodigo(emailAlvo);
     }
 
@@ -40,16 +47,9 @@ public class ValidarCodigoCaso {
         }
     }
 
-    private ContaUsuario procurarEValidarContaUsuario(Email emailAlvo) {
-        ContaUsuario conta = repositorio.buscarPorEmail(emailAlvo)
+    private ContaUsuario buscarContaUsuario(Email emailAlvo) {
+        return repositorio.buscarPorEmail(emailAlvo)
                 .orElseThrow(() -> new GenericaExcecao(
                         CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO));
-
-        if(conta.status() != StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE) {
-            throw new RegraNegocioExcecao(
-                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "conta de " +
-                    "usuário", "VERIFICACAO_CODIGO_PENDENTE");
-        }
-        return conta;
     }
 }
