@@ -18,16 +18,16 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositori
 
 import java.util.UUID;
 
-public class FinalizarCadastroAlunoCaso {
+public class SolicitarAcessoAlunoCaso {
     private final AlunoRepositorio alunoRepositorio;
     private final ContaUsuarioRepositorio contaUsuarioRepositorio;
     private final CriptografoSenhas criptografo;
     private final PublicadorEventos publicador;
 
-    public FinalizarCadastroAlunoCaso(AlunoRepositorio alunoRepositorio,
-                                      ContaUsuarioRepositorio contaUsuarioRepositorio,
-                                      CriptografoSenhas criptografo,
-                                      PublicadorEventos publicador) {
+    public SolicitarAcessoAlunoCaso(AlunoRepositorio alunoRepositorio,
+                                    ContaUsuarioRepositorio contaUsuarioRepositorio,
+                                    CriptografoSenhas criptografo,
+                                    PublicadorEventos publicador) {
         this.alunoRepositorio = alunoRepositorio;
         this.contaUsuarioRepositorio = contaUsuarioRepositorio;
         this.criptografo = criptografo;
