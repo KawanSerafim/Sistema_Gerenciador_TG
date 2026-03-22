@@ -11,9 +11,12 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
+
+import java.util.UUID;
 
 public class FinalizarCadastroAlunoCaso {
     private final AlunoRepositorio alunoRepositorio;
@@ -45,9 +48,11 @@ public class FinalizarCadastroAlunoCaso {
 
         Senha senhaCriptografada = criptografo.criptografar(
                 comando.senhaLimpa());
-        ContaUsuario novaConta = ContaUsuario.novo(email, senhaCriptografada);
+        ContaUsuarioId novaContaId = new ContaUsuarioId(UUID.randomUUID());
+        ContaUsuario novaConta = ContaUsuario.novo(novaContaId, email,
+                senhaCriptografada);
 
-        aluno.atualizarContaUsuario(novaConta);
+        aluno.vincularConta(novaContaId);
 
         contaUsuarioRepositorio.salvar(novaConta);
         alunoRepositorio.salvar(aluno);
@@ -63,7 +68,7 @@ public class FinalizarCadastroAlunoCaso {
     private void validarUnicidadeEmail(Email email) {
         contaUsuarioRepositorio.buscarPorEmail(email).ifPresent(conta -> {
             throw new RegraNegocioExcecao(CodigoErro.RN_002_REGISTRO_DUPLICADO,
-                    "e-mail");
+                    "email");
         });
     }
 
