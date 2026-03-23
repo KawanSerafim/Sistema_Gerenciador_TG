@@ -6,10 +6,13 @@ export function bloquearCaracteresInputNumber(e) {
 }
 
 export function bloquearCaracteresInputNome(e) {
-    // Permite apenas letras, espaços e alguns caracteres especiais (hífen, apóstrofo)
-    const regex = /^[a-záàâãéèêíïóôõöúçñA-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ\s'-]*$/;
+    // Permite teclas de controle (Backspace, setinhas, Tab, etc) e atalhos (Ctrl+C/V)
+    const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+    if (teclasPermitidas.includes(e.key) || e.ctrlKey || e.metaKey) return;
 
-    if (!regex.test(e.target.value + e.key)) {
+    // Se não for letra ou espaço, barra a tecla na hora!
+    const apenasLetras = /^[a-zA-ZÀ-ÿ\s]*$/;
+    if (!apenasLetras.test(e.key)) {
         e.preventDefault();
     }
 }
