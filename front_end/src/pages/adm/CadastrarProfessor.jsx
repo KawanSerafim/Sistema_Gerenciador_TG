@@ -5,80 +5,58 @@ import { FormGroup } from "react-bootstrap";
 
 import { useState } from 'react';
 import { bloquearCaracteresInputNome, validarNome } from '../../utils/utils';
-import { useForm } from '../../hooks/useForm';
+
 import UserNavBar from '../../components/usernavbar/UserNavBar';
 
-const validarCampos = (valores) => {
+// 1. Importações do RHF e Zod
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-    let erros = {};
-    for (const [key, value] of Object.entries(valores)) {
-        //Validações gênericas do campo vazio
-        if (!value || typeof value === "string" && value.trim() === '') {
-            erros[key] = `${key.charAt(0).toUpperCase()}${key.slice(1).toLowerCase()} é um campo obrigatório`
-        }
-        //Validações especificas
-        //Nome
-        else if (key == "nome" && validarNome(value.trim()) == false) {
-            erros.nome = "Nome com caracteres invalidos."
-        }
-        // Matricula
-        else if (key == "matricula" && value.trim().length != 11) {
-            erros.matricula = 'A matrícula tem que ter 11 dígitos.';
-        }
-        //Email
-        else if (key == "email" && !/\S+@\S+\.\S+/.test(value)) {
-            erros.email = 'Formato de email inválido.';
-        }
-        //Senha e ConfirmarSenha
-        else if (key == "confirmarSenha" && value !== valores.senha) {
-            erros.confirmarSenha = "Senha e Confirmar Senha devem ser iguais"
-        }
-        //Cargo
-        else if (key == "cargo" && (value === "" || !value)) {
-            erros.cargo = "Cargo é um campo obrigatório"
-        }
-    }
-
-    return erros;
-}
+// 2. Definição do Schema de Validação
+const professorSchema = z.object({
+    nome: z.string()
+        .min(1, "Nome é um campo obrigatório")
+        .refine(validarNome, "Nome com caracteres inválidos",),
+    matricula: z.string()
+        .length(11, "A matrícula tem que ter 11 dígitos"),
+    email: z.email("Formato de email inválido")
+        .min(1, "Email é um campo obrigatório"),
+    senha: z.string()
+        .min(6, "A senha deve ter no mínimo 6 caracteres"),
+    confirmarSenha: z.string()
+        .min(1, "Confirme sua senha"),
+    cargo: z.string()
+        .min(1, "Cargo é um campo obrigatório") // Garante que não fique no "Selecione..."
+}).refine((data) => data.senha === data.confirmarSenha, {
+    message: "Senha e Confirmar Senha devem ser iguais",
+    path: ["confirmarSenha"]
+});
 
 const CadastrarProfessor = () => {
-    //usar o hook de validação
+    const [exibirSucesso, setExibirSucesso] = useState(false);
 
-    //Usar hook de validação
+    // 3. Configuração do Hook
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(professorSchema),
+        defaultValues: {
+            nome: "", matricula: "", email: "", senha: "", confirmarSenha: "", cargo: ""
+        }
+    });
 
-    const campos = {
-        nome: "",
-        matricula: "",
-        email: "",
-        senha: "",
-        confirmarSenha: "",
-        cargo: ""
-    }
-
-    const { values, errors, handleChange, handleSubmit } = useForm(campos, validarCampos)
-
-    const [cargoSelecionado, setCargoSelecionado] = useState("")
-
-    const handleCargoSelecionado = (e) => {
-        //Troca no estado
-        setCargoSelecionado(e.target.value)
-        //Envia para validação
-        handleChange(e)
-    }
-
-
-    //Estado para o sucesso
-    const [exibirSucesso, setExibirSucesso] = useState(false)
-
-
-    // A função mock que realmente envia os dados caso passe na validação do frontend
+    // 4. Função de envio (Só roda se o formulário estiver 100% válido)
     const enviarParaBackend = (dadosValidados) => {
-        // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
-        console.log("Enviando payload para a API:", dadosValidados);
-        //Ativa alerta de sucesso
+        console.log("Enviando payload para a API Java:", dadosValidados);
+
         setExibirSucesso(true);
-        //Esconde depois de alguns segundos
+        reset(); // Limpa o formulário após o sucesso
+
+        // Esconde o alerta após 5 segundos
         setTimeout(() => setExibirSucesso(false), 5000);
     };
 
@@ -103,15 +81,14 @@ const CadastrarProfessor = () => {
                             type="text"
                             placeholder="Digite o nome completo do professor"
                             name="nome"
-                            value={values.nome}
-                            onChange={handleChange}
+                            {...register("nome")}
                             onKeyDown={bloquearCaracteresInputNome}
                             isInvalid={!!errors.nome}
                             className='bg-white text-black fw-normal fs-5'
 
                         />
                         <Form.Control.Feedback type="invalid">
-                            {errors.nome}
+                            {errors.nome?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -121,12 +98,11 @@ const CadastrarProfessor = () => {
                         <Form.Control
                             type="text" placeholder="Digite a matrícula do professor"
                             name="matricula"
-                            value={values.matricula}
-                            onChange={handleChange}
+                            {...register("matricula")}
                             isInvalid={!!errors.matricula}
                             className='bg-white text-black fw-normal fs-5' />
                         <Form.Control.Feedback type="invalid">
-                            {errors.matricula}
+                            {errors.matricula?.message}
                         </Form.Control.Feedback>
                     </FormGroup>
 
@@ -137,13 +113,12 @@ const CadastrarProfessor = () => {
                             type="email"
                             placeholder="Digite o email do professor"
                             name="email"
-                            value={values.email}
-                            onChange={handleChange}
+                            {...register("email")}
                             isInvalid={!!errors.email}
                             className='bg-white text-black fw-normal fs-5' />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.email}
+                            {errors.email?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -152,12 +127,11 @@ const CadastrarProfessor = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Senha</Form.Label>
                         <Form.Control type="password" placeholder="Digite a senha do professor"
                             name="senha"
-                            value={values.senha}
-                            onChange={handleChange}
+                            {...register("senha")}
                             isInvalid={!!errors.senha} className='bg-white text-black fw-normal fs-5' />
 
                         <Form.Control.Feedback type="invalid">
-                            {errors.senha}
+                            {errors.senha?.message}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -166,12 +140,11 @@ const CadastrarProfessor = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Confirmar Senha</Form.Label>
                         <Form.Control type="password" placeholder="Confirme a senha digitada"
                             name="confirmarSenha"
-                            value={values.confirmarSenha}
-                            onChange={handleChange}
+                            {...register("confirmarSenha")}
                             isInvalid={!!errors.confirmarSenha}
                             className='bg-white text-black fw-normal fs-5' />
                         <Form.Control.Feedback type="invalid">
-                            {errors.confirmarSenha}
+                            {errors.confirmarSenha?.message}
                         </Form.Control.Feedback>
                     </FormGroup>
 
@@ -180,8 +153,7 @@ const CadastrarProfessor = () => {
                         <Form.Label className='text-secondary fs-4 fw-medium'>Cargo</Form.Label>
                         <Form.Select
                             name="cargo"
-                            value={cargoSelecionado}
-                            onChange={handleCargoSelecionado}
+                            {...register("cargo")}
                             isInvalid={!!errors.cargo}
                             className='bg-white text-black fw-normal fs-5'>
                             <option value="" disabled selected>Selecione qual será o cargo do professor</option>
@@ -190,7 +162,7 @@ const CadastrarProfessor = () => {
                             <option value="orientador">Orientador</option>
                         </Form.Select>
                         <Form.Control.Feedback type="invalid">
-                            {errors.cargo}
+                            {errors.cargo?.message}
                         </Form.Control.Feedback>
                     </FormGroup>
 
