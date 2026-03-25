@@ -8,34 +8,34 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.ParametrosCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
 public class Curso {
     private final CursoId id;
     private Nome nome;
     private ParametrosCurso parametros;
-    private Professor coordenador;
+    private ProfessorId coordenadorId;
 
     private Curso(CursoId id, Nome nome, ParametrosCurso parametros,
-                  Professor coordenador) {
+                  ProfessorId coordenadorId) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.parametros = assegurarPresenca(parametros, "parâmetros");
-        this.coordenador = assegurarPresenca(coordenador, "coordenador");
+        this.coordenadorId = assegurarPresenca(coordenadorId, "ID " +
+                "do coordenador");
     }
 
     // Métodos Factory ---------------------------------------------------------
 
     public static Curso novo(CursoId id, Nome nome, ParametrosCurso parametros,
-                             Professor coordenador) {
-        return new Curso(id, nome, parametros, coordenador);
+                             ProfessorId coordenadorId) {
+        return new Curso(id, nome, parametros, coordenadorId);
     }
 
     public static Curso carregar(CursoId id, Nome nome,
                                  ParametrosCurso parametros,
-                                 Professor coordenador) {
-        return new Curso(id, nome, parametros, coordenador);
+                                 ProfessorId coordenadorId) {
+        return new Curso(id, nome, parametros, coordenadorId);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -74,13 +74,10 @@ public class Curso {
         this.parametros = assegurarPresenca(novosParametros, "parâmetros");
     }
 
-    public void atualizarCoordenador(Professor novoCoordenador) {
-        this.coordenador = assegurarPresenca(novoCoordenador, "coordenador");
+    public void atualizarCoordenador(ProfessorId novoCoordenadorId) {
+        this.coordenadorId = assegurarPresenca(novoCoordenadorId,
+                "coordenador");
     }
-
-    // Métodos Getters de Delegação --------------------------------------------
-
-    public ProfessorId idCoordenador() { return coordenador.id(); }
 
     // Métodos Getters ---------------------------------------------------------
 
@@ -89,5 +86,5 @@ public class Curso {
     public Nome nome() { return nome; }
     public String nomeTexto() { return nome.valor(); }
     public ParametrosCurso parametros() { return parametros; }
-    public Professor coordenador() { return coordenador; }
+    public ProfessorId coordenadorId() { return coordenadorId; }
 }
