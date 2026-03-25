@@ -1,132 +1,75 @@
 import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Alert } from "react-bootstrap";
 import UserNavBar from "../../../../components/usernavbar/UserNavBar";
-import { useForm } from "../../../../hooks/useForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { bloquearCaracteresInputNumber } from "../../../../utils/utils";
 
-// Controlador do ano minimo 
-const anoAtual = new Date().getFullYear();
-//Função pura para validação dos campos
-const validarCampos = (valores) => {
-    let erros = {};
-    const anoDigitado = parseInt(valores.ano);
-    // Ano e Semestre
-    if (!valores.ano) {
-        erros.ano = "O ano é obrigatório.";
-    }
-    else if (valores.ano.length !== 4) {
-        erros.ano = "O ano deve ter 4 dígitos.";
-    }
-    else if (anoDigitado < anoAtual || anoDigitado > (anoAtual + 2)) {
-        erros.ano = `O ano deve estar entre ${anoAtual} e ${anoAtual + 2}`
-    }
-    if (!valores.semestre) {
-        erros.semestre = "Selecione o semestre.";
-    }
+
+// RHF e Zod
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { camposSchema } from "./schemas/turmaSchema";
 
 
-    // Validação das turmas: 
-    // Verifica se todas as 6 combinações (3 turnos x 2 disciplinas) foram preenchidas
-    const disciplinas = ["TG1", "TG2"];
-    const turnos = ["Noite", "Tarde", "Manhã"];
-    let faltamProfessores = false;
 
-    turnos.forEach(t => {
-        disciplinas.forEach(d => {
-            const chave = `${d}-${t}`;
-            if (!valores.turmas[chave]) {
-                faltamProfessores = true;
-            }
-        });
-    });
-
-    if (faltamProfessores) {
-        erros.turmas = "Selecione professores para todas as turmas listadas.";
-    }
-
-    return erros;
-}
-
+//Mock de curso, fica de fora pois é dado constante
+const curso = {
+    turnos: ["Noite", "Tarde", "Manhã"],
+    disciplinas: ["TG1", "TG2"]
+};
 
 const CadastrarTurma = () => {
     //TODO: Trocar mocks pelos dados do backend
-
+    
     //Estado para o sucesso
     const [exibirSucesso, setExibirSucesso] = useState(false)
+    
+    const todosProfessores = ["Cristina", "Luciano", "Antonio", "Rogerio", "Colevati"];
 
-
-    //Usar hook de validação
-
-    const campos = {
-        ano: anoAtual.toString(),
-        semestre: "",
-        turmas: {}
-    }
-
-    const { values, errors, handleChange, handleSubmit } = useForm(campos, validarCampos)
-
-    //Mock de curso
-    const curso = {
-        id: 1,
-        nome: "Analise e desenvolvimento de sistemas",
-        coordenador: "Luciano",
-        turnos: ["Noite", "Tarde", "Manhã"],
-        disciplinas: ["TG1", "TG2"]
-    }
-
-    const optionsTurnos = curso.turnos
-    const optionsDisciplinas = curso.disciplinas
-
-    // Professores e turmas
-    const [profUnico, setProfUnico] = useState("")
-    //Controla o estado do btn radio de 1 prof apenas
-    const [apenasUmProf, setApenasUmProf] = useState(false)
-    //Mock de professores, dados reais viram do backend
-    const todosProfessores = ["Cristina", "Luciano", "Antonio", "Rogerio", "Colevati"]
-
-    // --- FUNÇÕES DE ATUALIZAÇÃO ---
-    const atualizarTurmasNoHook = (novoObjetoTurmas) => {
-        // Simula o evento que o hook de validação do form espera
-        handleChange({
-            target: {
-                name: "turmas",
-                value: novoObjetoTurmas
+    //Conf do RHF
+    const {
+        register, 
+        handleSubmit,
+        setValue,
+        control,
+        formState: {errors},
+        reset, 
+        } = useForm({
+            resolver: zodResolver(camposSchema),
+            defaultValues: {
+                ano: new Date().getFullYear(),
+                semestre: "",
+                turmas: {}
             }
-        });
-    };
-    //Quando um usuário muda o prof no select do topo
-    const handleProfessorUnico = (prof) => {
-        setProfUnico(prof);
-        //Se esta ativo preenche todos os campos com o prof selecionado
-        if (apenasUmProf) {
-            const novaTurma = {}
-            optionsTurnos.forEach(turno => {
-                optionsDisciplinas.forEach(disciplina => {
-                    novaTurma[`${disciplina}-${turno}`] = prof;
+        })
+    
+    //Observadores
+    // Checkbox
+    const apenasUmProf = useWatch({
+        control,
+        name: "checkUnico"
+    });
+    //Select do topo
+    const profUnico = useWatch({
+        control,
+        name:"profUnico"});
+    //Valores dos selects individuais
+    const turmasWatched = useWatch({
+        control,
+        name: "turmas"});
+
+    //Efeito para aplicar professor unico em tempo real, semnpre que os observadores forem acionados
+    useEffect(() => {
+        if (apenasUmProf && profUnico){
+            const novaConfiguracao = {};
+            curso.turnos.forEach(t => {
+                curso.disciplinas.forEach(d => {
+                    novaConfiguracao[`${d}-${t}`] = profUnico
                 })
-            });
-            atualizarTurmasNoHook(novaTurma);
+            })
+            //Atualiza o RHF
+            setValue("turmas", novaConfiguracao,  {shouldValidate: true});
         }
-    }
-
-    //Função para o checkbox "Selecionar Um professor para todas as disciplinas"
-    const handleUmProfessorParaTodas = (e) => {
-        const checado = e.target.checked;
-        setApenasUmProf(checado);
-        // Se marcou e ja tem profGlobal aplica todos na hora
-        if (checado && profUnico) {
-            handleProfessorUnico(profUnico);
-        }
-    }
-
-    //Função para os selects individuais
-    const handleSelecionarProfIndividual = (chaveTurma, prof) => {
-        const novaTurma = {
-            ...values.turmas,
-            [chaveTurma]: prof
-        }
-        atualizarTurmasNoHook(novaTurma)
-    }
+    }, [apenasUmProf, profUnico, setValue])
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
@@ -134,6 +77,8 @@ const CadastrarTurma = () => {
         console.log("Enviando payload para a API:", dadosValidados);
         //Ativa alerta de sucesso
         setExibirSucesso(true);
+        //Limpa o form após sucesso
+        reset()
         //Esconde depois de alguns segundos
         setTimeout(() => setExibirSucesso(false), 5000);
     };
@@ -167,20 +112,16 @@ const CadastrarTurma = () => {
                                     type="number"
                                     name="ano"
                                     title="Ano da turma"
-                                    value={values.ano}
-                                    onChange={handleChange}
+                                    {...register("ano")}
                                     //Usa função do utils para bloquear caracteres
                                     onKeyDown={bloquearCaracteresInputNumber}
                                     isInvalid={!!errors.ano}
-                                    //Impede que o usuario seleione anos anteriores ao atual
-                                    min={anoAtual}
-                                    max={anoAtual + 3}
                                     className="fw-medium bg-white border-secondary fs-5"
                                     style={{ maxWidth: '6.6rem' }}
                                 />
                                 {/* Feedback de erro */}
                                 <Form.Control.Feedback type="invalid">
-                                    {errors.ano}
+                                    {errors.ano?.message}
                                 </Form.Control.Feedback>
 
 
@@ -189,9 +130,7 @@ const CadastrarTurma = () => {
                         {/* Coluna do semestre */}
                         {/* Mobile=1, tablet=2, desktop=4 */}
                         <Col xs={12} md={6} lg={3}>
-                            <FormGroup controlId="formSemestre"
-                                value={values.semestre}
-                            >
+                            <FormGroup >
                                 <FormLabel className='text-secondary fs-4 fw-bold d-block' title="Semestre da turma">Semestre</FormLabel>
                                 <div className="d-flex gap-3 pt-2">
                                     <Form.Check
@@ -201,9 +140,8 @@ const CadastrarTurma = () => {
                                         name="semestre"
                                         type="radio"
                                         value="1"
-                                        onChange={handleChange}
+                                        {...register("semestre")}
                                         isInvalid={!!errors.semestre}
-                                        checked={values.semestre === "1"}
                                         className="fw-bold fs-5"
                                     />
                                     <Form.Check
@@ -213,13 +151,12 @@ const CadastrarTurma = () => {
                                         name="semestre"
                                         type="radio"
                                         value="2"
-                                        onChange={handleChange}
+                                        {...register("semestre")}
                                         isInvalid={!!errors.semestre}
-                                        checked={values.semestre === "2"}
                                         className="fw-bold fs-5"
                                     />
                                 </div>
-                                {errors.semestre && <small className="text-danger small mt-1">{errors.semestre}</small>}
+                                {errors.semestre && <small className="text-danger small mt-1">{errors.semestre?.message}</small>}
 
                             </FormGroup>
                         </Col>
@@ -231,18 +168,16 @@ const CadastrarTurma = () => {
                             title="Opção: Unico professor para todas as turmas"
                             type="checkbox"
                             id="checkUnicoProfessor"
-                            onChange={(e) => handleUmProfessorParaTodas(e)}
+                            {...register("checkUnico")}
                             className="mb-2 fw-medium text-secondary text-nowrap fs-5"
                         />
 
                         {/* Selecionar um Professor para todas as disciplina */}
                         <FormSelect className={apenasUmProf ? 'bg-white text-black fw-medium fs-5 w-100' : 'bg-dark-subtle text-muted fw-medium fs-5 w-100'}
-                            value={profUnico}
+                            {...register("profUnico")}
                             title={apenasUmProf ? "Selecionar professor unico para todas as turmas" : "Clique na opção ao lado para liberar a seleção"}
-                            onChange={(e) => handleProfessorUnico(e.target.value)}
                             //Enquanto a opção de apenas 1 prof não for selecionada o select esta desativado
                             disabled={!apenasUmProf}
-
                         >
                             <option value="" disabled selected> Selecione o professor de TG</option>
                             {todosProfessores.map((professor) => (
@@ -255,14 +190,12 @@ const CadastrarTurma = () => {
                     </div>
                     <hr className="my-4" />
                     {/* Linha 3: Opções de disciplinas e turnos */}
-                    {optionsTurnos.map((turno) => (
+                    {curso.turnos.map((turno) => (
                         <Row key={turno} className="gy-3 mb-3">
                             {/* Dentro da linha itera as disciplinas (colunas) */}
-                            {optionsDisciplinas.map((disciplina) => {
+                            {curso.disciplinas.map((disciplina) => {
                                 //id da turma para o estado
                                 const chaveTurma = `${disciplina}-${turno}`;
-                                //Verifica se existe erro em turma e se falta esse professor em especifico
-                                const campoEstaInvalido = !!errors.turmas && !values.turmas[chaveTurma];
 
                                 return (
                                     <Col md={6} key={`${chaveTurma}`}>
@@ -272,12 +205,12 @@ const CadastrarTurma = () => {
                                                 {disciplina} {turno}
                                             </FormLabel>
                                             <FormSelect
-                                                isInvalid={campoEstaInvalido}
                                                 title={"Selecione o professor da turma " + disciplina + ' ' + turno}
                                                 className='bg-white text-black border-secondary-subtle fw-medium fs-5'
-                                                //Garante que o valor venha do estado
-                                                value={values.turmas[chaveTurma] || ""}
-                                                onChange={(e) => handleSelecionarProfIndividual(chaveTurma, e.target.value)}
+                                                {...register(`turmas.${chaveTurma}`)}
+                                                //Garante que o valor venha do observador
+                                                value={turmasWatched?.[chaveTurma] || ""}
+                                                isInvalid={!!errors.turmas}
                                             >
                                                 <option value="" disabled>Selecione o professor de TG</option>
                                                 {todosProfessores.map((professor) => (
@@ -294,9 +227,9 @@ const CadastrarTurma = () => {
                     ))}
                     {/* Mensagem de Erro Geral para as Turmas */}
                     {errors.turmas && (
-                        <div className="text-danger text-center mt-2 small fw-bold">
-                            {errors.turmas}
-                        </div>
+                        <Alert variant="danger" className="text-center py-2">
+                            {errors.turmas.message}
+                        </Alert>
                     )}
 
 
