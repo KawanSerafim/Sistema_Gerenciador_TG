@@ -5,25 +5,34 @@ import { FormControl } from 'react-bootstrap';
 import UserNavBar from '../../components/usernavbar/UserNavBar';
 
 import { useState } from "react";
-import { useForm } from '../../hooks/useForm';
 
-//Função de validacao
+//Zod e RHF para validação
+import {z} from "zod"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-const validarCampos = (valores) => {
-    let erros = {};
-    if (!valores.codigo) erros.codigo = "Codigo é um campo obrigatório"
-    return erros;
-}
+
+//Schema de validação
+const camposSchema = z.object({
+    codigo: z.string().min(1, "Codigo é um campo obrigatório")
+})
 
 const ConfirmarEmail = () => {
-
-    const campos = {
-        codigo: ""
-    }
-    const { values, errors, handleChange, handleSubmit } = useForm(campos, validarCampos)
-
     //Estado para o sucesso
     const [exibirSucesso, setExibirSucesso] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors } 
+    } = useForm({
+        resolver: zodResolver(camposSchema),
+        defaultValues: {
+            codigo: ""
+        }
+    })
+
+
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
@@ -58,14 +67,13 @@ const ConfirmarEmail = () => {
                         type="text"
                         placeholder="Digite o código enviado em seu email"
                         name="codigo"
-                        value={values.codigo}
-                        onChange={handleChange}
+                       {...register("codigo")}
                         isInvalid={!!errors.codigo}
                         className='text-black fw-bold fs-4 w-75 mb-4 text-center'
                     />
                     {/* Feedback de erro */}
-                    <Form.Control.Feedback type="invalid">
-                        {errors.codigo}
+                    <Form.Control.Feedback type="invalid" className="text-danger fw-bold text-center mb-4">
+                        {errors.codigo?.message}
                     </Form.Control.Feedback>
 
                     <Button variant="primary" type="submit" size="lg" className='fw-bold fs-4 text-white py-3 rounded-3'>
