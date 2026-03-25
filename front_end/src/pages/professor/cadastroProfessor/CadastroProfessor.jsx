@@ -14,9 +14,8 @@ const professorSchema = z.object({
         .refine(validarNome, "Nome com caracteres inválidos"),
     matricula: z.string()
         .length(11, "A matrícula tem que ter 11 dígitos"),
-    email: z.string()
-        .min(1, "Email é um campo obrigatório")
-        .email("Formato de email inválido"),
+    email: z.email("Formato de email inválido")
+        .min(1, "Email é um campo obrigatório"),
     senha: z.string()
         .min(6, "A senha deve ter no mínimo 6 caracteres"),
     confirmarSenha: z.string()
