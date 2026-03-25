@@ -4,7 +4,7 @@ import "./cadastrarCurso.css"
 import UserNavBar from "../../components/usernavbar/UserNavBar";
 
 // Zod e RHF para validações
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {z} from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -61,7 +61,6 @@ const {
     register,
     handleSubmit,
     control,
-    watch,
     reset,
     formState: { errors }
 } = useForm({
@@ -89,7 +88,10 @@ const {
     });
 
     //Observador de mudanças no array tipoTG, para saber quais inputs habilitar 
-    const tiposTGWatched = watch("tiposTG");
+    const tiposTGWatched = useWatch({
+        control,
+        name: "tiposTG"
+    });
 
 
     const enviarParaBackend = (dadosValidados) => {
@@ -270,7 +272,7 @@ const {
                     </FormGroup>
                 </Form>
                 {exibirSucesso && (
-                    <Alert variant="sucess" onClose={() => setExibirSucesso(false)} dismissible className="mt-3 fw-bold shadow-sm" >
+                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3 fw-bold shadow-sm" >
                         Curso cadastrado com sucesso!
                     </Alert>
                 )}
