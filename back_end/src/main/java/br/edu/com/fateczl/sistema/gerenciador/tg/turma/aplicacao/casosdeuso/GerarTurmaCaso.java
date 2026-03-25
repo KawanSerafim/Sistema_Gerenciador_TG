@@ -3,14 +3,16 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Ano;
@@ -63,11 +65,30 @@ public class GerarTurmaCaso {
                 new Semestre(comando.semestre()));
 
         Professor coordenador = buscarEValidarCoordenador(emailCoordenador);
-        Curso curso = buscarCursoDoCoordenador(coordenador);
+        Curso curso = buscarCursoDoCoordenador(coordenador.id());
         Professor professorTg = buscarEValidarProfessorTg(matriculaProfessorTg);
-        Turma novaTurma = Turma.novo(new TurmaId(UUID.randomUUID()), curso,
-                comando.disciplina(), comando.turno(), periodoLetivo,
-                professorTg);
+
+        if(!curso.validarDisciplina(comando.disciplina())) {
+            throw new ValidacaoExcecao(CodigoErro.VD_007_CAMPO_NAO_SUPORTADO,
+                    "disciplina", "o curso associado não o possui");
+        }
+
+        if(!curso.validarTurno(comando.turno())) {
+            throw new ValidacaoExcecao(CodigoErro.VD_007_CAMPO_NAO_SUPORTADO,
+                    "turno", "o curso associado não o possui");
+        }
+
+        validarUnicidadeTurma(curso.id(), comando.disciplina(),
+                comando.turno(), periodoLetivo);
+
+        Turma novaTurma = Turma.novo(
+                new TurmaId(UUID.randomUUID()),
+                curso.id(),
+                comando.disciplina(),
+                comando.turno(),
+                periodoLetivo,
+                professorTg.id()
+        );
 
         turmaRepositorio.salvar(novaTurma);
 
@@ -105,32 +126,25 @@ public class GerarTurmaCaso {
                         CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO, "professor" +
                         " de TG"));
 
-        if(!professorTg.podeSerCoordenadorCurso()) {
+        if(!professorTg.podeSerProfessorTg()) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "professor",
                     "professor de TG");
         }
-
-        if(professorTg.statusContaUsuario() != StatusContaUsuario.ATIVO) {
-            throw new RegraNegocioExcecao(
-                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
-                    "conta de usuário do professor de TG",
-                    "conta ativa");
-        }
         return professorTg;
     }
 
-    private Curso buscarCursoDoCoordenador(Professor coordenador) {
-        return cursoRepositorio.buscarPorCoordenador(coordenador)
+    private Curso buscarCursoDoCoordenador(ProfessorId coordenadorId) {
+        return cursoRepositorio.buscarPorCoordenadorId(coordenadorId)
                 .orElseThrow(() -> new GenericaExcecao(
                         CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO,
                         "curso associado a este coordenador"));
     }
 
-    private void validarUnicidadeTurma(Curso curso, Disciplina disciplina,
+    private void validarUnicidadeTurma(CursoId cursoId, Disciplina disciplina,
                                        Turno turno,
                                        PeriodoLetivo periodoLetivo) {
-        turmaRepositorio.buscarPorCursoEDisciplinaETurnoEAnoESemestre(curso,
+        turmaRepositorio.buscarPorCursoIdEDisciplinaETurnoEAnoESemestre(cursoId,
                 disciplina, turno, periodoLetivo).ifPresent(turma -> {
                     throw new RegraNegocioExcecao(
                             CodigoErro.RN_002_REGISTRO_DUPLICADO, "turma");
