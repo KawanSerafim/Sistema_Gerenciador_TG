@@ -4,60 +4,67 @@ import AddIcon from "../../../assets/add.svg"
 import CancelIcon from "../../../assets/Cancel.svg"
 import { useState } from "react"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
-import { useForm } from "../../../hooks/useForm"
+
+//RHF e Zod
+
+import { useFieldArray, useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { camposSchema } from "./marcarBancaSchema"
 
 
-// Função de validação fora do componente
-const validarCampos = (valores) => {
-    let erros = {};
-    if (!valores.grupoId) erros.grupoId = "Selecione um grupo.";
-    if (valores.membros.length === 0) erros.membros = "Adicione pelo menos um membro à banca.";
-    if (!valores.data) erros.data = "A data é obrigatória.";
-    if (!valores.hora) erros.hora = "A hora é obrigatória.";
-    if (!valores.local.trim()) erros.local = "O local é obrigatório.";
-    return erros;
-};
+// Mocks
+const grupos = [
+    { grupoId: 1, tema: "Os riscos do vibe code", tipoTG: "Artigo", disciplina: "TG1", alunos: [{ nome: "João" }, { nome: "Maria" }] },
+    { grupoId: 2, tema: "Inteligência Artificial como auxiliadora da gestão financeira", tipoTG: "Desenvolvimento de Software", disciplina: "TG2", alunos: [{ nome: "Carlos" }, { nome: "Ana" }] },
+    { grupoId: 3, tema: "Cibersegurança na era da Inteligência Artificial", tipoTG: "Monografia", disciplina: "TG2", alunos: [{ nome: "Pedro" }, { nome: "Lucas" }] }
+];
+
+const professores = [
+    { id: 1, nome: "Prof. Luciano" },
+    { id: 2, nome: "Profa. Cristina" },
+    { id: 3, nome: "Prof. Colevati" }
+];
 
 const MarcarBanca = () => {
 
     // Validações
     const [exibirResultado, setExibirResultado] = useState(false)
     const [resultado, setResultado] = useState("");
-    // Configuração do Hook de Validação
-    const camposIniciais = {
-        grupoId: "",
-        membros: [],
-        data: "",
-        hora: "",
-        local: ""
-    };
 
-    const { values, errors, handleChange, handleSubmit } = useForm(camposIniciais, validarCampos)
+    const {
+        register,
+        control,
+        formState: {errors},
+        handleSubmit, 
+        getValues,
+        setValue
+    } = useForm({
+        resolver: zodResolver(camposSchema),
+        defaultValues: {
+            grupoId: "",
+            membros: [],
+            data: "",
+            hora: "",
+            local: ""
+        }
+    })
 
-    // Mocks
-    const grupos = [
-        { grupoId: 1, tema: "Os riscos do vibe code", tipoTG: "Artigo", disciplina: "TG1", alunos: [{ nome: "João" }, { nome: "Maria" }] },
-        { grupoId: 2, tema: "Inteligência Artificial como auxiliadora da gestão financeira", tipoTG: "Desenvolvimento de Software", disciplina: "TG2", alunos: [{ nome: "Carlos" }, { nome: "Ana" }] },
-        { grupoId: 3, tema: "Cibersegurança na era da Inteligência Artificial", tipoTG: "Monografia", disciplina: "TG2", alunos: [{ nome: "Pedro" }, { nome: "Lucas" }] }
-    ];
+    const {fields: membrosFields, append, remove} = useFieldArray({
+        control,
+        name: "membros"
+    })
 
-    const professores = [
-        { id: 1, nome: "Prof. Luciano" },
-        { id: 2, nome: "Profa. Cristina" },
-        { id: 3, nome: "Prof. Colevati" }
-    ];
-
-    // Estados locais temporários (apenas para digitar antes de adicionar)
-    const [profSelecionado, setProfSelecionado] = useState("");
-    const [nomeExterno, setNomeExterno] = useState("");
-    const [emailExterno, setEmailExterno] = useState("");
-    const [telExterno, setTelExterno] = useState("");
+    const grupoId = useWatch({
+        control,
+        name: "grupoId",
+    })
 
     // Deriva o grupo selecionado a partir do valor no hook
-    const selectedGrupo = grupos.find(g => g.grupoId === parseInt(values.grupoId));
+    const selectedGrupo = grupos.find(g => g.grupoId === parseInt(grupoId));
 
     // Colunas das Tabelas
     const colunaTabelaGrupo = [{ header: "Alunos do Grupo", accessor: "nome" }];
+
     const colunaTabelaMembro = [
         { header: "Membro da Banca", accessor: "nome" },
         { header: "Tipo", accessor: "tipoLabel" },
@@ -70,7 +77,14 @@ const MarcarBanca = () => {
                         alt="Remover"
                         title={"Clique aqui para remover " + row.nome + " da banca"}
                         style={{ cursor: 'pointer', width: '30px' }}
-                        onClick={() => handleRemoverMembro(row.id)}
+                        onClick={() => {
+                            // 1. Procura a posição real (0, 1, 2...) deste membro específico dentro do array do RHF
+                            const indexReal = membrosFields.findIndex(membro => membro.id === row.id);
+                            // 2. Se encontrou (index diferente de -1), manda o RHF apagar aquela posição exata
+                            if (indexReal !== -1) {
+                                remove(indexReal);
+                            }
+                        }}
                     />
                 </div>
             )
@@ -78,53 +92,59 @@ const MarcarBanca = () => {
     ];
 
     const handleAddProfessor = () => {
-        if (profSelecionado) {
-            const prof = professores.find(i => i.id === parseInt(profSelecionado));
+        const profId = getValues("profSelecionado")
+
+        if (profId) {
+
+            const prof = professores.find(i => i.id === parseInt(profId));
+            // Usa getValues para verificar o array atual
+            const membrosAtuais = getValues("membros");
+
             //Evita duplicatas
-            if (prof && !values.membros.some(membro => membro.id === prof.id)) {
-                const novosMembros = [...values.membros, {
-                    id: prof.id,
-                    tipo: "professor",
-                    tipoLabel: "Professor Interno",
-                    nome: prof.nome
-                }];
-                handleChange({ target: { name: "membros", value: novosMembros } });
+            if (prof && !membrosAtuais.some(membro => membro.id === prof.id)) {
+                append(
+                    {
+                        id: prof.id,
+                        tipo: "professor",
+                        tipoLabel: "Professor Interno",
+                        nome: prof.nome
+                    }
+                );
                 //Limpa o select
-                setProfSelecionado("")
+                setValue("profSelecionado", "")
 
             }
         }
     }
 
     const handleAddMembroExterno = () => {
-        if (nomeExterno.trim() && emailExterno.trim() !== "") {
-            const jaExiste = values.membros.some(membro => membro.email === emailExterno);
+        const nome = getValues("nomeExterno");
+        const email = getValues("emailExterno");
+        const telefone = getValues("telExterno");
+
+
+        if (nome.trim() && email.trim() !== "") {
+            const membrosAtuais = getValues("membros");
+            const jaExiste = membrosAtuais.some(membro => membro.email === email);
+
             if (!jaExiste) {
-                const novosMembros = [...values.membros, {
-                    id: emailExterno, // Usando email como ID temporário
+                append({
+                    id: email, // Usando email como ID temporário
                     tipo: "membroExterno",
                     tipoLabel: "Membro Externo",
-                    nome: nomeExterno,
-                    email: emailExterno,
-                    telefone: telExterno
-                }];
-                handleChange({ target: { name: 'membros', value: novosMembros } });
-
+                    nome: nome,
+                    email: email,
+                    telefone: telefone
+                });
                 // Limpa os inputs
-                setNomeExterno("");
-                setEmailExterno("");
-                setTelExterno("");
+                setValue("nomeExterno", "");
+                setValue("emailExterno", "");
+                setValue("telExterno", "");
             }
         } else {
             setResultado("Nome e e-mail do membro externo são obrigatórios.")
             setExibirResultado(true)
         }
-    }
-
-
-    const handleRemoverMembro = (id) => {
-        const novosMembros = values.membros.filter((membro) => membro.id !== id);
-        handleChange({ target: { name: "membros", value: novosMembros } })
     }
 
     const enviarParaBackend = (dadosValidados) => {
@@ -154,8 +174,7 @@ const MarcarBanca = () => {
                             <Form.Select
                                 title="Selecione o grupo"
                                 name="grupoId"
-                                value={values.grupoId}
-                                onChange={handleChange}
+                                {...register("grupoId")}
                                 isInvalid={!!errors.grupoId}
                                 className="w-50 bg-white text-black fw-normal fs-5 fs-5"
                             >
@@ -168,7 +187,7 @@ const MarcarBanca = () => {
                             </Form.Select>
                         </div>
 
-                        {errors.grupoId && <div className="text-danger text-center fw-bold mt-1">{errors.grupoId}</div>}
+                        {errors.grupoId && <div className="text-danger text-center fw-bold mt-1">{errors.grupoId?.message}</div>}
 
                     </Form.Group>
 
@@ -194,8 +213,7 @@ const MarcarBanca = () => {
                         <Form.Label className="m-0 fw-bold text-secondary fs-5" style={{ width: "130px" }}>Professor: </Form.Label>
                         <Form.Select
                             title="Selecione os professores que participaram da banca"
-                            value={profSelecionado}
-                            onChange={(e) => setProfSelecionado(e.target.value)}
+                            {...register("profSelecionado")}
                             className="bg-white text-black fw-normal fs-5 flex-grow-1"
                         >
                             <option value="" disabled selected>Selecione o professor</option>
@@ -221,24 +239,21 @@ const MarcarBanca = () => {
                             type="text"
                             title="Digite o nome completo do membro externo"
                             placeholder="Nome completo"
-                            value={nomeExterno}
-                            onChange={(e) => setNomeExterno(e.target.value)}
+                            {...register("nomeExterno")}
                             className="bg-white text-black fw-normal fs-5"
                         />
                         <Form.Control
                             type="email"
                             title="Digite o email do membro externo"
                             placeholder="Email"
-                            value={emailExterno}
-                            onChange={(e) => setEmailExterno(e.target.value)}
+                            {...register("emailExterno")}
                             className="bg-white text-black fw-normal fs-5 flex-grow-1 "
                         />
                         <Form.Control
                             type="tel"
                             title="Digite o nome telefone do membro externo"
                             placeholder="Telefone"
-                            value={telExterno}
-                            onChange={(e) => setTelExterno(e.target.value)}
+                            {...register("telExterno")}
                             className="bg-white text-black fw-normal fs-5 flex-grow-1 "
                         />
                         <Button variant="link" className="p-0 text-primary"
@@ -252,11 +267,12 @@ const MarcarBanca = () => {
                     {/* Tabela membros */}
                     <div className="mb-4">
 
-                        {values.membros.length > 0 ? (
+                        {membrosFields.length > 0 ? (
                             <div className="mb-4">
                                 <TableComponent
                                     colunas={colunaTabelaMembro}
-                                    dados={values.membros}
+                                    //Passa o fields do useFieldArray
+                                    dados={membrosFields}
                                 />
                             </div>
                         ) : (
@@ -264,7 +280,7 @@ const MarcarBanca = () => {
                                 Nenhum membro adicionado à banca ainda.
                             </div>
                         )}
-                        {errors.membros && <div className="text-danger text-center fw-bold mt-1">{errors.membros}</div>}
+                        {errors.membros && <div className="text-danger text-center fw-bold mt-1">{errors.membros?.message}</div>}
                     </div>
                     <hr className="my-4 border-secondary" />
                     {/* Horario e Local */}
@@ -277,12 +293,12 @@ const MarcarBanca = () => {
                                     type="date"
                                     name="data"
                                     title="Digite a data da banca"
-                                    value={values.data}
-                                    onChange={handleChange}
+                                   {...register("data")}
+                                   
                                     isInvalid={!!errors.data}
                                     className="bg-white text-black fw-normal fs-5 "
                                 />
-                                <Form.Control.Feedback type="invalid">{errors.data}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{errors.data?.message}</Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                         <Col md={3}>
@@ -292,12 +308,11 @@ const MarcarBanca = () => {
                                     type="time"
                                     name="hora"
                                     title="Digite a hora da banca"
-                                    value={values.hora}
-                                    onChange={handleChange}
+                                    {...register("hora")}
                                     isInvalid={!!errors.hora}
                                     className="bg-white text-black fw-normal fs-5 "
                                 />
-                                <Form.Control.Feedback type="invalid">{errors.hora}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{errors.hora?.message}</Form.Control.Feedback>
                             </Form.Group>
                         </Col>
 
@@ -310,12 +325,11 @@ const MarcarBanca = () => {
                                     name="local"
                                     title="Digite a o local da banca"
                                     placeholder="Ex: Sala 111 ou Link Teams"
-                                    value={values.local}
-                                    onChange={handleChange}
+                                   {...register("local")}
                                     isInvalid={!!errors.local}
                                     className="bg-white text-black fw-normal fs-5 "
                                 />
-                                <Form.Control.Feedback type="invalid">{errors.local}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{errors.local?.message}</Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                     </Row>
