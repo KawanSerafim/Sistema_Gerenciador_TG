@@ -12,9 +12,11 @@ export const camposSchema = z.object({
 
     semestre: z.string()
         .min(1, "Selecione o semestre"),
+
     // Objeto dinâmico onde as chaves serão "Disciplina-Turno" e o valor o Nome do Prof.
     turmas: z.record(z.string(), z.string().min(1, "Obigatório"))
-}).superRefine((dados, ctx) => {
+    })
+    .superRefine((dados, ctx) => {
     //Pega todas as opções de disciplinas e turnos do curso
     const disciplinas = ["TG1", "TG2"];
     const turnos = ["Noite", "Tarde", "Manhã"];

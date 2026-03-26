@@ -24,6 +24,7 @@ const cursoSchema = z.object({
         qntMax: z.coerce.number().min(0).optional(),
     }))
     .superRefine((tgs, ctx) => {
+        //ctx = contexto, permite enviar mais de 1 msg de erro
         // Filtra apenas os ativos para fazer as validações
         const ativos = tgs.filter(tg => tg.ativo);
 
