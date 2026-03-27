@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ValidadorComposicaoGrupoTgServico {
+public class ValidadorComposicaoGrupoTg {
 
     private final TurmaRepositorio turmaRepositorio;
 
-    public ValidadorComposicaoGrupoTgServico(
+    public ValidadorComposicaoGrupoTg(
             TurmaRepositorio turmaRepositorio
     ) {
         this.turmaRepositorio = turmaRepositorio;
