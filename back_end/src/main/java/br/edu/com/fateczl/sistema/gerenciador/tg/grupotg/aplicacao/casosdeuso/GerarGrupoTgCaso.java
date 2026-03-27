@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.StatusAluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
@@ -8,7 +9,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
@@ -17,26 +17,33 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoT
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servico.ValidadorComposicaoGrupoTg;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class GerarGrupoTgCaso {
     private final GrupoTgRepositorio grupoTgRepositorio;
     private final CursoRepositorio cursoRepositorio;
     private final AlunoRepositorio alunoRepositorio;
+    private final ValidadorComposicaoGrupoTg validadorComposicao;
 
-    public GerarGrupoTgCaso(GrupoTgRepositorio grupoTgRepositorio,
-                            CursoRepositorio cursoRepositorio,
-                            AlunoRepositorio alunoRepositorio) {
+    public GerarGrupoTgCaso(
+            GrupoTgRepositorio grupoTgRepositorio,
+            CursoRepositorio cursoRepositorio,
+            AlunoRepositorio alunoRepositorio,
+            ValidadorComposicaoGrupoTg validadorComposicao
+    ) {
         this.grupoTgRepositorio = grupoTgRepositorio;
         this.cursoRepositorio = cursoRepositorio;
         this.alunoRepositorio = alunoRepositorio;
+        this.validadorComposicao = validadorComposicao;
     }
 
     public record Comando(
             String idCurso,
-            Disciplina disciplina,
+            Set<Disciplina> disciplinas,
             String tema,
             String descricaoTema,
             TipoTg tipoTg,
@@ -50,8 +57,23 @@ public class GerarGrupoTgCaso {
         Curso curso = buscarCurso(comando.idCurso());
         List<Aluno> alunos = buscarEValidarAlunos(comando.matriculasAlunos());
 
-        GrupoTg novoGrupo = GrupoTg.novo(new GrupoTgId(UUID.randomUUID()),
-                curso, comando.disciplina(), tema, comando.tipoTg(), alunos);
+        validadorComposicao.validar(
+                curso,
+                comando.tipoTg(),
+                comando.disciplinas(),
+                alunos
+        );
+
+        List<AlunoId> alunoIds = alunos.stream().map(Aluno::id).toList();
+
+        GrupoTg novoGrupo = GrupoTg.novo(
+                new GrupoTgId(UUID.randomUUID()),
+                curso.id(),
+                comando.disciplinas(),
+                tema,
+                comando.tipoTg(),
+                alunoIds
+        );
 
         grupoTgRepositorio.salvar(novoGrupo);
     }
@@ -84,12 +106,6 @@ public class GerarGrupoTgCaso {
                 throw new RegraNegocioExcecao(
                         CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "aluno " +
                         aluno.nomeTexto(), "CADASTRADO");
-            }
-
-            if(aluno.statusContaUsuario() != StatusContaUsuario.ATIVO) {
-                throw new RegraNegocioExcecao(
-                        CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "conta " +
-                        "do aluno", "ATIVO");
             }
         }
         return alunosEncontrados;
