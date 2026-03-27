@@ -8,7 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
 import java.util.*;
 
@@ -18,23 +18,24 @@ public class Aluno {
     private final Matricula matricula;
     private ContaUsuarioId contaUsuarioId;
     private StatusAluno status;
-    private List<Turma> turmas;
+    private List<TurmaId> turmasIds;
 
     private Aluno(AlunoId id, Nome nome, Matricula matricula,
                   ContaUsuarioId contaUsuarioId, StatusAluno status,
-                  List<Turma> turmas) {
+                  List<TurmaId> turmasIds) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
         this.contaUsuarioId = contaUsuarioId;
         this.status = assegurarPresenca(status, "status");
-        this.turmas = new ArrayList<>(assegurarPresenca(turmas, "turmas"));
+        this.turmasIds = new ArrayList<>(assegurarPresenca(turmasIds,
+                "IDs das turmas"));
     }
 
     // Métodos Factory ---------------------------------------------------------
 
     public static Aluno novo(AlunoId id, Nome nome, Matricula matricula,
-                             Turma turmaInicial) {
+                             TurmaId turmaInicial) {
         if(turmaInicial == null) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
                     "turma inicial");
@@ -46,8 +47,9 @@ public class Aluno {
 
     public static Aluno carregar(AlunoId id, Nome nome, Matricula matricula,
                                  ContaUsuarioId contaUsuarioId,
-                                 StatusAluno status, List<Turma> turmas) {
-        return new Aluno(id, nome, matricula, contaUsuarioId, status, turmas);
+                                 StatusAluno status, List<TurmaId> turmasIds) {
+        return new Aluno(id, nome, matricula, contaUsuarioId, status,
+                turmasIds);
     }
 
     // Métodos especiais -------------------------------------------------------
@@ -60,26 +62,24 @@ public class Aluno {
         return objeto;
     }
 
-    private List<Turma> assegurarPresencaTurmas(List<Turma> turmas) {
-        if(turmas == null || turmas.isEmpty()) {
+    private List<TurmaId> assegurarPresencaTurmas(List<TurmaId> turmasIds) {
+        if(turmasIds == null || turmasIds.isEmpty()) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "turmas");
+                    "IDs das turmas");
         }
-        return turmas;
+        return turmasIds;
     }
 
-    public void matricularEmTurma(Turma novaTurma) {
-        assegurarPresenca(novaTurma, "turma");
+    public void matricularEmTurma(TurmaId novaTurmaId) {
+        assegurarPresenca(novaTurmaId, "ID da turma");
 
-        boolean jaMatriculado = this.turmas.stream()
-                .anyMatch(turmaExistente -> Objects
-                        .equals(turmaExistente.id(), novaTurma.id()));
-
-        if(jaMatriculado) {
-            throw new RegraNegocioExcecao(CodigoErro.RN_002_REGISTRO_DUPLICADO,
-                    "turma");
+        if(turmasIds.contains(novaTurmaId)) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_002_REGISTRO_DUPLICADO,
+                    "ID da turma"
+            );
         }
-        this.turmas.add(novaTurma);
+        this.turmasIds.add(novaTurmaId);
     }
 
     public void concluirCadastro() {
@@ -102,8 +102,10 @@ public class Aluno {
         }
     }
 
-    public void atualizarTurmas(List<Turma> novasTurmas) {
-        this.turmas = new ArrayList<>(assegurarPresencaTurmas(novasTurmas));
+    public void atualizarTurmas(List<TurmaId> novasTurmasIds) {
+        this.turmasIds = new ArrayList<>(
+                assegurarPresencaTurmas(novasTurmasIds)
+        );
     }
 
     // Métodos Getters ---------------------------------------------------------
@@ -116,5 +118,7 @@ public class Aluno {
     public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
     public StatusAluno status() { return status; }
-    public List<Turma> turmas() { return Collections.unmodifiableList(turmas); }
+    public List<TurmaId> turmasIds() {
+        return Collections.unmodifiableList(turmasIds);
+    }
 }
