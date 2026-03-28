@@ -17,7 +17,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoT
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servico.ValidadorComposicaoGrupoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servicos.ValidadorComposicaoGrupoTg;
 
 import java.util.List;
 import java.util.Set;

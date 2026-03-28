@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servico;
+package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servicos;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
