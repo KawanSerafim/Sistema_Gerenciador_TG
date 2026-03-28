@@ -4,14 +4,12 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.portas.LeitorAr
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.servicos.ValidadorAutorizacaoImportacao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.servicos.ValidadorCabecalhoArquivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -29,15 +27,23 @@ public class ImportarAlunosCaso {
     private final ProfessorRepositorio professorRepositorio;
     private final TurmaRepositorio turmaRepositorio;
     private final LeitorArquivoAlunos leitorArquivo;
+    private final ValidadorAutorizacaoImportacao validadorAutorizacao;
+    private final ValidadorCabecalhoArquivo validadorCabecalho;
 
-    public ImportarAlunosCaso(AlunoRepositorio alunoRepositorio,
-                              ProfessorRepositorio professorRepositorio,
-                              TurmaRepositorio turmaRepositorio,
-                              LeitorArquivoAlunos leitorArquivo) {
+    public ImportarAlunosCaso(
+            AlunoRepositorio alunoRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            TurmaRepositorio turmaRepositorio,
+            LeitorArquivoAlunos leitorArquivo,
+            ValidadorAutorizacaoImportacao validadorAutorizacao,
+            ValidadorCabecalhoArquivo validadorCabecalho
+    ) {
         this.alunoRepositorio = alunoRepositorio;
         this.professorRepositorio = professorRepositorio;
         this.turmaRepositorio = turmaRepositorio;
         this.leitorArquivo = leitorArquivo;
+        this.validadorAutorizacao = validadorAutorizacao;
+        this.validadorCabecalho = validadorCabecalho;
     }
 
     public record AlunoImportado(String id, String nome, String matricula) {}
@@ -46,81 +52,52 @@ public class ImportarAlunosCaso {
             InputStream arquivoBruto,
             String emailAutor
     ) {}
-    public record Resposta(
-            String idTurma,
-            String nomeCurso,
-            Turno turno,
-            Disciplina disciplina,
-            Integer ano,
-            Integer semestre,
-            List<AlunoImportado> alunos
-    ) {}
+    public record Resposta(List<AlunoImportado> alunos) {}
 
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
-        TurmaId idTurma = new TurmaId(UUID.fromString(comando.idTurma()));
-        Email emailAutor = new Email(comando.emailAutor());
-
-        Turma turma = buscarTurma(idTurma);
-        validarAutorizacao(emailAutor, turma);
-
-        var dadosArquivo = leitorArquivo.ler(comando.arquivoBruto());
-        validarMetadadosArquivo(dadosArquivo, turma);
-
-        List<AlunoImportado> alunos = processarEGravarAlunos(
-                dadosArquivo.alunos(), turma);
-
-        return new Resposta(
-                turma.idTexto(),
-                turma.nomeCursoTexto(),
-                turma.turno(),
-                turma.disciplina(),
-                turma.anoLetivoValor(),
-                turma.semestreLetivoValor(),
-                alunos
+        Professor autor = buscarProfessorPorEmail(
+                new Email(comando.emailAutor())
         );
+        Turma turma = buscarTurma(
+                new TurmaId(UUID.fromString(comando.idTurma()))
+        );
+
+        validadorAutorizacao.validar(autor, turma);
+        var arquivoLido = leitorArquivo.ler(comando.arquivoBruto());
+        validadorCabecalho.validar(arquivoLido, turma);
+
+        List<AlunoImportado> alunosImportados = processarEGravarAlunos(
+                arquivoLido.alunos(),
+                turma
+        );
+
+        return new Resposta(alunosImportados);
     }
 
     // FLUXOS ESPECIALIZADOS ---------------------------------------------------
 
-    private Turma buscarTurma(TurmaId id) {
-        return turmaRepositorio.buscarPorId(id)
-                .orElseThrow(() -> new GenericaExcecao(
-                        CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO, "turma"));
-    }
-
-    private void validarAutorizacao(Email emailAutor, Turma turma) {
-        Professor autor = professorRepositorio.buscarPorEmail(emailAutor)
+    private Professor buscarProfessorPorEmail(Email email) {
+        return professorRepositorio.buscarPorEmail(email)
                 .orElseThrow(() -> new GenericaExcecao(
                         CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO,
-                        "professor requisitante"));
-
-        boolean isProfessorTgDaTurma = turma.idProfessorTg().equals(autor.id());
-        boolean isCoordenadorDoCurso = turma.idCoordenadorCurso()
-                .equals(autor.id());
-
-        if(!isProfessorTgDaTurma && !isCoordenadorDoCurso) {
-            throw new RegraNegocioExcecao(
-                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
-                    "professor requisitante", "professor de TG ou coordenador" +
-                    " de curso");
-        }
+                        "professor autor"
+                ));
     }
 
-    private void validarMetadadosArquivo(
-            LeitorArquivoAlunos.DadosArquivo arquivo, Turma turma) {
-        if(!turma.anoLetivoValor().equals(arquivo.ano())
-                || !turma.semestreLetivoValor().equals(arquivo.semestre())
-                || !turma.turno().equals(arquivo.turno())) {
-            throw new ValidacaoExcecao(CodigoErro.VD_007_CAMPO_NAO_SUPORTADO,
-                    "cabeçalho do arquivo", "os dados do ano, semestre ou " +
-                    "turno não correspondem à turma selecionada");
-        }
+    private Turma buscarTurma(TurmaId turmaId) {
+        return turmaRepositorio.buscarPorId(turmaId)
+                .orElseThrow(() -> new GenericaExcecao(
+                        CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO,
+                        "turma de destino"
+                ));
     }
 
     private List<AlunoImportado> processarEGravarAlunos(
-            List<LeitorArquivoAlunos.DadosAluno> alunosArquivo, Turma turma) {
+            List<LeitorArquivoAlunos.DadosAluno> alunosArquivo,
+            Turma turma
+    ) {
         List<AlunoImportado> alunos = new ArrayList<>();
 
         for(var dado : alunosArquivo) {
@@ -131,15 +108,23 @@ public class ImportarAlunosCaso {
                     .orElse(null);
 
             if(aluno != null) {
-                aluno.matricularEmTurma(turma);
+                aluno.matricularEmTurma(turma.id());
             } else {
-                aluno = Aluno.novo(new AlunoId(UUID.randomUUID()), nome,
-                        matricula, turma);
+                aluno = Aluno.novo(
+                        new AlunoId(UUID.randomUUID()),
+                        nome,
+                        matricula,
+                        turma.id()
+                );
             }
 
             alunoRepositorio.salvar(aluno);
-            alunos.add(new AlunoImportado(aluno.idTexto(), aluno.nomeTexto(),
-                    aluno.matriculaTexto()));
+
+            alunos.add(new AlunoImportado(
+                    aluno.idTexto(),
+                    aluno.nomeTexto(),
+                    aluno.matriculaTexto()
+            ));
         }
         return alunos;
     }
