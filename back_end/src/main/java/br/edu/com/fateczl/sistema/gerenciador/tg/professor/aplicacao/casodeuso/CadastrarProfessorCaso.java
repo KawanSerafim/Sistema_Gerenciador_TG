@@ -2,8 +2,6 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
@@ -12,10 +10,12 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.servicos.VerificadorUnicidadeProfessor;
 
 import java.util.UUID;
 
@@ -24,15 +24,23 @@ public class CadastrarProfessorCaso {
     private final ContaUsuarioRepositorio contaUsuarioRepositorio;
     private final CriptografoSenhas criptografo;
     private final PublicadorEventos publicador;
+    private final VerificadorUnicidadeEmail verificadorEmail;
+    private final VerificadorUnicidadeProfessor verificadorProfessor;
 
-    public CadastrarProfessorCaso(ProfessorRepositorio professorRepositorio,
-                                  ContaUsuarioRepositorio contaUsuarioRepositorio,
-                                  CriptografoSenhas criptografo,
-                                  PublicadorEventos publicador) {
+    public CadastrarProfessorCaso(
+            ProfessorRepositorio professorRepositorio,
+            ContaUsuarioRepositorio contaUsuarioRepositorio,
+            CriptografoSenhas criptografo,
+            PublicadorEventos publicador,
+            VerificadorUnicidadeEmail verificadorEmail,
+            VerificadorUnicidadeProfessor verificadorProfessor
+    ) {
         this.professorRepositorio = professorRepositorio;
         this.contaUsuarioRepositorio = contaUsuarioRepositorio;
         this.criptografo = criptografo;
         this.publicador = publicador;
+        this.verificadorEmail = verificadorEmail;
+        this.verificadorProfessor = verificadorProfessor;
     }
 
     public record Comando(
@@ -55,50 +63,56 @@ public class CadastrarProfessorCaso {
         Matricula matriculaAlvo = new Matricula(comando.matricula());
         Nome nome = new Nome(comando.nome());
 
-        validarEmail(emailAlvo);
-        validarMatricula(matriculaAlvo);
+        verificadorEmail.verificar(emailAlvo);
+        verificadorProfessor.verificar(matriculaAlvo);
 
-        ContaUsuario novaConta = gerarNovaConta(emailAlvo,
-                comando.senhaLimpa());
-        Professor novoProfessor = gerarNovoProfessor(nome, matriculaAlvo,
-                novaConta.id(), comando.cargo());
+        ContaUsuario novaConta = gerarNovaConta(
+                emailAlvo,
+                comando.senhaLimpa()
+        );
+        Professor novoProfessor = gerarNovoProfessor(
+                nome, matriculaAlvo,
+                novaConta.id(),
+                comando.cargo()
+        );
 
         contaUsuarioRepositorio.salvar(novaConta);
         professorRepositorio.salvar(novoProfessor);
 
-        publicador.publicar(new ContaPendenteCriadaEvento(
-                novaConta.emailTexto()));
+        publicador.publicar(
+                new ContaPendenteCriadaEvento(novaConta.emailTexto())
+        );
 
-        return new Resposta(novoProfessor.idTexto(), nome.valor(),
-                matriculaAlvo.valor(), comando.cargo());
-    }
-
-    private void validarEmail(Email email) {
-        contaUsuarioRepositorio.buscarPorEmail(email).ifPresent(conta -> {
-            throw new RegraNegocioExcecao(
-                    CodigoErro.RN_002_REGISTRO_DUPLICADO, "email");
-        });
-    }
-
-    private void validarMatricula(Matricula matricula) {
-        professorRepositorio.buscarPorMatricula(matricula)
-                .ifPresent(professor -> {
-                    throw new RegraNegocioExcecao(
-                            CodigoErro.RN_002_REGISTRO_DUPLICADO, "matricula"
-                    );
-                });
+        return new Resposta(
+                novoProfessor.idTexto(),
+                nome.valor(),
+                matriculaAlvo.valor(),
+                comando.cargo()
+        );
     }
 
     private ContaUsuario gerarNovaConta(Email email, String senhaLimpa) {
         Senha senhaCriptografada = criptografo.criptografar(senhaLimpa);
-        return ContaUsuario.novo(new ContaUsuarioId(UUID.randomUUID()), email,
-                senhaCriptografada);
+
+        return ContaUsuario.novo(
+                new ContaUsuarioId(UUID.randomUUID()),
+                email,
+                senhaCriptografada
+        );
     }
 
-    private Professor gerarNovoProfessor(Nome nome, Matricula matricula,
-                                         ContaUsuarioId contaId,
-                                         CargoProfessor cargo) {
-        return Professor.novo(new ProfessorId(UUID.randomUUID()), nome,
-                matricula, contaId, cargo);
+    private Professor gerarNovoProfessor(
+            Nome nome,
+            Matricula matricula,
+            ContaUsuarioId contaId,
+            CargoProfessor cargo
+    ) {
+        return Professor.novo(
+                new ProfessorId(UUID.randomUUID()),
+                nome,
+                matricula,
+                contaId,
+                cargo
+        );
     }
 }
