@@ -43,6 +43,24 @@ public class ContaUsuario {
         return objeto;
     }
 
+    public void validarStatusParaEnviarEmail() {
+        if(status == StatusContaUsuario.ATIVO) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "conta de usuário", "VERIFICACAO_CODIGO_PENDENTE"
+            );
+        }
+    }
+
+    public void validarSePodeAutenticar() {
+        if(status != StatusContaUsuario.ATIVO) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "status da conta de usuário", "ATIVO"
+            );
+        }
+    }
+
     // Métodos de Alteração de Status ------------------------------------------
 
     public void confirmarEmail() {

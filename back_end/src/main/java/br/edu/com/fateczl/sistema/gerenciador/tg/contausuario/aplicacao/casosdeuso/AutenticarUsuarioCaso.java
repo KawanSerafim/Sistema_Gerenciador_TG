@@ -13,9 +13,11 @@ public class AutenticarUsuarioCaso {
     private final CriptografoSenhas criptografo;
     private final GeradorToken geradorToken;
 
-    public AutenticarUsuarioCaso(ContaUsuarioRepositorio repositorio,
-                                 CriptografoSenhas criptografo,
-                                 GeradorToken geradorToken) {
+    public AutenticarUsuarioCaso(
+            ContaUsuarioRepositorio repositorio,
+            CriptografoSenhas criptografo,
+            GeradorToken geradorToken
+    ) {
         this.repositorio = repositorio;
         this.criptografo = criptografo;
         this.geradorToken = geradorToken;
@@ -27,15 +29,21 @@ public class AutenticarUsuarioCaso {
         Email emailAlvo = new Email(comando.email());
         ContaUsuario usuario = repositorio.buscarPorEmail(emailAlvo)
                 .orElseThrow(() -> new AutorizacaoExcecao(
-                        CodigoErro.AU_001_CREDENCIAIS_INVALIDAS));
+                        CodigoErro.AU_001_CREDENCIAIS_INVALIDAS
+                ));
 
-        boolean senhaValida = criptografo.comparar(comando.senhaLimpa(),
-                usuario.senha());
+        usuario.validarSePodeAutenticar();
+
+        boolean senhaValida = criptografo.comparar(
+                comando.senhaLimpa(),
+                usuario.senha()
+        );
 
         if(!senhaValida) {
             throw new AutorizacaoExcecao(
                     CodigoErro.AU_001_CREDENCIAIS_INVALIDAS);
         }
+
         return geradorToken.gerarToken(usuario);
     }
 }
