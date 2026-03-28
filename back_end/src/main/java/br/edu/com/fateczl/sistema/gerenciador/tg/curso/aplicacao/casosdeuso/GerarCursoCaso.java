@@ -1,12 +1,14 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.AutorizacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
-import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.AjusteTipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
@@ -22,17 +24,20 @@ import java.util.List;
 import java.util.UUID;
 
 public class GerarCursoCaso {
+    private final AdministradorRepositorio administradorRepositorio;
     private final CursoRepositorio cursoRepositorio;
     private final ProfessorRepositorio professorRepositorio;
     private final VerificadorUnicidadeCurso verificadorUnicidade;
     private final ValidadorCoordenadorCurso validadorCoordenador;
 
     public GerarCursoCaso(
+            AdministradorRepositorio administradorRepositorio,
             CursoRepositorio cursoRepositorio,
             ProfessorRepositorio professorRepositorio,
             VerificadorUnicidadeCurso verificadorUnicidade,
             ValidadorCoordenadorCurso validadorCoordenador
     ) {
+        this.administradorRepositorio = administradorRepositorio;
         this.cursoRepositorio = cursoRepositorio;
         this.professorRepositorio = professorRepositorio;
         this.verificadorUnicidade = verificadorUnicidade;
@@ -42,6 +47,7 @@ public class GerarCursoCaso {
     public record AjusteComando(TipoTg tipoTg, Integer maxAlunosGrupo) {}
 
     public record Comando(
+            String emailAutor,
             String nome,
             String matriculaCoordenador,
             List<Turno> turnos,
@@ -59,6 +65,8 @@ public class GerarCursoCaso {
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
+        buscarAdministrador(new Email(comando.emailAutor()));
+
         Nome nome = new Nome(comando.nome());
         verificadorUnicidade.verificar(nome);
 
@@ -88,6 +96,14 @@ public class GerarCursoCaso {
     }
 
     // FLUXOS ESPECIALIZADOS ---------------------------------------------------
+
+    private void buscarAdministrador(Email email) {
+        administradorRepositorio.buscarPorEmail(email)
+                .orElseThrow(() -> new AutorizacaoExcecao(
+                        CodigoErro.AU_002_ACAO_NAO_PERMITIDA,
+                        "gerar curso"
+                ));
+    }
 
     private Professor buscarCoordenador(Matricula matricula) {
         return professorRepositorio.buscarPorMatricula(matricula)
