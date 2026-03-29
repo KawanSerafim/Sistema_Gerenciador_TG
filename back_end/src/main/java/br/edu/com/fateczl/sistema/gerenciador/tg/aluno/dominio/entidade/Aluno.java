@@ -162,6 +162,9 @@ public class Aluno {
     public Matricula matricula() { return matricula; }
     public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
+    public String contaUsuarioIdTexto() {
+        return contaUsuarioId.valor().toString();
+    }
     public StatusAluno status() { return status; }
     public List<TurmaId> turmasIds() {
         return Collections.unmodifiableList(turmasIds);
