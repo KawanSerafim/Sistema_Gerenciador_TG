@@ -52,4 +52,7 @@ public class Administrador {
     public Nome nome() { return nome; }
     public String nomeTexto() { return nome.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
+    public String contaUsuarioIdTexto() {
+        return contaUsuarioId.valor().toString();
+    }
 }
