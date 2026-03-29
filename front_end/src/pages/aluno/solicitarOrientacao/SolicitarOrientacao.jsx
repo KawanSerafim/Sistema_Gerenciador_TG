@@ -4,31 +4,40 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
 import { useState } from 'react';
-import { useForm } from '../../../hooks/useForm';
 
+// Zod e RHF
+import { solicitarOrientacaoZodSchema } from './schema/solicitarOrientacaoZodSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useWatch } from 'react-hook-form';
 
-const validarCampos = (valores) => {
-    let erros = {}
-    if (!valores.orientador) {
-        erros.orientador = "Orientador é um campo obrigatório";
-    }
-    return erros
-}
 
 const SolicitarOrientacao = () => {
 
-    const campos = {
-        orientador: ""
-    }
-    const { errors, handleChange, handleSubmit } = useForm(campos, validarCampos);
+    const {
+        control, 
+        setValue,
+        formState: {errors},
+        handleSubmit,
+        reset 
+    } = useForm({
+        resolver: zodResolver(solicitarOrientacaoZodSchema),
+        defaultValues: {
+            orientadorId: ""
+        }
+    });
 
+    //Observa o RHF para saber se um orientador valido foi selecionado
+    const orientadorSelecionado = useWatch({
+        control,
+        name: "orientadorId"
+    });
+
+    /* === Estados visuais da interaçao com usuario ===*/
     const [exibirSucesso, setExibirSucesso] = useState(false)
-
     // Estado do que esta escrito no input de orientador
     const [buscaOrientador, setBuscaOrientador] = useState("")
     //Lista filtrada de opções com base no input
     const [sugestoes, setSugestoes] = useState([]);
-    const [orientadorSelecionado, setOrientadorSelecionado] = useState(null)
 
     //Mock de orientador, TODO buscar do backend
     const [listaOrientadorDB] = useState([
@@ -57,7 +66,7 @@ const SolicitarOrientacao = () => {
         const termo = e.target.value;
         setBuscaOrientador(termo);
         // Reseta a seleção se o usuário voltar a digitar
-        setOrientadorSelecionado(null);
+        setValue("orientadorId", "", {shouldValidate: true})
 
         const opcoesDisponiveis = listaOrientadorDB
             //Pega os 3 primeiros
@@ -71,29 +80,15 @@ const SolicitarOrientacao = () => {
         } else {
             setSugestoes(opcoesDisponiveis);
         }
-
-        // Sincroniza com o useForm para validações
-        handleChange(e);
     };
 
     const selecionarSugestao = (orientador) => {
+        //Exibe o nome
         setBuscaOrientador(orientador.nome);
-        setOrientadorSelecionado(orientador);
+        // Injeta o id no RHF
+        setValue("orientadorId",String(orientador.id), {shouldValidate: true});
+        //Reseta suguestões
         setSugestoes([]);
-    };
-
-    const criarSolicitacao = () => {
-        // Só adiciona se houver um orientador selecionado do dropdown
-        const orientador = orientadorSelecionado;
-
-        if (orientador) {
-            setOrientadorSelecionado("");
-            setOrientadorSelecionado(null);
-            setSugestoes([]);
-
-            // Sincroniza com o hook de validação
-            handleChange({ target: { name: 'orientador', value: orientador } });
-        }
     };
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
@@ -102,6 +97,10 @@ const SolicitarOrientacao = () => {
         console.log("Enviando payload para a API:", dadosValidados);
         //Ativa alerta de sucesso
         setExibirSucesso(true);
+        //Limpa o input visual
+        setBuscaOrientador("");
+        //Limpa RHF
+        reset();
         //Esconde depois de alguns segundos
         setTimeout(() => setExibirSucesso(false), 5000);
     };
@@ -121,7 +120,6 @@ const SolicitarOrientacao = () => {
                     <Row className="mb-4 d-flex flex-column align-items-center">
                         <Col md={6} style={{ position: 'relative' }}> {/* Importante: relative para o dropdown */}
                             <FormControl
-                                name="orientador"
                                 value={buscaOrientador}
                                 onChange={handleBuscaOrientador}
                                 onFocus={handleSugestoesFocus}
@@ -129,7 +127,7 @@ const SolicitarOrientacao = () => {
                                 autoComplete="off"
                                 placeholder="Digite ou selecione o nome do orientador"
                                 className='bg-white text-black fw-bold fs-5'
-                                isInvalid={!!errors.orientador}
+                                isInvalid={!!errors.orientadorId}
                             />
 
                             {/* Lista de Sugestões */}
@@ -149,9 +147,9 @@ const SolicitarOrientacao = () => {
                             )}
                         </Col>
                         {/* Exibe erro de validação se a lista estiver vazia */}
-                        {errors.orientador && (
+                        {errors.orientadorId && (
                             <Alert variant="danger" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                                {errors.orientador}
+                                {errors.orientadorId?.message}
                             </Alert>
                         )}
                     </Row>
@@ -159,11 +157,12 @@ const SolicitarOrientacao = () => {
                         variant="primary"
                         type="submit" id='btn-select'
                         className='mb-2 p-2 fs-4 fw-medium'
+                        //Usa variavel do RHF para controlar comportamento do botão
+                        disabled={!orientadorSelecionado}
                         style={{
                             cursor: orientadorSelecionado ? 'pointer' : 'not-allowed',
                             opacity: orientadorSelecionado ? 1 : 0.4
                         }}
-                        onClick={criarSolicitacao}
                         title="Enviar Solicitação"
                     >
                         Enviar solicitação
@@ -172,7 +171,7 @@ const SolicitarOrientacao = () => {
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {exibirSucesso && (
                     <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                        {`Solicitação de orientação enviada com sucesso`}
+                        Solicitação de orientação enviada com sucesso!
                     </Alert>
                 )}
             </Container>
