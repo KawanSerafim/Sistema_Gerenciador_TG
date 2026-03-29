@@ -8,6 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.Curs
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TipoCoorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
 import java.util.*;
@@ -16,19 +17,28 @@ public class GrupoTg {
     private final GrupoTgId id;
     private ProfessorId orientadorId;
     private String coorientadorIdTexto;
+    private TipoCoorientador tipoCoorientador;
     private final CursoId cursoId;
     private Set<Disciplina> disciplinas;
     private TemaTg temaTg;
     private TipoTg tipoTg;
     private List<AlunoId> alunosIds;
 
-    private GrupoTg(GrupoTgId id, ProfessorId orientadorId,
-                    String coorientadorIdTexto, CursoId cursoId,
-                    Set<Disciplina> disciplinas, TemaTg temaTg, TipoTg tipoTg,
-                    List<AlunoId> alunosIds) {
+    private GrupoTg(
+            GrupoTgId id,
+            ProfessorId orientadorId,
+            String coorientadorIdTexto,
+            TipoCoorientador tipoCoorientador,
+            CursoId cursoId,
+            Set<Disciplina> disciplinas,
+            TemaTg temaTg,
+            TipoTg tipoTg,
+            List<AlunoId> alunosIds
+    ) {
         this.id = assegurarPresenca(id, "ID");
         this.orientadorId = orientadorId;
         this.coorientadorIdTexto = coorientadorIdTexto;
+        this.tipoCoorientador = tipoCoorientador;
         this.cursoId = assegurarPresenca(cursoId, "ID do curso");
         this.disciplinas = assegurarPresencaDisciplinas(disciplinas);
         this.temaTg = assegurarPresenca(temaTg, "tema de TG");
@@ -38,45 +48,78 @@ public class GrupoTg {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static GrupoTg novo(GrupoTgId id, CursoId cursoId,
-                               Set<Disciplina> disciplinas,
-                               TemaTg temaTg, TipoTg tipoTg,
-                               List<AlunoId> alunosIds) {
-        return new GrupoTg(id, null, null, cursoId, disciplinas, temaTg, tipoTg,
+    public static GrupoTg novo(
+            GrupoTgId id,
+            CursoId cursoId,
+            Set<Disciplina> disciplinas,
+            TemaTg temaTg,
+            TipoTg tipoTg,
+            List<AlunoId> alunosIds
+    ) {
+        return new GrupoTg(
+                id,
+                null, null, null,
+                cursoId,
+                disciplinas,
+                temaTg,
+                tipoTg,
                 alunosIds);
     }
 
-    public static GrupoTg carregar(GrupoTgId id, ProfessorId orientadorId,
-                                   String coorientadorIdTexto, CursoId cursoId,
-                                   Set<Disciplina> disciplinas, TemaTg temaTg,
-                                   TipoTg tipoTg, List<AlunoId> alunosIds) {
-        return new GrupoTg(id, orientadorId, coorientadorIdTexto, cursoId,
-                disciplinas, temaTg, tipoTg, alunosIds);
+    public static GrupoTg carregar(
+            GrupoTgId id,
+            ProfessorId orientadorId,
+            String coorientadorIdTexto,
+            TipoCoorientador tipoCoorientador,
+            CursoId cursoId,
+            Set<Disciplina> disciplinas,
+            TemaTg temaTg,
+            TipoTg tipoTg,
+            List<AlunoId> alunosIds
+    ) {
+        return new GrupoTg(
+                id,
+                orientadorId,
+                coorientadorIdTexto,
+                tipoCoorientador,
+                cursoId,
+                disciplinas,
+                temaTg,
+                tipoTg,
+                alunosIds
+        );
     }
 
     // Métodos especiais -------------------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    campo);
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    campo
+            );
         }
         return objeto;
     }
 
     private Set<Disciplina> assegurarPresencaDisciplinas(
-            Set<Disciplina> disciplinas) {
+            Set<Disciplina> disciplinas
+    ) {
         if(disciplinas == null || disciplinas.isEmpty()) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "disciplinas");
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "disciplinas"
+            );
         }
         return EnumSet.copyOf(disciplinas);
     }
 
     private List<AlunoId> assegurarPresencaAlunos(List<AlunoId> alunosIds) {
         if(alunosIds == null || alunosIds.isEmpty()) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    "alunos");
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "alunos"
+            );
         }
         return alunosIds;
     }
@@ -86,8 +129,17 @@ public class GrupoTg {
     }
 
     public void vincularCoorientador(String coorientadorIdTexto) {
-        this.coorientadorIdTexto = assegurarPresenca(coorientadorIdTexto,
-                "ID do coorientador");
+        this.coorientadorIdTexto = assegurarPresenca(
+                coorientadorIdTexto,
+                "ID do coorientador"
+        );
+    }
+
+    public void atribuirTipoDeCoorientador(TipoCoorientador tipoCoorientador) {
+        this.tipoCoorientador = assegurarPresenca(
+                tipoCoorientador,
+                "tipo de coorientador"
+        );
     }
 
     // Métodos de Atualização --------------------------------------------------
@@ -106,7 +158,8 @@ public class GrupoTg {
 
     public void atualizarAlunos(List<AlunoId> novosAlunosIds) {
         this.alunosIds = new ArrayList<>(
-                assegurarPresencaAlunos(novosAlunosIds));
+                assegurarPresencaAlunos(novosAlunosIds)
+        );
     }
 
     // Métodos Getters ---------------------------------------------------------
@@ -115,6 +168,7 @@ public class GrupoTg {
     public String idTexto() { return id.valor().toString(); }
     public ProfessorId orientadorId() { return orientadorId; }
     public String coorientadorIdTexto() { return coorientadorIdTexto; }
+    public TipoCoorientador tipoCoorientador() { return tipoCoorientador; }
     public CursoId cursoId() { return cursoId; }
     public Set<Disciplina> disciplinas() {
         return Collections.unmodifiableSet(disciplinas);
