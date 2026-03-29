@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlunoRepositorio {
-    Aluno salvar(Aluno aluno);
+    void salvar(Aluno aluno);
     Optional<Aluno> buscarPorMatricula(Matricula matricula);
     Optional<List<Aluno>> buscarPorMatriculas(List<Matricula> matriculas);
     Optional<Aluno> buscarPorContaId(ContaUsuarioId contaUsuarioId);
