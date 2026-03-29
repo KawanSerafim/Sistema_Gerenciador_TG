@@ -128,18 +128,15 @@ public class GrupoTg {
         this.orientadorId = assegurarPresenca(professorId, "ID do orientador");
     }
 
-    public void vincularCoorientador(String coorientadorIdTexto) {
+    public void vincularCoorientador(
+            String coorientadorIdTexto,
+            TipoCoorientador tipo
+    ) {
         this.coorientadorIdTexto = assegurarPresenca(
                 coorientadorIdTexto,
                 "ID do coorientador"
         );
-    }
-
-    public void atribuirTipoDeCoorientador(TipoCoorientador tipoCoorientador) {
-        this.tipoCoorientador = assegurarPresenca(
-                tipoCoorientador,
-                "tipo de coorientador"
-        );
+        this.tipoCoorientador = assegurarPresenca(tipo, "tipo de coorientador");
     }
 
     // Métodos de Atualização --------------------------------------------------
