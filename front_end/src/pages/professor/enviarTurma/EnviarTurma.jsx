@@ -27,7 +27,7 @@ const EnviarTurma = () => {
         control,
         reset,
         handleSubmit,
-        formState: errors
+        formState: {errors}
     } = useForm({
         resolver: zodResolver(enviarTurmaSchema),
         defaultValues: {
@@ -38,7 +38,7 @@ const EnviarTurma = () => {
     })
     // Observa se alguma turma foi selecionada, para liberar o input de envio
     const turmaSelecionada = useWatch({control, name: "turmaId"})
-    //Observa arquivo para pegar o noem e mostrar na tela 
+    //Observa arquivo para pegar o nome e mostrar na tela 
     const arquivoSelecionado = useWatch({
         control,
         name: "arquivo"
@@ -70,7 +70,7 @@ const EnviarTurma = () => {
                 
                 setAlunosCadastrados(respostaBackend);
                 setExibirResultado({ show: true, variant: "success", message: "Turma enviada e alunos registrados com sucesso!" });
-                reset(); // Limpa o formulário
+                reset({turmaId: '', arquivo: undefined}); // Limpa o formulário
             }, 1500);
 
         } catch (e) {
@@ -94,46 +94,52 @@ const EnviarTurma = () => {
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
 
                     {/* Seleção de turma */}
-                    <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSelectTurma">
-                        <FormSelect
-                            title="Selecionar turma de TG"
-                            className='bg-white text-black fw-medium fs-4 w-50 text-center'
-                            {...register("turmaId")}
-                            isInvalid={!!errors.turmaId}
-                            >
-                            <option value="" disabled selected>Selecione a turma que deseja exibir</option>
-                            {turmas.map(t => (
+                    <FormGroup className="mb-3" controlId="formSelectTurma">
+                        <div className="d-flex justify-content-center">
+                            <FormSelect
+                                title="Selecionar turma de TG"
+                                className='bg-white text-black fw-medium fs-4 w-50 text-center'
+                                {...register("turmaId")}
+                                isInvalid={!!errors.turmaId}
+                                >
+                                <option value="" disabled selected>Selecione a turma que deseja exibir</option>
+                                {turmas.map(t => (
+                                    
+                                    <option key={t.id} value={t.id}>{t.nome}</option>
+                                ))}
                                 
-                                <option key={t.id} value={t.id}>{t.nome}</option>
-                            ))}
-                            
-                        </FormSelect>
-                        {errors.turmaId && <div className="text-danger text-center fw-bold mt-1">{errors.turmaId?.message}</div>}
+                            </FormSelect>
+                        </div>
+                        {errors.turmaId && <div className="text-danger text-center fw-bold mt-2">{errors.turmaId?.message}</div>}
 
                     </FormGroup>
                     {/* Exibe o input de arquivo apenas se a turma foi selecionada */}
                     {turmaSelecionada && (
                         <>
 
-                            <FormGroup className="mb-3 d-flex justify-content-center gap-3" controlId="formSendTurma">
-                                {/* Input verdadeiro escondido */}
-                                <FormControl type="file"
-                                    id="input-arquivo-turma"
-                                    style={{ display: 'none' }}
-                                    {...register("arquivo")}
-                                    accept=".xlsx"
-                                    required={true} className='input-send text-black fw-bold fs-4 w-75' />
-                                {/* Label personalizada como botão */}
-                                <FormLabel
-                                    title="Clique aqui para escolher o arquivo .xlsx da turma"
-                                    htmlFor="input-arquivo-turma"
-                                    className="btn btn-lg input-send py-3 fw-bold fs-4 w-75 fw-bold shadow"
-                                    style={{ cursor: "pointer" }}
-                                    >
-                                    {nomeArquivo ? `Arquivo selecionado: ${nomeArquivo}` : "Clique aqui para selecionar a planilha de alunos (apenas .xlsx)"}
-                                </FormLabel>
+                            <FormGroup className="mb-3 gap-3" controlId="formSendTurma">
+                                <div className="d-flex justify-content-center">
+
+                                    {/* Input verdadeiro escondido */}
+                                    <FormControl type="file"
+                                        id="input-arquivo-turma"
+                                        style={{ display: 'none' }}
+                                        {...register("arquivo")}
+                                        accept=".xlsx"
+                                        className='input-send text-black fw-bold fs-4 w-75' />
+                                    {/* Label personalizada como botão */}
+                                    <FormLabel
+                                        title="Clique aqui para escolher o arquivo .xlsx da turma"
+                                        htmlFor="input-arquivo-turma"
+                                        className={`btn btn-lg w-100 w-md-75 py-3 fs-5 fs-md-4 fw-bold shadow ${errors.arquivo ? 'btn-outline-danger' : 'input-send'}`}
+                                        style={{ cursor: "pointer" }}
+                                        >
+                                        {nomeArquivo ? `Arquivo selecionado: ${nomeArquivo}` : "Clique aqui para selecionar a planilha de alunos (apenas .xlsx)"}
+                                    </FormLabel>
+                                </div>
                                 {/* Feedback visual */}
-                                {errors.arquivo && <div className="text-danger fw-bold mt-2">{errors.arquivo.message}</div>}
+                                {errors.arquivo && <div className="text-danger fw-bold mt-2 text-center">{errors.arquivo?.message}</div>}
+                                
                             </FormGroup>
                             <FormGroup className="text-center">
                                 <Button
@@ -145,7 +151,7 @@ const EnviarTurma = () => {
                                     Enviar Turma
                                 </Button>
                             </FormGroup>
-                            {nomeArquivo && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
+                            {nomeArquivo && !errors.arquivo && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
                         </>
                     )}
 

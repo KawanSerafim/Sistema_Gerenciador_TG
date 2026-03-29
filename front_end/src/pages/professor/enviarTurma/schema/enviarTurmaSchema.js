@@ -9,7 +9,7 @@ const ACCEPTED_TYPES = [
 
 export const enviarTurmaSchema = z.object({
     //Select de turmas retorna um id
-    turmaId: z.string().nonempty("Selecione uma turma para continuar"),
+    turmaId: z.coerce.string().min(1, "Selecione uma turma para continuar"),
 
     // O input type="file" retorna um FileList do navegador
     arquivo: z.any()
@@ -22,7 +22,7 @@ export const enviarTurmaSchema = z.object({
         )
         .refine(
             //Verfica o tipo do arquivo
-            (files) => ACCEPTED_TYPES.includes(files?.[0].type), "Formato inválido. Envie apenas planilhas Excel (.xlsx)"
+            (files) => ACCEPTED_TYPES.includes(files?.[0]?.type), "Formato inválido. Envie apenas planilhas Excel (.xlsx)"
         )
         
 
