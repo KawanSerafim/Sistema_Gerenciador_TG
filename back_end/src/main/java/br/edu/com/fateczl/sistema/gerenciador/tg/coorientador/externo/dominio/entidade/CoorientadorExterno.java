@@ -12,8 +12,11 @@ public class CoorientadorExterno implements Coorientador {
     private final Nome nome;
     private final Origem origem;
 
-    private CoorientadorExterno(CoorientadorExternoId id, Nome nome,
-                                Origem origem) {
+    private CoorientadorExterno(
+            CoorientadorExternoId id,
+            Nome nome,
+            Origem origem
+    ) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.origem = assegurarPresenca(origem, "origem");
@@ -21,13 +24,19 @@ public class CoorientadorExterno implements Coorientador {
 
     // Métodos Factory ---------------------------------------------------------
 
-    public static CoorientadorExterno novo(CoorientadorExternoId id, Nome nome,
-                                           Origem origem) {
+    public static CoorientadorExterno novo(
+            CoorientadorExternoId id,
+            Nome nome,
+            Origem origem
+    ) {
         return new CoorientadorExterno(id, nome, origem);
     }
 
-    public static CoorientadorExterno carregar(CoorientadorExternoId id,
-                                               Nome nome, Origem origem) {
+    public static CoorientadorExterno carregar(
+            CoorientadorExternoId id,
+            Nome nome,
+            Origem origem
+    ) {
         return new CoorientadorExterno(id, nome, origem);
     }
 
@@ -35,8 +44,10 @@ public class CoorientadorExterno implements Coorientador {
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    campo);
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    campo
+            );
         }
         return objeto;
     }
@@ -49,5 +60,7 @@ public class CoorientadorExterno implements Coorientador {
     // Métodos Getters ---------------------------------------------------------
 
     public CoorientadorExternoId id() { return id; }
+    public String idTexto() { return id.valor().toString(); }
+    public String nomeTexto() { return nome.valor(); }
     public Origem origem() { return origem; }
 }
