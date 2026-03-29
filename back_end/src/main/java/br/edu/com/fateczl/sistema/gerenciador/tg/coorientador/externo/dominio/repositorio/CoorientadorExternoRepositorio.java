@@ -7,7 +7,9 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.ob
 import java.util.Optional;
 
 public interface CoorientadorExternoRepositorio {
-    CoorientadorExterno salvar(CoorientadorExterno coorientadorExterno);
-    Optional<CoorientadorExterno> buscarPorNomeEOrigem(Nome nome,
-                                                       Origem origem);
+    void salvar(CoorientadorExterno coorientadorExterno);
+    Optional<CoorientadorExterno> buscarPorNomeEOrigem(
+            Nome nome,
+            Origem origem
+    );
 }
