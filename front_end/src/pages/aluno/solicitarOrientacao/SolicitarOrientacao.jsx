@@ -111,14 +111,16 @@ const SolicitarOrientacao = () => {
                 userName='Aluno'
                 maxWidth='1200px'
             />
-            <Container className="mt-5 text-center" style={{ maxWidth: "1200px" }}>
+            <Container className="mt-5 text-center px-3 px-md-0" style={{ maxWidth: "1200px" }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Solicitar Orientação</h2>
+
                 <Form noValidate
-                    className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm px-5'
+                    className='form-bg border border-dark border-top-0 p-3 p-md-5 rounded-bottom-4 shadow-sm'
                     onSubmit={handleSubmit(enviarParaBackend)}
                 >
-                    <Row className="mb-4 d-flex flex-column align-items-center">
-                        <Col md={6} style={{ position: 'relative' }}> {/* Importante: relative para o dropdown */}
+                    <Row className="mb-4 justify-content-center">
+                        {/* xs=12 (100% no celular), md=8 (maior no tablet), lg=6 (metade na tela grande) */}
+                        <Col xs={12} md={8} lg={6} style={{ position: 'relative' }}> {/* Importante: relative para o dropdown */}
                             <FormControl
                                 value={buscaOrientador}
                                 onChange={handleBuscaOrientador}
@@ -132,7 +134,7 @@ const SolicitarOrientacao = () => {
 
                             {/* Lista de Sugestões */}
                             {sugestoes.length > 0 && (
-                                <ul className="list-group position-absolute shadow-lg" style={{ zIndex: 1000, top: '100%', width: "95%" }}>
+                                <ul className="list-group position-absolute shadow-lg mt-1" style={{ zIndex: 1000, top: '100%', width: "95%" }}>
                                     {sugestoes.map(orientador => (
                                         <ListGroup.Item
                                             key={orientador.id}
@@ -146,33 +148,45 @@ const SolicitarOrientacao = () => {
                                 </ul>
                             )}
                         </Col>
-                        {/* Exibe erro de validação se a lista estiver vazia */}
-                        {errors.orientadorId && (
-                            <Alert variant="danger" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                                {errors.orientadorId?.message}
-                            </Alert>
-                        )}
                     </Row>
-                    <Button
-                        variant="primary"
-                        type="submit" id='btn-select'
-                        className='mb-2 p-2 fs-4 fw-medium'
-                        //Usa variavel do RHF para controlar comportamento do botão
-                        disabled={!orientadorSelecionado}
-                        style={{
-                            cursor: orientadorSelecionado ? 'pointer' : 'not-allowed',
-                            opacity: orientadorSelecionado ? 1 : 0.4
-                        }}
-                        title="Enviar Solicitação"
-                    >
-                        Enviar solicitação
-                    </Button>
+                        {/* Exibe erro de validação se a lista estiver vazia */}
+                    {errors.orientadorId && (
+                        <Row className="justify-content-center mb-4">
+                            <Col xs={12} md={8} lg={6}>
+                                 <div className="text-danger fw-bold text-center">
+                                    {errors.orientadorId?.message}
+                                </div>
+                            </Col>
+                        </Row>
+                    )}
+                    <Row className="justify-content-center mt-2">
+                        <Col xs={12} md={6} lg={4}>
+                            <Button
+                                variant="primary"
+                                type="submit" id='btn-select'
+                                className='mb-2 p-2 fs-5 fs-md-4 fw-medium w-100'
+                                //Usa variavel do RHF para controlar comportamento do botão
+                                disabled={!orientadorSelecionado}
+                                style={{
+                                    cursor: orientadorSelecionado ? 'pointer' : 'not-allowed',
+                                    opacity: orientadorSelecionado ? 1 : 0.4
+                                }}
+                                title="Enviar Solicitação"
+                            >
+                                Enviar solicitação
+                            </Button>
+                        </Col>
+                    </Row>
                 </Form>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {exibirSucesso && (
-                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                        Solicitação de orientação enviada com sucesso!
-                    </Alert>
+                    <Row className="justify-content-center mt-3">
+                        <Col xs={12} md={8} lg={6}>
+                            <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
+                                Solicitação de orientação enviada com sucesso!
+                            </Alert>
+                        </Col>
+                    </Row>
                 )}
             </Container>
         </>
