@@ -5,21 +5,32 @@ import { useMemo, useState } from "react";
 import { useModal } from "../../../hooks/useModal/useModal";
 import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
-// const validarCampos = (valores) => {
-//     let erros = {}
-//     const nota = parseInt(valores.nota)
-//     //TODO: Lidar com validacao do campo nota, em casos que não é enviado nota
-// }
+import { camposSchema } from "./schema/visaoBancasArtigosZodSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 const VisaoBancasArtigos = () => {
-    //TODO: usar hook de validação
-
-    const [exibirResultado, setExibirResultado] = useState(false)
+   
+    const [exibirResultado, setExibirResultado] = useState({
+        show: false, message: "", variant: ""
+    })
     const [temaSelecionado, setTemaSelecionado] = useState(null)
-    const [resultado, setResultado] = useState(false)
 
     const { show, selectedData, handleOpen, handleClose } = useModal(null)
 
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        reset,
+        formState: {errors}
+    } = useForm({
+        resolver: zodResolver(camposSchema),
+        defaultValues: {
+            idGrupo: "",
+            nota: 0
+        }
+    })
 
     //Mocks temporarios
     const columns = [
@@ -93,7 +104,9 @@ const VisaoBancasArtigos = () => {
                             onClick={() => {
                                 handleOpen({ type: "NOTA", row })
                                 setTemaSelecionado(row.tema)
-                                setResultado(true)
+                                //Injeta id grupo e zera a nota no RHF
+                                setValue("idGrupo", String(row.id));
+                                setValue("nota",0);
                             }}>
                             Atribuir Nota
                         </Button>
@@ -104,8 +117,7 @@ const VisaoBancasArtigos = () => {
                             className={isArtigo ? "text-muted border" : "text-black"}
                             onClick={() => {
                                 setTemaSelecionado(row.tema)
-                                setResultado(false)
-                                setExibirResultado(true)
+                                setExibirResultado({show: true, message: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variant:"danger"})
                             }}>
                             Cancelar Avaliação
                         </Button>
@@ -178,7 +190,9 @@ const VisaoBancasArtigos = () => {
         }
         if (type === 'NOTA') {
             return (
-                <>
+                <Form
+                noValidate
+                onSubmit={handleSubmit(enviarParaBackend)}>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
                             <span className="fw-bold fs-5">{`${data.tema} - ${data.disciplina.toUpperCase()}`}</span>
@@ -206,25 +220,60 @@ const VisaoBancasArtigos = () => {
                                     defaultValue={0}
                                     min={0}
                                     max={10}
+                                    {...register("nota")}
+                                    isInvalid={!!errors.nota}
                                     title="Digite a nota do grupo"
                                     onKeyDown={bloquearCaracteresInputNumber}
                                     className="text-center w-50"
-                                />
-                                <Button variant="success" className="fw-bold text-black px-4" onClick={() => {
-                                    setExibirResultado(true)
-                                    // Fecha o modal após dar a nota
-                                    handleClose();
-                                }}>
+                                    />
+
+                                {/* Exibe o erro do Zod aqui */}
+                                <Form.Control.Feedback type="invalid" className="fw-bold fs-6">
+                                    {errors.nota?.message} 
+                                </Form.Control.Feedback>
+
+                                <Button variant="success"
+                                type="submit" className="fw-bold text-black px-4" 
+                                >
                                     Confirmar Nota
                                 </Button>
                             </div>
                         </Col>
                     </Row>
-                </>
+                </Form>
+                
             );
         }
     };
 
+    const enviarParaBackend = async (dadosValidados) => {
+        try {
+            // Usa formData para enviar para o backend, o grupo e a nota deles
+            const formData = new FormData();
+            formData.append("idGrupo", dadosValidados.idGrupo);
+            formData.append("nota", dadosValidados.nota); // Pega o arquivo real
+
+            console.log("Enviando para o backend...");
+
+            // Simula o delay da rede e a resposta do backend lendo o CSV/XLSX
+            setTimeout(() => {
+                const respostaBackend = "200";
+                if (respostaBackend.includes("200")){
+                    setExibirResultado({ show: true, variant: "success", message: `Nota do grupo ${dadosValidados.idGrupo} enviada com sucesso` });
+                } else{
+                    setExibirResultado({ show: true, variant: "danger", message: `Erro ao enviar nota: ${dadosValidados.nota} do grupo ${dadosValidados.idGrupo}.` });
+                }
+                reset(); // Limpa o formulário
+            }, 1500);
+
+        } catch (e) {
+            console.log(e)
+            setExibirResultado({ show: true, variant: "danger", message: "Erro ao enviar nota, tente novamente" });
+        }finally{
+            handleClose();
+            reset();
+        }
+    };
     return (
         <>
             <UserNavBar
@@ -249,9 +298,8 @@ const VisaoBancasArtigos = () => {
                 </Modal>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {exibirResultado && (
-                    <Alert variant={resultado ? "success" : "warning"} onClose={() => setExibirResultado(false)} dismissible className="mt-3" >
-                        {resultado ? `Nota do grupo de tema: ${temaSelecionado} salva!`
-                            : `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`}
+                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({...exibirResultado, show: false})} dismissible className="mt-3" >
+                        {exibirResultado.message}
                     </Alert>
                 )}
             </Container>
