@@ -1,0 +1,70 @@
+const BASE_URL = import.meta.env.VITE_API_URL;
+/**
+ * Cliente HTTP customizado que atua como interceptador de requisições.
+ * Injeta automaticamente o token de autenticação e trata erros globais (ex: sessão expirada).
+ *
+ * @param {string} endpoint - O caminho da API a ser chamado (ex: "/bancas/grupos"). Não inclua a URL base.
+ * @param {RequestInit} [options={}] - Opções customizadas para o fetch (method, headers, body, etc).
+ * @returns {Promise<any>} A promessa resolvida com os dados da resposta em formato JSON.
+ * @throws {Error} Lança um erro com a mensagem do servidor caso a requisição falhe.
+ */
+export const apiClient = async (endpoint, options = {}) => {
+
+    // ======= Interceptando a requisição =======
+
+    //TODO: Veirificar o nome do item que contem o token jwt no localstorage
+    const token = localStorage.getItem("token")
+
+    //Pega headers padrões
+    const headers = {
+        "Content-Type": "application/json",
+        //Mantem os outros headers que podem ter sido passados
+        ...options.headers,
+    }
+
+    //Se o token existir, coloca ele na requisição
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    try {
+        //Usa o fetch original com URL_BASE + Endpoint
+        const resposta = await fetch(`${BASE_URL}${endpoint}`, {
+            ...options,
+            headers,
+        });
+
+        // ======= Interceptando resposta =======
+
+        //Se backend dizer que o token é invalido/expirado (401 ou 403)
+        if (resposta.status === 401 || resposta.status === 403) {
+            console.error("Sessão expirada. Deslogando usuário...");
+            // Limpa o token antigo
+            localStorage.removeItem("token");
+            //Força o usuário de volta para a tela de login
+            window.location.href = "/login";
+
+            throw new Error("Sessão expirada");
+        }
+
+        //Se deu qualquer erro (400, 404, 500)
+        if (!resposta.ok) {
+            // Tenta ler a mensagem de erro que o backend enviou, ou usa uma generica
+            const dadosErro = await resposta.json().catch(() => null);
+            throw new Error(dadosErro?.message || "Erro de comunicação com o servidor.");
+        }
+
+        //Se deu tudo certo, tenta devolver o JSON (ou vazio dependendo do caso)
+        if (resposta.status !== 204) {
+            return await resposta.json();
+        }
+        return null;
+
+    } catch (erro) {
+        //Pega problemas de Network Error
+        console.error("Erro no apiClient:", erro);
+        throw erro;
+    }
+
+
+}
