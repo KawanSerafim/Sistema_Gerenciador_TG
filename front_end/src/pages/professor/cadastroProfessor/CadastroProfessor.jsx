@@ -5,10 +5,15 @@ import { bloquearCaracteresInputNome } from "../../../utils/utils";
 // 1. Importações do RHF e Zod
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { professorSchema } from "./schema/cadastroProfessorZodSchema";
+import { professorSchema } from "../../../schemas/usuarioSchema";
+import { usuarioService } from "../../../service/login/usuarioService";
 
 const CadastroProfessor = () => {
-  const [exibirSucesso, setExibirSucesso] = useState(false);
+  const [resultado, setResultado] = useState({
+    show: false,
+    variant: "",
+    message: "",
+  });
 
   // 3. Configuração do Hook
   const {
@@ -29,14 +34,40 @@ const CadastroProfessor = () => {
   });
 
   // 4. Função de envio (Só roda se o formulário estiver 100% válido)
-  const enviarParaBackend = (dadosValidados) => {
-    console.log("Enviando payload para a API Java:", dadosValidados);
+  const enviarParaBackend = async (dadosValidados) => {
+    try {
+      //Aguarda o service com o uso do Interceptador
+      const resposta = await usuarioService.cadastrarUsuario(
+        dadosValidados,
+        "professor",
+      );
+      console.log("Enviando payload para a API Java:", dadosValidados);
+      //Se chegou aqui deu tudo certo
+      setResultado({
+        show: true,
+        variant: "success",
+        message: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
+      });
 
-    setExibirSucesso(true);
-    reset(); // Limpa o formulário após o sucesso
+      // Joga a tela pra baixo suavemente para o usuário ler o sucesso
+      window.scrollTo(0, document.body.scrollHeight);
 
-    // Esconde o alerta após 5 segundos
-    setTimeout(() => setExibirSucesso(false), 5000);
+      reset(); // Limpa o formulário após o sucesso
+      //Some a mensagem depois de um tempo
+      setTimeout(
+        () => setResultado({ show: false, variant: "", message: "" }),
+        5000,
+      );
+    } catch (erro) {
+      console.error("Falha no cadastro: ", erro);
+      setResultado({
+        show: true,
+        variant: "danger",
+        message: erro.message || "Erro ao cadastrar. Tente novamente.",
+      });
+      // Joga a tela pra baixo suavemente para o usuário ler o sucesso
+      window.scrollTo(0, document.body.scrollHeight);
+    }
   };
 
   return (
@@ -168,14 +199,16 @@ const CadastroProfessor = () => {
         </div>
       </Form>
 
-      {exibirSucesso && (
+      {resultado.show && (
         <Alert
-          variant="success"
-          onClose={() => setExibirSucesso(false)}
+          variant={resultado.variant}
+          onClose={() =>
+            setResultado({ show: false, variant: "", message: "" })
+          }
           dismissible
-          className="mt-3 shadow-sm"
+          className="mt-3 shadow-sm fw-bold text-center"
         >
-          Professor cadastrado com sucesso!
+          {resultado.message}
         </Alert>
       )}
     </Container>
