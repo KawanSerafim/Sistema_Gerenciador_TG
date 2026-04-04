@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +33,18 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
     public Optional<Turma> buscarPorId(TurmaId id) {
         return repositorio.findById(id.valor().toString())
                 .map(TurmaMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Turma> buscarTodasPorIds(Set<TurmaId> ids) {
+        var idsTexto = ids.stream()
+                .map(id -> id.valor().toString())
+                .toList();
+
+        return repositorio.findAllById(idsTexto).stream()
+                .map(TurmaMapeador::paraDominio)
+                .toList();
     }
 
     @Override
