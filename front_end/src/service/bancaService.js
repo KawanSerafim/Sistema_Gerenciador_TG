@@ -1,4 +1,4 @@
-import { apiClient } from "./apiService";
+import { apiClient } from "./apiClient";
 
 export const bancaService = {
     // Função para buscar dados (GET)
