@@ -10,7 +10,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Turm
 import java.util.Optional;
 
 public interface TurmaRepositorio {
-    Turma salvar(Turma turma);
+    void salvar(Turma turma);
     Optional<Turma> buscarPorId(TurmaId id);
     Optional<Turma> buscarPorCursoIdEDisciplinaETurnoEAnoESemestre(
             CursoId cursoId, Disciplina disciplina, Turno turno,
