@@ -77,8 +77,12 @@ public class Turma {
     public TurmaId id() { return id; }
     public String idTexto() { return id.valor().toString(); }
     public CursoId cursoId() { return cursoId; }
+    public String cursoIdTexto() { return cursoId.valor().toString(); }
     public Disciplina disciplina() { return disciplina; }
     public Turno turno() { return turno; }
     public PeriodoLetivo periodoLetivo() { return periodoLetivo; }
     public ProfessorId professorTgId() { return professorTgId; }
+    public String professorTgIdTexto() {
+        return professorTgId.valor().toString();
+    }
 }
