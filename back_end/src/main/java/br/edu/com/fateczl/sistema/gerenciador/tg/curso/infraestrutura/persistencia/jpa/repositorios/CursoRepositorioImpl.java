@@ -1,4 +1,49 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.persistencia.jpa.repositorios;
 
-public class CursoRepositorioImpl {
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.persistencia.jpa.mapeador.CursoMapeador;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class CursoRepositorioImpl implements CursoRepositorio {
+    private final CursoJpaRepositorio repositorio;
+
+    @Override
+    @Transactional
+    public void salvar(Curso curso) {
+        var modelo = CursoMapeador.paraModelo(curso);
+        repositorio.save(modelo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> buscarPorId(CursoId id) {
+        return repositorio.findById(id.valor().toString())
+                .map(CursoMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> buscarPorNome(Nome nome) {
+        return repositorio.findByNome(nome.valor())
+                .map(CursoMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> buscarPorCoordenadorId(ProfessorId professorId) {
+        String coordenadorIdTexto = professorId.toString();
+
+        return repositorio.findByCoordenadorId(coordenadorIdTexto)
+                .map(CursoMapeador::paraDominio);
+    }
 }

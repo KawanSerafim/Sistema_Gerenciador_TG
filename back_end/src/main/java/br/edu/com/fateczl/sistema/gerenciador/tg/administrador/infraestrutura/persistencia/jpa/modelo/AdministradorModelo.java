@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.administrador.infraestrutura.persistencia.jpa.modelos;
+package br.edu.com.fateczl.sistema.gerenciador.tg.administrador.infraestrutura.persistencia.jpa.modelo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class AdministradorModelo {
     @Id
+    @Column(updatable = false)
     private String id;
 
     @Column(nullable = false)

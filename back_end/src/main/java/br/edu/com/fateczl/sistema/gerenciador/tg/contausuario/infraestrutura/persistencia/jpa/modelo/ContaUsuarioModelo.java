@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.persistencia.jpa.modelos;
+package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.persistencia.jpa.modelo;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.StatusContaUsuario;
 import jakarta.persistence.*;
@@ -13,6 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class ContaUsuarioModelo {
     @Id
+    @Column(updatable = false)
     private String id;
 
     @Column(nullable = false, unique = true)
