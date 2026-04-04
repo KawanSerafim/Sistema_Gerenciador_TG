@@ -24,7 +24,7 @@ public class ContaUsuarioRepositorioImpl implements ContaUsuarioRepositorio {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<ContaUsuario> buscarPorId(ContaUsuarioId id) {
         String idTexto = id.toString();
 
@@ -33,7 +33,7 @@ public class ContaUsuarioRepositorioImpl implements ContaUsuarioRepositorio {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<ContaUsuario> buscarPorEmail(Email email) {
         return repositorio.findByEmail(email.valor())
                 .map(ContaUsuarioMapeador::paraDominio);

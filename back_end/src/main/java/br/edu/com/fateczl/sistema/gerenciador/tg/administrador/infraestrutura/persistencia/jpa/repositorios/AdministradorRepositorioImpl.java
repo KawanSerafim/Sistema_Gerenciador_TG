@@ -24,14 +24,14 @@ public class AdministradorRepositorioImpl implements AdministradorRepositorio {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Administrador> buscarPorId(AdministradorId id) {
         return repositorio.findById(id.valor().toString())
                 .map(AdministradorMapeador::paraDominio);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Administrador> buscarPorEmail(Email email) {
         return repositorio.findByEmailDaConta(email.valor())
                 .map(AdministradorMapeador::paraDominio);

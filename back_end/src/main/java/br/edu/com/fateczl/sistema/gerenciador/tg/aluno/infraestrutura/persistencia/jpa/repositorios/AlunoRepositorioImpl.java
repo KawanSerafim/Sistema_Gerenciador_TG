@@ -26,14 +26,14 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Aluno> buscarPorMatricula(Matricula matricula) {
         return repositorio.findByMatricula(matricula.valor())
                 .map(AlunoMapeador::paraDominio);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<List<Aluno>> buscarPorMatriculas(
             List<Matricula> matriculas
     ) {
@@ -57,7 +57,7 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Aluno> buscarPorContaId(ContaUsuarioId contaUsuarioId) {
         String contaUsuarioIdTexto = contaUsuarioId.valor().toString();
 

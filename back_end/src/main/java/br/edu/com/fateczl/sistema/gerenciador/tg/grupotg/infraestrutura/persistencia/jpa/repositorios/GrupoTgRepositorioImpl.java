@@ -17,6 +17,7 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
     private final GrupoTgJpaRepositorio repositorio;
 
     @Override
+    @Transactional
     public void salvar(GrupoTg grupoTg) {
         var modelo = GrupoTgMapeador.paraModelo(grupoTg);
         repositorio.save(modelo);
@@ -24,7 +25,7 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<GrupoTg> buscarPorAlunoIdECursoId(
+    public Optional<GrupoTg> buscarPorAlunoECurso(
             AlunoId alunoId,
             CursoId cursoId
     ) {
