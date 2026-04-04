@@ -7,7 +7,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Prof
 import java.util.Optional;
 
 public interface ProfessorRepositorio {
-    Professor salvar(Professor professor);
+    void salvar(Professor professor);
     Optional<Professor> buscarPorMatricula(Matricula matricula);
     Optional<Professor> buscarPorEmail(Email email);
 }
