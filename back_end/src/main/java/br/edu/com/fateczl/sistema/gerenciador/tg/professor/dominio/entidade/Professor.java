@@ -82,5 +82,8 @@ public class Professor implements Coorientador {
     public Matricula matricula() { return matricula; }
     public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
+    public String contaUsuarioIdTexto() {
+        return contaUsuarioId.valor().toString();
+    }
     public CargoProfessor cargo() { return cargo; }
 }
