@@ -159,14 +159,23 @@ public class GrupoTg {
         );
     }
 
+    // Métodos Getters de Delegação --------------------------------------------
+
+    public String nomeTemaTg() { return temaTg.nome(); }
+    public String descricaoTemaTg() { return temaTg.descricao(); }
+
     // Métodos Getters ---------------------------------------------------------
 
     public GrupoTgId id() { return id; }
     public String idTexto() { return id.valor().toString(); }
     public ProfessorId orientadorId() { return orientadorId; }
+    public String orientadorIdTexto() {
+        return orientadorId.valor().toString();
+    }
     public String coorientadorIdTexto() { return coorientadorIdTexto; }
     public TipoCoorientador tipoCoorientador() { return tipoCoorientador; }
     public CursoId cursoId() { return cursoId; }
+    public String cursoIdTexto() { return cursoId.valor().toString(); }
     public Set<Disciplina> disciplinas() {
         return Collections.unmodifiableSet(disciplinas);
     }
