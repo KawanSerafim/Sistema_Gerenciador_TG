@@ -8,7 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.
 import java.util.Optional;
 
 public interface CursoRepositorio {
-    Curso salvar(Curso curso);
+    void salvar(Curso curso);
     Optional<Curso> buscarPorId(CursoId id);
     Optional<Curso> buscarPorNome(Nome nome);
     Optional<Curso> buscarPorCoordenadorId(ProfessorId professorId);
