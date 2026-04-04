@@ -87,4 +87,7 @@ public class Curso {
     public String nomeTexto() { return nome.valor(); }
     public ParametrosCurso parametros() { return parametros; }
     public ProfessorId coordenadorId() { return coordenadorId; }
+    public String coordenadorIdTexto() {
+        return coordenadorId.valor().toString();
+    }
 }
