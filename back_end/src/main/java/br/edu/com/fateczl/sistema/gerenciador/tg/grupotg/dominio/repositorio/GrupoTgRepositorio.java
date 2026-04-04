@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface GrupoTgRepositorio {
     void salvar(GrupoTg grupoTg);
-    Optional<GrupoTg> buscarPorAlunoIdECursoId(
+    Optional<GrupoTg> buscarPorAlunoECurso(
             AlunoId alunoId,
             CursoId cursoId
     );
