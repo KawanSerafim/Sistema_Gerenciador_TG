@@ -1,10 +1,9 @@
+import { obrigatorio } from "../../utils/utils";
 import { apiClient } from "../apiClient";
 
-const obrigatorio = (nomeParam) => {
-  throw new Error(`Parametro "${nomeParam}" é obrigatório`);
-};
 
 export const usuarioService = {
+
   /**
    * Cadastra um novo usuario
    * @param {Object} payload - Objeto contendo {email, senha}

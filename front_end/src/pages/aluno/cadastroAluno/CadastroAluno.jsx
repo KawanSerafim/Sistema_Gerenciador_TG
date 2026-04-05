@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { alunoSchema } from "../../../schemas/usuarioSchema";
 import { useState } from "react";
-import { usuarioService } from "../../../service/login/usuarioService";
+import { usuarioService } from "../../../service/usuario/usuarioService";
 
 const CadastroAluno = () => {
   const [resultado, setResultado] = useState({

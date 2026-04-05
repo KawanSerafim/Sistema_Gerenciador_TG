@@ -22,3 +22,7 @@ export function validarNome(nome) {
     const regex = /^[a-záàâãéèêíïóôõöúçñA-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ\s'-]{2,}$/;
     return regex.test(nome.trim());
 }
+
+export const obrigatorio = (nomeParam) => {
+    throw new Error(`Parametro "${nomeParam}" é obrigatório`);
+};

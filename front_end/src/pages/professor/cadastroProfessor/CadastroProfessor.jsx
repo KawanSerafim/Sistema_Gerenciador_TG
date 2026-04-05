@@ -6,7 +6,7 @@ import { bloquearCaracteresInputNome } from "../../../utils/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { professorSchema } from "../../../schemas/usuarioSchema";
-import { usuarioService } from "../../../service/login/usuarioService";
+import { usuarioService } from "../../../service/usuario/usuarioService";
 
 const CadastroProfessor = () => {
   const [resultado, setResultado] = useState({
