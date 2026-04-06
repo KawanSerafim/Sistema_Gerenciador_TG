@@ -15,12 +15,12 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class CoorientadorExternoModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(nullable = false)
+    @Column(length = 150, nullable = false)
     private String nome;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String origem;
 }

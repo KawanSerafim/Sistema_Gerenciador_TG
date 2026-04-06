@@ -15,9 +15,13 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class AjusteTipoTgModelo {
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_tg", nullable = false)
+    @Column(length = 30, name = "tipo_tg", nullable = false)
     private TipoTg tipoTg;
 
-    @Column(name = "max_alunos_grupo", nullable = false)
+    @Column(
+            columnDefinition = "TINYINT",
+            name = "max_alunos_grupo",
+            nullable = false
+    )
     private Integer maxAlunosGrupo;
 }

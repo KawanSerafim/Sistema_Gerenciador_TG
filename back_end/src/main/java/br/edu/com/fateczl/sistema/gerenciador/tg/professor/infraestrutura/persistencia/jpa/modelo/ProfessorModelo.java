@@ -13,19 +13,24 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class ProfessorModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 20, nullable = false, unique = true)
     private String matricula;
 
-    @Column(nullable = false)
+    @Column(length = 150, nullable = false)
     private String nome;
 
-    @Column(name = "conta_usuario_id", nullable = true, unique = true)
+    @Column(
+            length = 36,
+            name = "conta_usuario_id",
+            nullable = true,
+            unique = true
+    )
     private String contaUsuarioId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(length = 30, nullable = false)
     private CargoProfessor cargo;
 }

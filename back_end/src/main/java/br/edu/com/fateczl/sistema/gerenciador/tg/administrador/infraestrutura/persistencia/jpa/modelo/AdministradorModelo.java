@@ -15,12 +15,17 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class AdministradorModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false, nullable = false)
     private String id;
 
-    @Column(nullable = false)
+    @Column(length = 150, nullable = false)
     private String nome;
 
-    @Column(name = "conta_usuario_id", nullable = false, unique = true)
+    @Column(
+            length = 36,
+            name = "conta_usuario_id",
+            nullable = false,
+            unique = true
+    )
     private String contaUsuarioId;
 }

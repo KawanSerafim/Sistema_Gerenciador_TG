@@ -13,13 +13,13 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class ContaUsuarioModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 150, nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 100, nullable = false)
     private String senha;
 
     @Enumerated(EnumType.STRING)

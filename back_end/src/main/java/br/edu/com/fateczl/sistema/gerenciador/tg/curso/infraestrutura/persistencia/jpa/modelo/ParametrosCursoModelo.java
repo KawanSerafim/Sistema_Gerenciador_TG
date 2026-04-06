@@ -22,7 +22,7 @@ public class ParametrosCursoModelo {
             joinColumns = @JoinColumn(name = "curso_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "turno", nullable = false)
+    @Column(length = 30, name = "turno", nullable = false)
     private Set<Turno> turnos;
 
     @ElementCollection
@@ -31,7 +31,7 @@ public class ParametrosCursoModelo {
             joinColumns = @JoinColumn(name = "curso_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "disciplina", nullable = false)
+    @Column(length = 30, name = "disciplina", nullable = false)
     private Set<Disciplina> disciplinas;
 
     @ElementCollection

@@ -14,26 +14,26 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class TurmaModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(name = "curso_id", nullable = false)
+    @Column(length = 36, name = "curso_id", nullable = false)
     private String cursoId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(length = 30, nullable = false)
     private Disciplina disciplina;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(length = 30, nullable = false)
     private Turno turno;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "SMALLINT", nullable = false)
     private Integer ano;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TINYINT", nullable = false)
     private Integer semestre;
 
-    @Column(name = "professor_id", nullable = false)
+    @Column(length = 36, name = "professor_id", nullable = false)
     private String professorId;
 }

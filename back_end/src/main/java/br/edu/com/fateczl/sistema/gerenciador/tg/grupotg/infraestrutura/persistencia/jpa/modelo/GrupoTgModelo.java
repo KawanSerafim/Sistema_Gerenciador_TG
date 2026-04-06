@@ -18,20 +18,20 @@ import java.util.Set;
 @NoArgsConstructor @AllArgsConstructor
 public class GrupoTgModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(name = "orientador_id", nullable = false)
+    @Column(length = 36, name = "orientador_id", nullable = false)
     private String orientadorId;
 
-    @Column(name = "coorientador_id")
+    @Column(length = 36, name = "coorientador_id")
     private String coorientadorId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_coorientador")
+    @Column(length = 30, name = "tipo_coorientador")
     private TipoCoorientador tipoCoorientador;
 
-    @Column(name = "curso_id", nullable = false)
+    @Column(length = 36, name = "curso_id", nullable = false)
     private String cursoId;
 
     @ElementCollection
@@ -40,17 +40,21 @@ public class GrupoTgModelo {
             joinColumns = @JoinColumn(name = "grupo_tg_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "disciplina", nullable = false)
+    @Column(length = 30, name = "disciplina", nullable = false)
     private Set<Disciplina> disciplinas;
 
-    @Column(name = "nome_tema_tg", nullable = false)
+    @Column(length = 150, name = "nome_tema_tg", nullable = false)
     private String nomeTemaTg;
 
-    @Column(name = "descricao_tema_tg", nullable = false)
+    @Column(
+            columnDefinition = "TEXT",
+            name = "descricao_tema_tg",
+            nullable = false
+    )
     private String descricaoTemaTg;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_tg", nullable = false)
+    @Column(length = 30, name = "tipo_tg", nullable = false)
     private TipoTg tipoTg;
 
     @ElementCollection
@@ -58,6 +62,6 @@ public class GrupoTgModelo {
             name = "grupo_tg_alunos",
             joinColumns = @JoinColumn(name = "grupo_tg_id")
     )
-    @Column(nullable = false)
+    @Column(length = 36, nullable = false)
     private List<String> alunosIds;
 }

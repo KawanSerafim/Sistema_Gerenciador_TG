@@ -16,16 +16,21 @@ import java.util.Set;
 @NoArgsConstructor @AllArgsConstructor
 public class AlunoModelo {
     @Id
-    @Column(updatable = false)
+    @Column(length = 36, updatable = false, nullable = false)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 20, nullable = false, unique = true)
     private String matricula;
 
-    @Column(nullable = false)
+    @Column(length = 150, nullable = false)
     private String nome;
 
-    @Column(name = "conta_usuario_id", nullable = true, unique = true)
+    @Column(
+            length = 36,
+            name = "conta_usuario_id",
+            nullable = true,
+            unique = true
+    )
     private String contaUsuarioId;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -33,7 +38,7 @@ public class AlunoModelo {
             name = "alunos_turmas",
             joinColumns = @JoinColumn(name = "aluno_id")
     )
-    @Column(name = "turma_id", nullable = false)
+    @Column(length = 36, name = "turma_id", nullable = false)
     private Set<String> turmasIds = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
