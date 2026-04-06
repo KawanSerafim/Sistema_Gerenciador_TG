@@ -7,7 +7,7 @@ import { bloquearCaracteresInputNumber } from "../../../../utils/utils";
 // RHF e Zod
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { camposSchema } from "./schemas/turmaSchema";
+import { camposSchema } from "../../../../schemas/professor/coordenador/cadastrarTurma/cadastrarTurmaZodSchema";
 
 
 
@@ -19,29 +19,29 @@ const curso = {
 
 const CadastrarTurma = () => {
     //TODO: Trocar mocks pelos dados do backend
-    
+
     //Estado para o sucesso
     const [exibirSucesso, setExibirSucesso] = useState(false)
-    
+
     const todosProfessores = ["Cristina", "Luciano", "Antonio", "Rogerio", "Colevati"];
 
     //Conf do RHF
     const {
-        register, 
+        register,
         handleSubmit,
         setValue,
         control,
-        formState: {errors},
-        reset, 
-        } = useForm({
-            resolver: zodResolver(camposSchema),
-            defaultValues: {
-                ano: new Date().getFullYear(),
-                semestre: "",
-                turmas: {}
-            }
-        })
-    
+        formState: { errors },
+        reset,
+    } = useForm({
+        resolver: zodResolver(camposSchema),
+        defaultValues: {
+            ano: new Date().getFullYear(),
+            semestre: "",
+            turmas: {}
+        }
+    })
+
     //Observadores
     // Checkbox
     const apenasUmProf = useWatch({
@@ -51,15 +51,17 @@ const CadastrarTurma = () => {
     //Select do topo
     const profUnico = useWatch({
         control,
-        name:"profUnico"});
+        name: "profUnico"
+    });
     //Valores dos selects individuais
     const turmasWatched = useWatch({
         control,
-        name: "turmas"});
+        name: "turmas"
+    });
 
     //Efeito para aplicar professor unico em tempo real, semnpre que os observadores forem acionados
     useEffect(() => {
-        if (apenasUmProf && profUnico){
+        if (apenasUmProf && profUnico) {
             const novaConfiguracao = {};
             curso.turnos.forEach(t => {
                 curso.disciplinas.forEach(d => {
@@ -67,7 +69,7 @@ const CadastrarTurma = () => {
                 })
             })
             //Atualiza o RHF
-            setValue("turmas", novaConfiguracao,  {shouldValidate: true});
+            setValue("turmas", novaConfiguracao, { shouldValidate: true });
         }
     }, [apenasUmProf, profUnico, setValue])
 

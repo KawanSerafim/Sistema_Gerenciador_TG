@@ -11,23 +11,8 @@ import UserNavBar from '../../../components/usernavbar/UserNavBar';
 
 // Zod e RHF para validações
 import { useFieldArray, useForm } from 'react-hook-form';
-import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
-
-
-//Schema de validação
-const camposSchema = z.object({
-    tema: z.string()
-        .min(1, "O tema é obrigatório"),
-    tipoTG: z.string()
-        .min(1, "O Tipo de TG é um campo obrigatório"),
-    integrantes: z.array(z.object({
-        // Aceita string ou number
-        id: z.union([z.string(), z.number()]),
-        nome: z.string()
-    })).min(1, "Adicione pelo menos um integrante ao grupo.")
-})
-
+import { camposSchema } from '../../../schemas/aluno/formarGrupo/formarGrupoZodSchema';
 
 const FormarGrupo = () => {
     const [exibirSucesso, setExibirSucesso] = useState(false)

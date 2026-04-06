@@ -7,15 +7,10 @@ import UserNavBar from '../../components/usernavbar/UserNavBar';
 import { useState } from "react";
 
 //Zod e RHF para validação
-import {z} from "zod"
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { camposSchema } from '../../schemas/utils/confirmarEmail/confirmarEmailZodSchema';
 
-
-//Schema de validação
-const camposSchema = z.object({
-    codigo: z.string().min(1, "Codigo é um campo obrigatório")
-})
 
 const ConfirmarEmail = () => {
     //Estado para o sucesso
@@ -24,7 +19,7 @@ const ConfirmarEmail = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors } 
+        formState: { errors }
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
@@ -67,7 +62,7 @@ const ConfirmarEmail = () => {
                         type="text"
                         placeholder="Digite o código enviado em seu email"
                         name="codigo"
-                       {...register("codigo")}
+                        {...register("codigo")}
                         isInvalid={!!errors.codigo}
                         className='text-black fw-bold fs-4 w-75 mb-4 text-center'
                     />

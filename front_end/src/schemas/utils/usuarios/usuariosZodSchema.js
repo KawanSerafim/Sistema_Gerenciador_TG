@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { validarNome } from "../utils/utils";
+import { validarNome } from "../../../utils/utils";
 validarNome;
 
 // O schema base para usuario
@@ -11,7 +11,7 @@ const usuarioSchema = z.object({
   confirmarSenha: z.string().min(1, "Confirme sua senha"),
 });
 
-// Schema especifico do professor
+// Schema especifico do professor para cadastro
 export const professorSchema = usuarioSchema
   .extend({
     nome: z
@@ -27,7 +27,7 @@ export const professorSchema = usuarioSchema
     path: ["confirmarSenha"],
   });
 
-//Schema de validação zod
+//Schema especifico de aluno para cadastro
 export const alunoSchema = usuarioSchema
   .extend({
     nome: z
@@ -50,3 +50,14 @@ export const alunoSchema = usuarioSchema
     message: "Senha e Confirmar Senha devem ser iguais",
     path: ["confirmarSenha"],
   });
+
+
+//Schema para login
+export const loginSchema = z.object({
+  email: z
+    .email("Formato de email invalido")
+    .min(1, "O email é obrigatório"),
+  senha: z
+    .string()
+    .min(1, "A senha é campo obrigatório")
+})

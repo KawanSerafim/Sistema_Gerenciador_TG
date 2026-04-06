@@ -9,9 +9,9 @@ import { bloquearCaracteresInputNome } from "../../../utils/utils";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
-import { alunoSchema } from "../../../schemas/usuarioSchema";
+import { alunoSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
 import { useState } from "react";
-import { usuarioService } from "../../../service/usuario/usuarioService";
+import { usuarioService } from "../../../services/usuario/usuarioService";
 
 const CadastroAluno = () => {
   const [resultado, setResultado] = useState({
@@ -62,7 +62,7 @@ const CadastroAluno = () => {
   const enviarParaBackend = async (dadosValidados) => {
     try {
       //Aguarda o service com o uso do Interceptador
-      const resposta = await usuarioService.cadastrarUsuario(
+      await usuarioService.cadastrarUsuario(
         dadosValidados,
         "aluno",
       );

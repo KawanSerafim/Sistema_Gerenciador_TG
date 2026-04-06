@@ -3,7 +3,7 @@ import { Alert, Button, Col, Container, Form, FormControl, FormGroup, FormLabel,
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 
 
-import { finalizarDisciplinasZodSchema } from "./schema/finalizarDisciplinasZodSchema";
+import { finalizarDisciplinasZodSchema } from "../../../schemas/professor/finalizarDisciplinas/finalizarDisciplinasZodSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 
@@ -29,7 +29,7 @@ const FinalizarDisciplinas = () => {
         handleSubmit,
         setValue,
         control,
-        formState: {errors}
+        formState: { errors }
     } = useForm({
         resolver: zodResolver(finalizarDisciplinasZodSchema),
         defaultValues: {
@@ -38,8 +38,8 @@ const FinalizarDisciplinas = () => {
     })
 
 
-    const [exibirResultado, setExibirResultado ] = useState({show: false, variant: "", message: ""})
-    
+    const [exibirResultado, setExibirResultado] = useState({ show: false, variant: "", message: "" })
+
 
     // Disciplinas
     //TODO: buscar disciplinas do professor logado e colocar no estado
@@ -65,9 +65,9 @@ const FinalizarDisciplinas = () => {
     //Função para o checkbox "Selecionar Todas"
     const handleSelecionarTodas = (event) => {
         if (event.target.checked) {
-            setValue("disciplinasSelecionadas",todasDisciplinas, {shouldValidate: true})
+            setValue("disciplinasSelecionadas", todasDisciplinas, { shouldValidate: true })
         } else {
-            setValue("disciplinasSelecionadas", [], {shouldValidate: true})
+            setValue("disciplinasSelecionadas", [], { shouldValidate: true })
         }
     }
 
@@ -75,24 +75,24 @@ const FinalizarDisciplinas = () => {
     const handleSelecionarIndividual = (disciplina) => {
         if (disciplinasSelecionadas.includes(disciplina)) {
             //Se ja esta na lista é por que o usuario quer tirar
-            setValue("disciplinasSelecionadas",disciplinasSelecionadas.filter(item => item !== disciplina), {shouldValidate: true})
+            setValue("disciplinasSelecionadas", disciplinasSelecionadas.filter(item => item !== disciplina), { shouldValidate: true })
         } else {
             //Se não, adiciona na lista
-            setValue("disciplinasSelecionadas", [...disciplinasSelecionadas, disciplina], {shouldValidate: true});
+            setValue("disciplinasSelecionadas", [...disciplinasSelecionadas, disciplina], { shouldValidate: true });
         }
     }
 
 
-// A função mock que realmente envia os dados caso passe na validação do frontend
+    // A função mock que realmente envia os dados caso passe na validação do frontend
     const enviarParaBackend = (dadosValidados) => {
         // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
         console.log("Enviando payload para a API:", dadosValidados);
         //Ativa alerta de sucesso
-        setExibirResultado({show: true, variant: "success", message: "Disciplinas finalizadas com sucesso!"});
+        setExibirResultado({ show: true, variant: "success", message: "Disciplinas finalizadas com sucesso!" });
         //Limpa RHF
         reset();
         //Esconde depois de alguns segundos
-        setTimeout(() => setExibirResultado({show: false}), 5000);
+        setTimeout(() => setExibirResultado({ show: false }), 5000);
     };
 
 
@@ -133,7 +133,7 @@ const FinalizarDisciplinas = () => {
                                 id="SelectAllDisciplinas"
                                 checked={disciplinasSelecionadas.length === todasDisciplinas.length}
                                 onChange={handleSelecionarTodas}
-                                
+
                                 isInvalid={!!errors.disciplinasSelecionadas}
                                 className="mb-2 fw-medium text-secondary fs-5"
 
@@ -149,78 +149,78 @@ const FinalizarDisciplinas = () => {
                             {/* Caso tenha disciplinas de manhã */}
                             {disciplinas ?
                                 //Filtra primeiro para depois mapear 
-                                disciplinas.filter( disciplina => disciplina.turnos.includes("Manhã"))
-                                .map((d) => {
-                                    return (
-                                        <Form.Check
-                                            key={`${d.id}-manha`}
-                                            label={d.nome}
-                                            name={`${d.nome}-manha`}
-                                            title={d.nome + " manhã"}
-                                            type="checkbox"
-                                            id={`Select${d.nome}Manha`}
-                                            className="mb-3 fw-medium text-secondary fs-5"
-                                            checked={disciplinasSelecionadas.includes(`Select${d.nome}Manha`)}
-                                            onChange={() => handleSelecionarIndividual(`Select${d.nome}Manha`)}
-                                            isInvalid={!!errors.disciplinasSelecionadas}
-                                        />
-                                    )
-                            }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Manhã</h3>)}
+                                disciplinas.filter(disciplina => disciplina.turnos.includes("Manhã"))
+                                    .map((d) => {
+                                        return (
+                                            <Form.Check
+                                                key={`${d.id}-manha`}
+                                                label={d.nome}
+                                                name={`${d.nome}-manha`}
+                                                title={d.nome + " manhã"}
+                                                type="checkbox"
+                                                id={`Select${d.nome}Manha`}
+                                                className="mb-3 fw-medium text-secondary fs-5"
+                                                checked={disciplinasSelecionadas.includes(`Select${d.nome}Manha`)}
+                                                onChange={() => handleSelecionarIndividual(`Select${d.nome}Manha`)}
+                                                isInvalid={!!errors.disciplinasSelecionadas}
+                                            />
+                                        )
+                                    }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Manhã</h3>)}
                         </div>
                         <div className="gap-2">
                             <FormLabel className='text-secondary fs-4 fw-medium'>
                                 Tarde
                             </FormLabel>
                             {/* Caso tenha disciplinas de tarde */}
-                            {disciplinas ? 
-                                disciplinas.filter( disciplina => disciplina.turnos.includes("Tarde"))
-                                .map((d) => {
-                                    return (
-                                        <Form.Check
-                                            key={`${d.id}-tarde`}
-                                            label={d.nome}
-                                            name={`${d.nome}-tarde`}
-                                            title={d.nome + " tarde"}
-                                            type="checkbox"
-                                            id={`Select${d.nome}Tarde`}
-                                            className="mb-3 fw-medium text-secondary fs-5"
-                                            checked={disciplinasSelecionadas.includes(`Select${d.nome}Tarde`)}
-                                            onChange={() => handleSelecionarIndividual(`Select${d.nome}Tarde`)}
-                                            isInvalid={!!errors.disciplinasSelecionadas}
-                                        />
-                                    )
-                            }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Tarde</h3>)}
+                            {disciplinas ?
+                                disciplinas.filter(disciplina => disciplina.turnos.includes("Tarde"))
+                                    .map((d) => {
+                                        return (
+                                            <Form.Check
+                                                key={`${d.id}-tarde`}
+                                                label={d.nome}
+                                                name={`${d.nome}-tarde`}
+                                                title={d.nome + " tarde"}
+                                                type="checkbox"
+                                                id={`Select${d.nome}Tarde`}
+                                                className="mb-3 fw-medium text-secondary fs-5"
+                                                checked={disciplinasSelecionadas.includes(`Select${d.nome}Tarde`)}
+                                                onChange={() => handleSelecionarIndividual(`Select${d.nome}Tarde`)}
+                                                isInvalid={!!errors.disciplinasSelecionadas}
+                                            />
+                                        )
+                                    }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Tarde</h3>)}
                         </div>
                         <div className="gap-2">
                             <FormLabel className='text-secondary fs-4 fw-medium'>
                                 Noite
                             </FormLabel>
                             {/* Caso tenha disciplinas de noite */}
-                            {disciplinas ? 
-                                disciplinas.filter( disciplina => disciplina.turnos.includes("Noite"))
-                                .map((d) => {
-                                    return (
-                                        <Form.Check
-                                            key={`${d.id}-noite`}
-                                            label={d.nome}
-                                            name={`${d.nome}-noite`}
-                                            title={d.nome + " noite"}
-                                            type="checkbox"
-                                            id={`Select${d.nome}Noite`}
-                                            className="mb-3 fw-medium text-secondary fs-5"
-                                            checked={disciplinasSelecionadas.includes(`Select${d.nome}Noite`)}
-                                            onChange={() => handleSelecionarIndividual(`Select${d.nome}Noite`)}
-                                            isInvalid={!!errors.disciplinasSelecionadas}
-                                        />
-                                    )
-                            }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Noite</h3>)}
+                            {disciplinas ?
+                                disciplinas.filter(disciplina => disciplina.turnos.includes("Noite"))
+                                    .map((d) => {
+                                        return (
+                                            <Form.Check
+                                                key={`${d.id}-noite`}
+                                                label={d.nome}
+                                                name={`${d.nome}-noite`}
+                                                title={d.nome + " noite"}
+                                                type="checkbox"
+                                                id={`Select${d.nome}Noite`}
+                                                className="mb-3 fw-medium text-secondary fs-5"
+                                                checked={disciplinasSelecionadas.includes(`Select${d.nome}Noite`)}
+                                                onChange={() => handleSelecionarIndividual(`Select${d.nome}Noite`)}
+                                                isInvalid={!!errors.disciplinasSelecionadas}
+                                            />
+                                        )
+                                    }) : (<h3 className="text-secondary fs-4 fw-medium">Curso sem disciplinas do périodo da Noite</h3>)}
                         </div>
                     </FormGroup>
                     {/* Exibe erro de validação se a lista estiver vazia */}
                     {errors.disciplinasSelecionadas && (
                         <Row className="justify-content-center mb-4">
                             <Col xs={12} md={8} lg={6}>
-                                 <div className="text-danger fw-bold text-center">
+                                <div className="text-danger fw-bold text-center">
                                     {errors.disciplinasSelecionadas?.message}
                                 </div>
                             </Col>
@@ -238,12 +238,12 @@ const FinalizarDisciplinas = () => {
                             >
                                 Finalizar Disciplinas
                             </Button>
-            {/* Renderiza o alerta de sucesso após passar nas validações */}
-            {exibirResultado.show && (
-                <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({...exibirResultado, show: false})} dismissible className="mt-3" >
-                    {exibirResultado.message}
-                </Alert>
-            )}
+                            {/* Renderiza o alerta de sucesso após passar nas validações */}
+                            {exibirResultado.show && (
+                                <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
+                                    {exibirResultado.message}
+                                </Alert>
+                            )}
                         </Col>
                     </Row>
                 </Form>

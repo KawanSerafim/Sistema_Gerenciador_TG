@@ -7,8 +7,8 @@ import UserNavBar from "../../components/usernavbar/UserNavBar";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cursoSchema } from "../../schemas/curso/cadastrarCursoZodSchema";
-import { professorService } from "../../service/professor/professorService";
-import { cursoService } from "../../service/curso/cursoService";
+import { professorService } from "../../services/professor/professorService"
+import { cursoService } from "../../services/curso/cursoService";
 
 
 const CadastrarCurso = () => {

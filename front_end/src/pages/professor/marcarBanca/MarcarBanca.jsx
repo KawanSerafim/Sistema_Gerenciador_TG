@@ -9,7 +9,7 @@ import UserNavBar from "../../../components/usernavbar/UserNavBar"
 
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { camposSchema } from "./marcarBancaSchema"
+import { camposSchema } from "../../../schemas/professor/marcarBanca/marcarBancaSchema"
 
 
 // Mocks
@@ -34,8 +34,8 @@ const MarcarBanca = () => {
     const {
         register,
         control,
-        formState: {errors},
-        handleSubmit, 
+        formState: { errors },
+        handleSubmit,
         getValues,
         setValue
     } = useForm({
@@ -49,7 +49,7 @@ const MarcarBanca = () => {
         }
     })
 
-    const {fields: membrosFields, append, remove} = useFieldArray({
+    const { fields: membrosFields, append, remove } = useFieldArray({
         control,
         name: "membros"
     })
@@ -293,8 +293,8 @@ const MarcarBanca = () => {
                                     type="date"
                                     name="data"
                                     title="Digite a data da banca"
-                                   {...register("data")}
-                                   
+                                    {...register("data")}
+
                                     isInvalid={!!errors.data}
                                     className="bg-white text-black fw-normal fs-5 "
                                 />
@@ -325,7 +325,7 @@ const MarcarBanca = () => {
                                     name="local"
                                     title="Digite a o local da banca"
                                     placeholder="Ex: Sala 111 ou Link Teams"
-                                   {...register("local")}
+                                    {...register("local")}
                                     isInvalid={!!errors.local}
                                     className="bg-white text-black fw-normal fs-5 "
                                 />

@@ -53,4 +53,40 @@ export const usuarioService = {
       method: "GET",
     });
   },
+
+  /** 
+   *  Realiza o login do usuário (Aluno, Professor)
+   * @param {Object} credenciais - Objeto contendo {email, senha}
+   * @returns {Promise<any>} Dados do usuário e resultado da operação
+   */
+  login: async (credenciais) => {
+    //Realiza requisição
+    const resposta = await apiClient(`/auth/login`, {
+      method: "POST",
+      body: JSON.stringify(credenciais),
+    });
+
+    //Se não cair no catch, o login foi um sucesso
+    //Então irá salvar o token JWT no local storage
+    //TODO: Verificar se o backend vai mandar o token na resposta e como
+    if (resposta && resposta.token) {
+      localStorage.setItem("meu_token_tg", resposta.token);
+
+      // Salva o role do usuario
+      if (resposta.cargo) {
+        localStorage.setItem("cargo_usuario", resposta.cargo);
+      }
+    }
+    return resposta;
+  },
+
+  /**
+   * Desloga o usuário limpando a sessão do navegador
+   */
+  logout: () => {
+    localStorage.removeItem("meu_token_tg");
+    localStorage.removeItem("cargo_usuario");
+    //Redireciona para a tela de login
+    window.location.href = "/login";
+  }
 };

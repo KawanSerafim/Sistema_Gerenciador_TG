@@ -5,12 +5,12 @@ import { useMemo, useState } from "react";
 import { useModal } from "../../../hooks/useModal/useModal";
 import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
-import { camposSchema } from "./schema/visaoBancasArtigosZodSchema";
+import { camposSchema } from "../../../schemas/professor/visaoBancasArtigos/visaoBancasArtigosZodSchema"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const VisaoBancasArtigos = () => {
-   
+
     const [exibirResultado, setExibirResultado] = useState({
         show: false, message: "", variant: ""
     })
@@ -23,7 +23,7 @@ const VisaoBancasArtigos = () => {
         handleSubmit,
         setValue,
         reset,
-        formState: {errors}
+        formState: { errors }
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
@@ -106,7 +106,7 @@ const VisaoBancasArtigos = () => {
                                 setTemaSelecionado(row.tema)
                                 //Injeta id grupo e zera a nota no RHF
                                 setValue("idGrupo", String(row.id));
-                                setValue("nota",0);
+                                setValue("nota", 0);
                             }}>
                             Atribuir Nota
                         </Button>
@@ -117,7 +117,7 @@ const VisaoBancasArtigos = () => {
                             className={isArtigo ? "text-muted border" : "text-black"}
                             onClick={() => {
                                 setTemaSelecionado(row.tema)
-                                setExibirResultado({show: true, message: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variant:"danger"})
+                                setExibirResultado({ show: true, message: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variant: "danger" })
                             }}>
                             Cancelar Avaliação
                         </Button>
@@ -191,8 +191,8 @@ const VisaoBancasArtigos = () => {
         if (type === 'NOTA') {
             return (
                 <Form
-                noValidate
-                onSubmit={handleSubmit(enviarParaBackend)}>
+                    noValidate
+                    onSubmit={handleSubmit(enviarParaBackend)}>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
                             <span className="fw-bold fs-5">{`${data.tema} - ${data.disciplina.toUpperCase()}`}</span>
@@ -225,15 +225,15 @@ const VisaoBancasArtigos = () => {
                                     title="Digite a nota do grupo"
                                     onKeyDown={bloquearCaracteresInputNumber}
                                     className="text-center w-50"
-                                    />
+                                />
 
                                 {/* Exibe o erro do Zod aqui */}
                                 <Form.Control.Feedback type="invalid" className="fw-bold fs-6">
-                                    {errors.nota?.message} 
+                                    {errors.nota?.message}
                                 </Form.Control.Feedback>
 
                                 <Button variant="success"
-                                type="submit" className="fw-bold text-black px-4" 
+                                    type="submit" className="fw-bold text-black px-4"
                                 >
                                     Confirmar Nota
                                 </Button>
@@ -241,7 +241,7 @@ const VisaoBancasArtigos = () => {
                         </Col>
                     </Row>
                 </Form>
-                
+
             );
         }
     };
@@ -258,9 +258,9 @@ const VisaoBancasArtigos = () => {
             // Simula o delay da rede e a resposta do backend lendo o CSV/XLSX
             setTimeout(() => {
                 const respostaBackend = "200";
-                if (respostaBackend.includes("200")){
+                if (respostaBackend.includes("200")) {
                     setExibirResultado({ show: true, variant: "success", message: `Nota do grupo ${dadosValidados.idGrupo} enviada com sucesso` });
-                } else{
+                } else {
                     setExibirResultado({ show: true, variant: "danger", message: `Erro ao enviar nota: ${dadosValidados.nota} do grupo ${dadosValidados.idGrupo}.` });
                 }
                 reset(); // Limpa o formulário
@@ -269,7 +269,7 @@ const VisaoBancasArtigos = () => {
         } catch (e) {
             console.log(e)
             setExibirResultado({ show: true, variant: "danger", message: "Erro ao enviar nota, tente novamente" });
-        }finally{
+        } finally {
             handleClose();
             reset();
         }
@@ -298,7 +298,7 @@ const VisaoBancasArtigos = () => {
                 </Modal>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {exibirResultado && (
-                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({...exibirResultado, show: false})} dismissible className="mt-3" >
+                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
                         {exibirResultado.message}
                     </Alert>
                 )}

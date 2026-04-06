@@ -5,8 +5,8 @@ import { bloquearCaracteresInputNome } from "../../../utils/utils";
 // 1. Importações do RHF e Zod
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { professorSchema } from "../../../schemas/usuarioSchema";
-import { usuarioService } from "../../../service/usuario/usuarioService";
+import { professorSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
+import { usuarioService } from "../../../services/usuario/usuarioService";
 
 const CadastroProfessor = () => {
   const [resultado, setResultado] = useState({
@@ -37,7 +37,7 @@ const CadastroProfessor = () => {
   const enviarParaBackend = async (dadosValidados) => {
     try {
       //Aguarda o service com o uso do Interceptador
-      const resposta = await usuarioService.cadastrarUsuario(
+      await usuarioService.cadastrarUsuario(
         dadosValidados,
         "professor",
       );

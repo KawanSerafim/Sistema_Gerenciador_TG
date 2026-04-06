@@ -6,7 +6,7 @@ import UserNavBar from '../../../components/usernavbar/UserNavBar';
 import { useState } from 'react';
 
 // Zod e RHF
-import { solicitarOrientacaoZodSchema } from './schema/solicitarOrientacaoZodSchema';
+import { solicitarOrientacaoZodSchema } from '../../../schemas/aluno/solicitarOrientacao/solicitarOrientacaoZodSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -14,11 +14,11 @@ import { useForm, useWatch } from 'react-hook-form';
 const SolicitarOrientacao = () => {
 
     const {
-        control, 
+        control,
         setValue,
-        formState: {errors},
+        formState: { errors },
         handleSubmit,
-        reset 
+        reset
     } = useForm({
         resolver: zodResolver(solicitarOrientacaoZodSchema),
         defaultValues: {
@@ -66,7 +66,7 @@ const SolicitarOrientacao = () => {
         const termo = e.target.value;
         setBuscaOrientador(termo);
         // Reseta a seleção se o usuário voltar a digitar
-        setValue("orientadorId", "", {shouldValidate: true})
+        setValue("orientadorId", "", { shouldValidate: true })
 
         const opcoesDisponiveis = listaOrientadorDB
             //Pega os 3 primeiros
@@ -86,7 +86,7 @@ const SolicitarOrientacao = () => {
         //Exibe o nome
         setBuscaOrientador(orientador.nome);
         // Injeta o id no RHF
-        setValue("orientadorId",String(orientador.id), {shouldValidate: true});
+        setValue("orientadorId", String(orientador.id), { shouldValidate: true });
         //Reseta suguestões
         setSugestoes([]);
     };
@@ -149,11 +149,11 @@ const SolicitarOrientacao = () => {
                             )}
                         </Col>
                     </Row>
-                        {/* Exibe erro de validação se a lista estiver vazia */}
+                    {/* Exibe erro de validação se a lista estiver vazia */}
                     {errors.orientadorId && (
                         <Row className="justify-content-center mb-4">
                             <Col xs={12} md={8} lg={6}>
-                                 <div className="text-danger fw-bold text-center">
+                                <div className="text-danger fw-bold text-center">
                                     {errors.orientadorId?.message}
                                 </div>
                             </Col>
