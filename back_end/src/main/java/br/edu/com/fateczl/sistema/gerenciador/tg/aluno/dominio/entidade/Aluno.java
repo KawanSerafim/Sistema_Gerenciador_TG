@@ -38,7 +38,7 @@ public class Aluno {
         );
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODOS FACTORY ---------------------------------------------------------
 
     public static Aluno novo(
             AlunoId id,
@@ -81,7 +81,7 @@ public class Aluno {
         );
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
@@ -103,6 +103,19 @@ public class Aluno {
         return turmasIds;
     }
 
+    // MÉTODO DE VALIDAÇÃO -----------------------------------------------------
+
+    public void validarSolicitacaoAcesso() {
+        if(status != StatusAluno.PRE_CADASTRO) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "status do aluno", "PRE_CADASTRO"
+            );
+        }
+    }
+
+    // MÉTODOS ESPECIALIZADOS --------------------------------------------------
+
     public void matricularEmTurma(TurmaId novaTurmaId) {
         assegurarPresenca(novaTurmaId, "ID da turma");
 
@@ -115,15 +128,6 @@ public class Aluno {
         this.turmasIds.add(novaTurmaId);
     }
 
-    public void validarSolicitacaoAcesso() {
-        if(status != StatusAluno.PRE_CADASTRO) {
-            throw new RegraNegocioExcecao(
-                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
-                    "status do aluno", "PRE_CADASTRO"
-            );
-        }
-    }
-
     public void concluirCadastro() {
         if(status != StatusAluno.AGUARDANDO_CONFIRMACAO) {
             throw new RegraNegocioExcecao(
@@ -134,7 +138,7 @@ public class Aluno {
         this.status = StatusAluno.CADASTRADO;
     }
 
-    // Métodos de Atualização --------------------------------------------------
+    // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     public void vincularConta(ContaUsuarioId novaContaUsuarioId) {
         this.contaUsuarioId = assegurarPresenca(
@@ -153,18 +157,19 @@ public class Aluno {
         );
     }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
+
+    public String idTexto() { return id.texto(); }
+    public String nomeTexto() { return nome.valor(); }
+    public String matriculaTexto() { return matricula.valor(); }
+    public String contaUsuarioIdTexto() { return contaUsuarioId.texto(); }
+
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public AlunoId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
     public Nome nome() { return nome; }
-    public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
-    public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
-    public String contaUsuarioIdTexto() {
-        return contaUsuarioId.valor().toString();
-    }
     public StatusAluno status() { return status; }
     public List<TurmaId> turmasIds() {
         return Collections.unmodifiableList(turmasIds);

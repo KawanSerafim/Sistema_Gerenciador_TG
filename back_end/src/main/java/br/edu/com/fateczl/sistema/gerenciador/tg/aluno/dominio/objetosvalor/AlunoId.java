@@ -13,4 +13,6 @@ public record AlunoId(UUID valor) implements Serializable {
                     "ID do aluno");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

@@ -9,8 +9,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.C
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 
-import java.util.Random;
-
 public class EnviarEmailConfirmacaoCaso {
     private final ContaUsuarioRepositorio repositorio;
     private final GerenciadorCacheCodigo cache;

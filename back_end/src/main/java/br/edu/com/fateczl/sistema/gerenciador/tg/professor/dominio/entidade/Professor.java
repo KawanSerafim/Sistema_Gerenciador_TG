@@ -16,32 +16,46 @@ public class Professor implements Coorientador {
     private final ContaUsuarioId contaUsuarioId;
     private CargoProfessor cargo;
 
-    private Professor(ProfessorId id, Nome nome, Matricula matricula,
-                      ContaUsuarioId contaUsuarioId, CargoProfessor cargo) {
+    private Professor(
+            ProfessorId id,
+            Nome nome,
+            Matricula matricula,
+            ContaUsuarioId contaUsuarioId,
+            CargoProfessor cargo
+    ) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
         this.matricula = assegurarPresenca(matricula, "matrícula");
-        this.contaUsuarioId = assegurarPresenca(contaUsuarioId, "ID da conta " +
-                "de usuário");
+        this.contaUsuarioId = assegurarPresenca(
+                contaUsuarioId,
+                "ID da conta de usuário"
+        );
         this.cargo = assegurarPresenca(cargo, "cargo");
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODOS FACTORY ---------------------------------------------------------
 
-    public static Professor novo(ProfessorId id, Nome nome, Matricula matricula,
-                                 ContaUsuarioId contaUsuarioId,
-                                 CargoProfessor cargo) {
+    public static Professor novo(
+            ProfessorId id,
+            Nome nome,
+            Matricula matricula,
+            ContaUsuarioId contaUsuarioId,
+            CargoProfessor cargo
+    ) {
         return new Professor(id, nome, matricula, contaUsuarioId, cargo);
     }
 
-    public static Professor carregar(ProfessorId id, Nome nome,
-                                     Matricula matricula,
-                                     ContaUsuarioId contaUsuarioId,
-                                     CargoProfessor cargo) {
+    public static Professor carregar(
+            ProfessorId id,
+            Nome nome,
+            Matricula matricula,
+            ContaUsuarioId contaUsuarioId,
+            CargoProfessor cargo
+    ) {
         return new Professor(id, nome, matricula, contaUsuarioId, cargo);
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
@@ -51,39 +65,38 @@ public class Professor implements Coorientador {
         return objeto;
     }
 
-    public boolean podeSerOrientador() {
-        return cargo.podeSerOrientador();
-    }
+    // MÉTODOS DE VERIFICAÇÃO --------------------------------------------------
 
-    public boolean podeSerProfessorTg() {
-        return cargo.podeSerProfessorTg();
-    }
+    public boolean podeSerOrientador() { return cargo.podeSerOrientador(); }
+
+    public boolean podeSerProfessorTg() { return cargo.podeSerProfessorTg(); }
 
     public boolean podeSerCoordenadorCurso() {
         return cargo.podeSerCoordenadorCurso();
     }
 
-    // Métodos de Atualização --------------------------------------------------
+    // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     public void atualizarCargo(CargoProfessor novoCargo) {
         this.cargo = assegurarPresenca(novoCargo, "cargo");
     }
 
-    // Métodos de contrato -----------------------------------------------------
+    // MÉTODOS DE CONTRATO -----------------------------------------------------
 
     @Override public Nome nome() { return nome; }
     @Override public String identificacao() { return this.matricula.valor(); }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
+
+    public String idTexto() { return id.texto(); }
+    public String nomeTexto() { return nome.valor(); }
+    public String matriculaTexto() { return matricula.valor(); }
+    public String contaUsuarioIdTexto() { return contaUsuarioId.texto(); }
+
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public ProfessorId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
-    public String nomeTexto() { return nome.valor(); }
     public Matricula matricula() { return matricula; }
-    public String matriculaTexto() { return matricula.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
-    public String contaUsuarioIdTexto() {
-        return contaUsuarioId.valor().toString();
-    }
     public CargoProfessor cargo() { return cargo; }
 }

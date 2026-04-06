@@ -12,4 +12,6 @@ public record CursoId(UUID valor) {
                     "ID do curso");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

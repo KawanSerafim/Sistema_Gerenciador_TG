@@ -12,4 +12,6 @@ public record CoorientadorExternoId(UUID valor) {
                     "ID do coorientador externo");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

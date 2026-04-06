@@ -19,11 +19,12 @@ public class Administrador {
         this.id = assegurarPresenca(id, "ID do administrador");
         this.nome = assegurarPresenca(nome, "nome");
         this.contaUsuarioId = assegurarPresenca(
-                contaUsuarioId, "ID da conta de usuário"
+                contaUsuarioId,
+                "ID da conta de usuário"
         );
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODO FACTORY ----------------------------------------------------------
 
     public static Administrador carregar(
             AdministradorId id,
@@ -33,7 +34,7 @@ public class Administrador {
         return new Administrador(id, nome, contaUsuarioId);
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODO PARA GARANTIR PRESENÇA -------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
@@ -45,14 +46,15 @@ public class Administrador {
         return objeto;
     }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
+
+    public String idTexto() { return id.texto(); }
+    public String nomeTexto() { return nome.valor(); }
+    public String contaUsuarioIdTexto() { return contaUsuarioId.texto(); }
+
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public AdministradorId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
     public Nome nome() { return nome; }
-    public String nomeTexto() { return nome.valor(); }
     public ContaUsuarioId contaUsuarioId() { return contaUsuarioId; }
-    public String contaUsuarioIdTexto() {
-        return contaUsuarioId.valor().toString();
-    }
 }

@@ -11,37 +11,55 @@ public class ContaUsuario {
     private Senha senha;
     private StatusContaUsuario status;
 
-    private ContaUsuario(ContaUsuarioId id, Email email, Senha senha,
-                         StatusContaUsuario status) {
+    private ContaUsuario(
+            ContaUsuarioId id,
+            Email email,
+            Senha senha,
+            StatusContaUsuario status
+    ) {
         this.id = assegurarPresenca(id, "ID");
         this.email = assegurarPresenca(email, "email");
         this.senha = assegurarPresenca(senha, "senha");
         this.status = assegurarPresenca(status, "status");
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODOS FACTORY ---------------------------------------------------------
 
-    public static ContaUsuario novo(ContaUsuarioId id, Email email,
-                                    Senha senha) {
-        return new ContaUsuario(id, email, senha,
-                StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE);
+    public static ContaUsuario novo(
+            ContaUsuarioId id,
+            Email email,
+            Senha senha
+    ) {
+        return new ContaUsuario(
+                id,
+                email,
+                senha,
+                StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE
+        );
     }
 
-    public static ContaUsuario carregar(ContaUsuarioId id, Email email,
-                                        Senha senha,
-                                        StatusContaUsuario status) {
+    public static ContaUsuario carregar(
+            ContaUsuarioId id,
+            Email email,
+            Senha senha,
+            StatusContaUsuario status
+    ) {
         return new ContaUsuario(id, email, senha, status);
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
-            throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
-                    campo);
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    campo
+            );
         }
         return objeto;
     }
+
+    // MÉTODOS DE VALIDAÇÃO ----------------------------------------------------
 
     public void validarStatusParaEnviarEmail() {
         if(status == StatusContaUsuario.ATIVO) {
@@ -61,14 +79,15 @@ public class ContaUsuario {
         }
     }
 
-    // Métodos de Alteração de Status ------------------------------------------
+    // MÉTODOS DE ALTERAÇÃO DE STATUS ------------------------------------------
 
     public void confirmarEmail() {
         if(status != StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
                     "status de conta de usuário",
-                    "VERIFICACAO_CODIGO_PENDENTE");
+                    "VERIFICACAO_CODIGO_PENDENTE"
+            );
         }
         this.status = StatusContaUsuario.EMAIL_CONFIRMADO;
     }
@@ -77,7 +96,8 @@ public class ContaUsuario {
         if(status != StatusContaUsuario.EMAIL_CONFIRMADO) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
-                    "status de conta de usuário", "EMAIL_CONFIRMADO");
+                    "status de conta de usuário", "EMAIL_CONFIRMADO"
+            );
         }
         this.status = StatusContaUsuario.ATIVO;
     }
@@ -87,12 +107,13 @@ public class ContaUsuario {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
                     "status de conta de usuário", "ATIVO ou demais, sem ser " +
-                    "INATIVO");
+                    "INATIVO"
+            );
         }
         this.status = StatusContaUsuario.INATIVO;
     }
 
-    // Métodos de Atualização --------------------------------------------------
+    // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     public void atualizarEmail(Email novoEmail) {
         this.email = assegurarPresenca(novoEmail, "email");
@@ -102,12 +123,16 @@ public class ContaUsuario {
         this.senha = assegurarPresenca(novaSenha, "senha");
     }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
+
+    public String idTexto() { return id.texto(); }
+    public String emailTexto() { return email.valor(); }
+    public String senhaTexto() { return senha.valor(); }
+
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public ContaUsuarioId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
     public Email email() { return email; }
-    public String emailTexto() { return email.valor(); }
     public Senha senha() { return senha; }
     public StatusContaUsuario status() { return status; }
 }

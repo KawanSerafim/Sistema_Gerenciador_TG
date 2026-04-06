@@ -22,7 +22,7 @@ public class CoorientadorExterno implements Coorientador {
         this.origem = assegurarPresenca(origem, "origem");
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODOS FACTORY ---------------------------------------------------------
 
     public static CoorientadorExterno novo(
             CoorientadorExternoId id,
@@ -40,7 +40,7 @@ public class CoorientadorExterno implements Coorientador {
         return new CoorientadorExterno(id, nome, origem);
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
@@ -57,10 +57,13 @@ public class CoorientadorExterno implements Coorientador {
     @Override public Nome nome() { return nome; }
     @Override public String identificacao() { return this.origem.valor(); }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
+
+    public String idTexto() { return id.texto(); }
+    public String nomeTexto() { return nome.valor(); }
+
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public CoorientadorExternoId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
-    public String nomeTexto() { return nome.valor(); }
     public Origem origem() { return origem; }
 }

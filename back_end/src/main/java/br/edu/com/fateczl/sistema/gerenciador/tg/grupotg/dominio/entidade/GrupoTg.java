@@ -46,7 +46,7 @@ public class GrupoTg {
         this.alunosIds = new ArrayList<>((assegurarPresencaAlunos(alunosIds)));
     }
 
-    // Métodos Factory ---------------------------------------------------------
+    // MÉTODOS FACTORY ---------------------------------------------------------
 
     public static GrupoTg novo(
             GrupoTgId id,
@@ -90,7 +90,7 @@ public class GrupoTg {
         );
     }
 
-    // Métodos especiais -------------------------------------------------------
+    // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
 
     private <T> T assegurarPresenca(T objeto, String campo) {
         if(objeto == null) {
@@ -124,6 +124,8 @@ public class GrupoTg {
         return alunosIds;
     }
 
+    // MÉTODOS DE VINCULAÇÃO ---------------------------------------------------
+
     public void vincularOrientador(ProfessorId professorId) {
         this.orientadorId = assegurarPresenca(professorId, "ID do orientador");
     }
@@ -139,7 +141,7 @@ public class GrupoTg {
         this.tipoCoorientador = assegurarPresenca(tipo, "tipo de coorientador");
     }
 
-    // Métodos de Atualização --------------------------------------------------
+    // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     public void atualizarDisciplina(Set<Disciplina> novasDisciplinas) {
         this.disciplinas = assegurarPresencaDisciplinas(novasDisciplinas);
@@ -159,23 +161,21 @@ public class GrupoTg {
         );
     }
 
-    // Métodos Getters de Delegação --------------------------------------------
+    // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
 
+    public String idTexto() { return id.texto(); }
+    public String orientadorIdTexto() { return orientadorId.texto(); }
+    public String cursoIdTexto() { return cursoId.texto(); }
     public String nomeTemaTg() { return temaTg.nome(); }
     public String descricaoTemaTg() { return temaTg.descricao(); }
 
-    // Métodos Getters ---------------------------------------------------------
+    // MÉTODOS GETTERS ---------------------------------------------------------
 
     public GrupoTgId id() { return id; }
-    public String idTexto() { return id.valor().toString(); }
     public ProfessorId orientadorId() { return orientadorId; }
-    public String orientadorIdTexto() {
-        return orientadorId.valor().toString();
-    }
     public String coorientadorIdTexto() { return coorientadorIdTexto; }
     public TipoCoorientador tipoCoorientador() { return tipoCoorientador; }
     public CursoId cursoId() { return cursoId; }
-    public String cursoIdTexto() { return cursoId.valor().toString(); }
     public Set<Disciplina> disciplinas() {
         return Collections.unmodifiableSet(disciplinas);
     }

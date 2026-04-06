@@ -71,7 +71,11 @@ public class SolicitarAcessoAlunoCaso {
                 new ContaPendenteCriadaEvento(novaConta.emailTexto())
         );
 
-        return new Resposta(aluno.idTexto(), aluno.nomeTexto(), email.valor());
+        return new Resposta(
+                aluno.idTexto(),
+                aluno.nomeTexto(),
+                email.valor()
+        );
     }
 
     // FLUXO ESPECIALIZADO ---------------------------------------------------

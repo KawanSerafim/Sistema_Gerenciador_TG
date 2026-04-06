@@ -12,4 +12,6 @@ public record GrupoTgId(UUID valor) {
                     "ID do grupo de TG");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

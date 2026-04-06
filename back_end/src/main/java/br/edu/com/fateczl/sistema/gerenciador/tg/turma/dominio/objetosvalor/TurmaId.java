@@ -12,4 +12,6 @@ public record TurmaId(UUID valor) {
                     "ID da turma");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

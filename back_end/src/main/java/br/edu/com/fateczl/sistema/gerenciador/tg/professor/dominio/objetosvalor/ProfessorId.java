@@ -13,4 +13,6 @@ public record ProfessorId(UUID valor) implements Serializable {
                     "ID do professor");
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }

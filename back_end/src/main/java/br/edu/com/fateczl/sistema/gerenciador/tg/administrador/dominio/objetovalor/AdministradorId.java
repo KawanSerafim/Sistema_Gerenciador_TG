@@ -14,4 +14,6 @@ public record AdministradorId(UUID valor) {
             );
         }
     }
+
+    public String texto() { return this.valor.toString(); }
 }
