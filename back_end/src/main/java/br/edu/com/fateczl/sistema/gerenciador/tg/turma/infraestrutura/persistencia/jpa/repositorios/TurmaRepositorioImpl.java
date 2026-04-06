@@ -31,7 +31,7 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<Turma> buscarPorId(TurmaId id) {
-        return repositorio.findById(id.valor().toString())
+        return repositorio.findById(id.texto())
                 .map(TurmaMapeador::paraDominio);
     }
 
@@ -39,7 +39,7 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
     @Transactional(readOnly = true)
     public List<Turma> buscarTodasPorIds(Set<TurmaId> ids) {
         var idsTexto = ids.stream()
-                .map(id -> id.valor().toString())
+                .map(TurmaId::texto)
                 .toList();
 
         return repositorio.findAllById(idsTexto).stream()
@@ -59,7 +59,7 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
         var semestre = periodoLetivo.semestreValor();
 
         return repositorio.findByCursoIdAndDisciplinaAndTurnoAndAnoAndSemestre(
-                cursoId.valor().toString(),
+                cursoId.texto(),
                 disciplina,
                 turno,
                 ano,

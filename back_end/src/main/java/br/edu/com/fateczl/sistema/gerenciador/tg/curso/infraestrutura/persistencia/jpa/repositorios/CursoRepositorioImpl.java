@@ -27,7 +27,7 @@ public class CursoRepositorioImpl implements CursoRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<Curso> buscarPorId(CursoId id) {
-        return repositorio.findById(id.valor().toString())
+        return repositorio.findById(id.texto())
                 .map(CursoMapeador::paraDominio);
     }
 

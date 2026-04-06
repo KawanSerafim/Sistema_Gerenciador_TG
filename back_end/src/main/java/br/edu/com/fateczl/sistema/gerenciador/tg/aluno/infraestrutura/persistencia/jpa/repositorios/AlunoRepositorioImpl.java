@@ -59,7 +59,7 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<Aluno> buscarPorContaId(ContaUsuarioId contaUsuarioId) {
-        String contaUsuarioIdTexto = contaUsuarioId.valor().toString();
+        String contaUsuarioIdTexto = contaUsuarioId.texto();
 
         return repositorio.findByContaUsuarioId(contaUsuarioIdTexto)
                 .map(AlunoMapeador::paraDominio);

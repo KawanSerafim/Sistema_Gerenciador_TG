@@ -26,7 +26,7 @@ public class AdministradorRepositorioImpl implements AdministradorRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<Administrador> buscarPorId(AdministradorId id) {
-        return repositorio.findById(id.valor().toString())
+        return repositorio.findById(id.texto())
                 .map(AdministradorMapeador::paraDominio);
     }
 

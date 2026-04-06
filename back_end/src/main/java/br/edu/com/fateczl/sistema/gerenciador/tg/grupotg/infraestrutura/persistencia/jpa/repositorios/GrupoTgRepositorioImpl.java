@@ -29,9 +29,7 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
             AlunoId alunoId,
             CursoId cursoId
     ) {
-        return repositorio.findByAlunoAndCurso(
-                alunoId.valor().toString(),
-                cursoId.valor().toString()
-        ).map(GrupoTgMapeador::paraDominio);
+        return repositorio.findByAlunoAndCurso(alunoId.texto(), cursoId.texto())
+                .map(GrupoTgMapeador::paraDominio);
     }
 }
