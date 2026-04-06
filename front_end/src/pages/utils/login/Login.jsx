@@ -1,6 +1,44 @@
-import { Button, Container, Form, FormGroup } from "react-bootstrap"
+import { useState } from "react"
+import { Alert, Button, Container, Form, FormGroup } from "react-bootstrap"
+import { usuarioService } from "../../../services/usuario/usuarioService"
+
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { loginSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema"
 
 const Login = () => {
+    const [erro, setErro] = useState()
+
+
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { email: "", senha: "" }
+    });
+
+    const realizarLogin = async (dadosValidados) => {
+        try {
+            //Limpa erros anteriores
+            setErro("");
+            // Chama o Service
+            await usuarioService.login(dadosValidados);
+
+            // Se chegou aqui, o Token já está salvo no localStorage!
+            console.log("Login de sucesso!");
+
+            // Redireciona o usuário dependendo do cargo (se o backend enviar essa info)
+            const cargo = localStorage.getItem("cargo_usuario");
+            if (cargo === "aluno") {
+                window.location.href("/aluno/home");
+            } else {
+                window.location.href("/professor/bancas");
+            }
+
+        } catch (error) {
+            // Se a senha estiver errada, o apiClient joga o erro e cai aqui!
+            console.error("Falha ao logar:", error);
+            setErro(error.message || "E-mail ou senha incorretos.");
+        }
+    };
 
     return (
         <>
@@ -8,18 +46,32 @@ const Login = () => {
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Login</h2>
                 <Form
                     noValidate
+                    onSubmit={handleSubmit(realizarLogin)}
                     className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>
 
                     {/* Email */}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label className='text-secondary fs-4 fw-bold'>Email</Form.Label>
-                        <Form.Control type="email" placeholder="Digite seu email" required={true} className='bg-white text-black fw-normal fs-5' />
-                    </Form.Group>
+                        <Form.Control type="email" placeholder="Digite seu email"
+                            {...register("email")}
+                            isInvalid={!!errors.email}
+                            className='bg-white text-black fw-normal fs-5' />
 
+                        {/* Feedback de erro */}
+                        <Form.Control.Feedback type="invalid">
+                            {errors.email?.message}
+                        </Form.Control.Feedback>
+                    </Form.Group>
                     {/* Senha */}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label className='text-secondary fs-4 fw-bold'>Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Digite sua senha" required={true} className='bg-white text-black fw-normal fs-5' />
+                        <Form.Control type="password" placeholder="Digite sua senha"
+                            {...register("senha")}
+                            isInvalid={!!errors.senha} className='bg-white text-black fw-normal fs-5' />
+                        {/* Feedback de erro */}
+                        <Form.Control.Feedback type="invalid">
+                            {errors.senha?.message}
+                        </Form.Control.Feedback>
                     </Form.Group>
 
 
@@ -33,8 +85,15 @@ const Login = () => {
                             Entrar
                         </Button>
                     </FormGroup>
-
                 </Form>
+                {erro && (
+                    <Alert variant="danger"
+                        onClose={() => setErro('')}
+                        className="mt-3 shadow-sm fw-bold text-center"
+                    >
+                        {erro}
+                    </Alert>
+                )}
             </Container>
         </>
     )
