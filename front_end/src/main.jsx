@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import './custom.bootstrap.scss';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CadastroAluno from './pages/aluno/cadastroAluno/CadastroAluno.jsx';
 import CadastroProfessor from './pages/professor/cadastroProfessor/CadastroProfessor.jsx';
 import FormarGrupo from './pages/aluno/formarGrupo/FormarGrupo.jsx';
@@ -44,7 +44,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/visaoBancas" element={<VisaoBancasArtigos />} />
         <Route path="/professor/finalizarDisciplinas" element={<FinalizarDisciplinas />} />
         <Route path="/aluno/cadastro" element={<CadastroAluno />} />
-        <Route path="/aluno/home" element={<Home />} />
+        <Route path="/aluno/" element={<Home />} />
         <Route path="/aluno/formarGrupo" element={<FormarGrupo />} />
         <Route path="/aluno/solicitarOrientacao" element={<SolicitarOrientacao />} />
         <Route path="/aluno/enviarTG" element={<CarregarTG />} />
