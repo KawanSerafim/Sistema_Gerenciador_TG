@@ -18,7 +18,7 @@ export const professorSchema = usuarioSchema
       .string()
       .min(1, "Nome é um campo obrigatório")
       .refine(validarNome, "Nome com caracteres inválidos"),
-    matricula: z.string().length(11, "A matrícula tem que ter 11 dígitos"),
+    matricula: z.string().length(13, "A matrícula tem que ter 13 dígitos"),
     cargo: z.string().min(1, "Cargo é um campo obrigatório"), // Garante que não fique no "Selecione..."
   })
   //Tratamento senha e confirmar senha
@@ -34,7 +34,7 @@ export const alunoSchema = usuarioSchema
       .string()
       .min(1, "Nome é um campo obrigatório")
       .refine(validarNome, "Nome com caracteres invalidos"),
-    matricula: z.string().length(11, "A matricula tem que ter 11 dígitos"),
+    matricula: z.string().length(13, "A matricula tem que ter 13 dígitos"),
     telefone: z.string().length(11, "Telefone inválido"),
     // Array de Redes
     redes: z.array(
