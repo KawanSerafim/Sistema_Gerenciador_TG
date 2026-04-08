@@ -41,9 +41,7 @@ public class CursoRepositorioImpl implements CursoRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<Curso> buscarPorCoordenadorId(ProfessorId professorId) {
-        String coordenadorIdTexto = professorId.toString();
-
-        return repositorio.findByCoordenadorId(coordenadorIdTexto)
+        return repositorio.findByCoordenadorId(professorId.texto())
                 .map(CursoMapeador::paraDominio);
     }
 }

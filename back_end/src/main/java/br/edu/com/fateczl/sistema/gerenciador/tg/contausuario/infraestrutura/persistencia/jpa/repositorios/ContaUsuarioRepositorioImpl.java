@@ -26,9 +26,7 @@ public class ContaUsuarioRepositorioImpl implements ContaUsuarioRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<ContaUsuario> buscarPorId(ContaUsuarioId id) {
-        String idTexto = id.toString();
-
-        return repositorio.findById(idTexto)
+        return repositorio.findById(id.texto())
                 .map(ContaUsuarioMapeador::paraDominio);
     }
 
