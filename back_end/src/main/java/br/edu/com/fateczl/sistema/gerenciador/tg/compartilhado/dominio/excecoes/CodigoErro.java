@@ -13,7 +13,7 @@ public enum CodigoErro {
     VD_006_COLECAO_OBRIGATORIA_VAZIA("VD", "A coleção '%s' deve ter um valor."),
     VD_007_CAMPO_NAO_SUPORTADO(
             "VD", "O campo '%s' não é suportado. Motivo: '%s'"),
-    VD_008_ARQUIVO_INVALIDO("VD", "O arquivo não é válido."),
+    VD_008_ARQUIVO_INVALIDO("VD", "O arquivo não é válido pois 's'."),
 
     // REGRA DE NEGÓCIO --------------------------------------------------------
 
