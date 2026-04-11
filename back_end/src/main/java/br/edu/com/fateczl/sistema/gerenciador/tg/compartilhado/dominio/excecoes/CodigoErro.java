@@ -33,6 +33,7 @@ public enum CodigoErro {
     RN_005_CODIGO_CONFIRMACAO_INVALIDA_EXPIRADO(
             "RN", "O código '%s' é inválido ou já expirou"
     ),
+    RN_006_TOKEN_INVALIDO_EXPIRADO("RN", "O token está inválido ou expirado."),
 
     // AUTORIZAÇÃO -------------------------------------------------------------
 
