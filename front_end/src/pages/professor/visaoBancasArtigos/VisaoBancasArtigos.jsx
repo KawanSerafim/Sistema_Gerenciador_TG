@@ -12,7 +12,7 @@ import { useForm, useFieldArray, useWatch } from "react-hook-form";
 const VisaoBancasArtigos = () => {
 
     const [exibirResultado, setExibirResultado] = useState({
-        show: false, message: "", variant: ""
+        exibir: false, mensagem: "", variante: ""
     })
     const [temaSelecionado, setTemaSelecionado] = useState(null)
 
@@ -95,8 +95,8 @@ const VisaoBancasArtigos = () => {
             header: "Ações",
             // Render customizado para os botões de Aceitar/Recusar
             render: (row) => {
+                //Verifica se já foi realizado a banca, se sim habilita btn de nota e desabilita btn de cancelar avaliação
                 const isBancaRealizada = row.situacao === "Pré Banca realizada" || row.situacao === "Banca realizada";
-                const isArtigo = row.tipoTg === "Artigo";
 
                 return (
                     <Stack direction="horizontal" gap={5} className="justify-content-center">
@@ -121,13 +121,13 @@ const VisaoBancasArtigos = () => {
                             Atribuir Nota
                         </Button>
                         <Button
-                            variant={isArtigo ? "light" : "danger"}
+                            variant={isBancaRealizada ? "light" : "danger"}
                             size="lm"
-                            disabled={isArtigo}
-                            className={isArtigo ? "text-muted border" : "text-black"}
+                            disabled={isBancaRealizada}
+                            className={isBancaRealizada ? "text-muted border" : "text-black"}
                             onClick={() => {
                                 setTemaSelecionado(row.tema)
-                                setExibirResultado({ show: true, message: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variant: "danger" })
+                                setExibirResultado({ exibir: true, mensagem: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variante: "danger" })
                             }}>
                             Cancelar Avaliação
                         </Button>
@@ -300,16 +300,16 @@ const VisaoBancasArtigos = () => {
             setTimeout(() => {
                 const respostaBackend = "200";
                 if (respostaBackend.includes("200")) {
-                    setExibirResultado({ show: true, variant: "success", message: `Nota do grupo ${dadosValidados.idGrupo} enviada com sucesso` });
+                    setExibirResultado({ exibir: true, variante: "success", mensagem: `Nota do grupo ${dadosValidados.idGrupo} enviada com sucesso` });
                 } else {
-                    setExibirResultado({ show: true, variant: "danger", message: `Erro ao enviar nota: ${dadosValidados.nota} do grupo ${dadosValidados.idGrupo}.` });
+                    setExibirResultado({ exibir: true, variante: "danger", mensagem: `Erro ao enviar nota: ${dadosValidados.nota} do grupo ${dadosValidados.idGrupo}.` });
                 }
                 reset(); // Limpa o formulário
             }, 1500);
 
         } catch (e) {
             console.log(e)
-            setExibirResultado({ show: true, variant: "danger", message: "Erro ao enviar nota, tente novamente" });
+            setExibirResultado({ exibir: true, variante: "danger", mensagem: "Erro ao enviar nota, tente novamente" });
         } finally {
             handleClose();
             reset();
@@ -338,9 +338,9 @@ const VisaoBancasArtigos = () => {
                     {renderModalContent()}
                 </Modal>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado.show && (
-                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
-                        {exibirResultado.message}
+                {exibirResultado.exibir && (
+                    <Alert variant={exibirResultado.variante} onClose={() => setExibirResultado({ ...exibirResultado, exibir: false })} dismissible className="mt-3" >
+                        {exibirResultado.mensagem}
                     </Alert>
                 )}
             </Container>
