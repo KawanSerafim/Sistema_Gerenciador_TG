@@ -7,7 +7,7 @@ import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
 import { camposSchema } from "../../../schemas/professor/visaoBancasArtigos/visaoBancasArtigosZodSchema"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 
 const VisaoBancasArtigos = () => {
 
@@ -23,12 +23,16 @@ const VisaoBancasArtigos = () => {
         handleSubmit,
         setValue,
         reset,
-        formState: { errors }
+        formState: { errors },
+        control
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
             idGrupo: "",
-            nota: 0
+            notas: [{
+                nomeMembroBanca: "",
+                nota: 0
+            }]
         }
     })
 
@@ -106,7 +110,13 @@ const VisaoBancasArtigos = () => {
                                 setTemaSelecionado(row.tema)
                                 //Injeta id grupo e zera a nota no RHF
                                 setValue("idGrupo", String(row.id));
-                                setValue("nota", 0);
+                                const arrayNotasIniciais = row.membros.map((nomeMembro) => ({
+                                    nomeMembroBanca: nomeMembro,
+                                    //Inicia todas as notas em 0
+                                    nota: 0
+                                }));
+
+                                setValue("notas", arrayNotasIniciais);
                             }}>
                             Atribuir Nota
                         </Button>
@@ -126,6 +136,7 @@ const VisaoBancasArtigos = () => {
             }
         }
     ]
+
     const data = useMemo(() => [
         {
             id: 1,
@@ -159,6 +170,32 @@ const VisaoBancasArtigos = () => {
             situacao: "Banca marcada"
         }
     ], [])
+
+    //Lida com as notas dos membros da banca
+    const { fields } = useFieldArray({
+        control,
+        name: "notas"
+    })
+
+    //Observa mudanças no array de notas, para o calculo da média
+    const notasEmTempoReal = useWatch({
+        control,
+        name: "notas",
+        defaultValue: []
+    });
+
+    //Calcula média das notas
+    const calcularMedia = () => {
+        if (notasEmTempoReal.length === 0) return 0;
+
+        const soma = notasEmTempoReal.reduce(
+            (acc, membro) => acc + Number(membro.nota || 0)
+            , 0);
+        const media = soma / notasEmTempoReal.length;
+
+        //Caso seja decimal returna apenas 1 casa pós virgula
+        return media.toFixed(1)
+    }
 
     // Função auxiliar para renderizar o conteúdo interno do Modal correto
     const renderModalContent = () => {
@@ -202,36 +239,40 @@ const VisaoBancasArtigos = () => {
                     <Row className="m-0 text-center">
                         <Col xs={6} className="p-0 border-end border-dark">
                             <div className="fw-bold p-2 border-dark fs-5" style={{ backgroundColor: '#ffe5cc' }}>
-                                Integrantes
+                                Integrantes da Banca
                             </div>
                             <ul className="list-group list-group-flush fs-6">
-                                {data.grupo.map((aluno, idx) => (
-                                    <li key={idx} className="list-group-item fw-bold" style={{ backgroundColor: '#ffecd9' }}>{aluno}</li>
-                                ))}
+                                {fields.
+                                    map((field, idx) => (
+                                        <div key={idx} className="p-4 d-flex flex-column align-items-center gap-2">
+                                            {/* Nome integrante */}
+                                            <li className="list-group-item fw-bold" style={{ backgroundColor: '#ffecd9' }}>
+                                                {field.nomeMembroBanca}
+                                            </li>
+                                            {/* Nota do integrante */}
+                                            <Form.Control
+                                                type="number"
+                                                defaultValue={0}
+                                                min={0}
+                                                max={10}
+                                                {...register(`notas.${idx}.nota`)}
+                                                isInvalid={!!errors.notas?.[idx]?.nota}
+                                                title="Digite a nota do integrante da banca"
+                                                onKeyDown={bloquearCaracteresInputNumber}
+                                                className="text-center w-50"
+                                            />
+                                            <Form.Control.Feedback type="invalid" className="fw-bold fs-6">
+                                                {errors.notas?.[idx]?.message}
+                                            </Form.Control.Feedback>
+                                        </div>
+                                    ))}
                             </ul>
                         </Col>
                         <Col xs={6} className="p-0 d-flex flex-column align-items-center justify-content-center" style={{ backgroundColor: '#ffecd9' }}>
                             <div className="fw-bold p-2 border-bottom border-dark w-100" style={{ backgroundColor: '#ffe5cc' }}>
-                                Nota do Grupo
+                                Média final do grupo: {calcularMedia()}
                             </div>
                             <div className="p-4 d-flex flex-column align-items-center gap-3 w-100 h-100">
-                                <Form.Control
-                                    type="number"
-                                    defaultValue={0}
-                                    min={0}
-                                    max={10}
-                                    {...register("nota")}
-                                    isInvalid={!!errors.nota}
-                                    title="Digite a nota do grupo"
-                                    onKeyDown={bloquearCaracteresInputNumber}
-                                    className="text-center w-50"
-                                />
-
-                                {/* Exibe o erro do Zod aqui */}
-                                <Form.Control.Feedback type="invalid" className="fw-bold fs-6">
-                                    {errors.nota?.message}
-                                </Form.Control.Feedback>
-
                                 <Button variant="success"
                                     type="submit" className="fw-bold text-black px-4"
                                 >
@@ -251,7 +292,7 @@ const VisaoBancasArtigos = () => {
             // Usa formData para enviar para o backend, o grupo e a nota deles
             const formData = new FormData();
             formData.append("idGrupo", dadosValidados.idGrupo);
-            formData.append("nota", dadosValidados.nota); // Pega o arquivo real
+            formData.append("notas", dadosValidados.notas); // Pega o arquivo real
 
             console.log("Enviando para o backend...");
 
@@ -297,7 +338,7 @@ const VisaoBancasArtigos = () => {
                     {renderModalContent()}
                 </Modal>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado && (
+                {exibirResultado.show && (
                     <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
                         {exibirResultado.message}
                     </Alert>
