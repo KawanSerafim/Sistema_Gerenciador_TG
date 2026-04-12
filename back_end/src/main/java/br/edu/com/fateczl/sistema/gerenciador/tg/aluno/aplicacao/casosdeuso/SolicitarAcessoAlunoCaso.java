@@ -9,12 +9,15 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Autoridade;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class SolicitarAcessoAlunoCaso {
@@ -46,6 +49,7 @@ public class SolicitarAcessoAlunoCaso {
     public Resposta executar(Comando comando) {
         Matricula matricula = new Matricula(comando.matricula());
         Email email = new Email(comando.email());
+        Set<Autoridade> autoridades = Set.of(Autoridade.ROLE_ALUNO);
 
         verificadorEmail.verificar(email);
 
@@ -59,7 +63,8 @@ public class SolicitarAcessoAlunoCaso {
         ContaUsuario novaConta = ContaUsuario.novo(
                 novaContaId,
                 email,
-                senhaCriptografada
+                senhaCriptografada,
+                autoridades
         );
 
         aluno.vincularConta(novaContaId);

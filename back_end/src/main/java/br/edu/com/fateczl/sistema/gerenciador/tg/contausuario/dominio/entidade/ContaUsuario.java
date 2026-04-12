@@ -5,22 +5,28 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.*;
 
+import java.util.Collections;
+import java.util.Set;
+
 public class ContaUsuario {
     private final ContaUsuarioId id;
     private Email email;
     private Senha senha;
     private StatusContaUsuario status;
+    private Set<Autoridade> autoridades;
 
     private ContaUsuario(
             ContaUsuarioId id,
             Email email,
             Senha senha,
-            StatusContaUsuario status
+            StatusContaUsuario status,
+            Set<Autoridade> autoridades
     ) {
         this.id = assegurarPresenca(id, "ID");
         this.email = assegurarPresenca(email, "email");
         this.senha = assegurarPresenca(senha, "senha");
         this.status = assegurarPresenca(status, "status");
+        this.autoridades = assegurarPresencaAutoridades(autoridades);
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
@@ -28,13 +34,15 @@ public class ContaUsuario {
     public static ContaUsuario novo(
             ContaUsuarioId id,
             Email email,
-            Senha senha
+            Senha senha,
+            Set<Autoridade> autoridades
     ) {
         return new ContaUsuario(
                 id,
                 email,
                 senha,
-                StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE
+                StatusContaUsuario.VERIFICACAO_CODIGO_PENDENTE,
+                autoridades
         );
     }
 
@@ -42,9 +50,10 @@ public class ContaUsuario {
             ContaUsuarioId id,
             Email email,
             Senha senha,
-            StatusContaUsuario status
+            StatusContaUsuario status,
+            Set<Autoridade> autoridades
     ) {
-        return new ContaUsuario(id, email, senha, status);
+        return new ContaUsuario(id, email, senha, status, autoridades);
     }
 
     // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
@@ -57,6 +66,18 @@ public class ContaUsuario {
             );
         }
         return objeto;
+    }
+
+    private Set<Autoridade> assegurarPresencaAutoridades(
+            Set<Autoridade> autoridades
+    ) {
+        if(autoridades == null) {
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "autoridades"
+            );
+        }
+        return autoridades;
     }
 
     // MÉTODOS DE VALIDAÇÃO ----------------------------------------------------
@@ -123,6 +144,10 @@ public class ContaUsuario {
         this.senha = assegurarPresenca(novaSenha, "senha");
     }
 
+    public void atualizarAutoridades(Set<Autoridade> novasAutoridades) {
+        this.autoridades = assegurarPresencaAutoridades(novasAutoridades);
+    }
+
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
 
     public String idTexto() { return id.texto(); }
@@ -135,4 +160,7 @@ public class ContaUsuario {
     public Email email() { return email; }
     public Senha senha() { return senha; }
     public StatusContaUsuario status() { return status; }
+    public Set<Autoridade> autoridades() {
+        return Collections.unmodifiableSet(autoridades);
+    }
 }

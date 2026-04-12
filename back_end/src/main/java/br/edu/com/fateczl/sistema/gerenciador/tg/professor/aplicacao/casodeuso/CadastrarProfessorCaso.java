@@ -6,6 +6,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Autoridade;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
@@ -15,8 +16,10 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Prof
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.servicos.IdentificadorAutoridadesProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.servicos.VerificadorUnicidadeProfessor;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class CadastrarProfessorCaso {
@@ -26,6 +29,7 @@ public class CadastrarProfessorCaso {
     private final PublicadorEventos publicador;
     private final VerificadorUnicidadeEmail verificadorEmail;
     private final VerificadorUnicidadeProfessor verificadorProfessor;
+    private final IdentificadorAutoridadesProfessor identificadorAutoridades;
 
     public CadastrarProfessorCaso(
             ProfessorRepositorio professorRepositorio,
@@ -33,7 +37,8 @@ public class CadastrarProfessorCaso {
             CriptografoSenhas criptografo,
             PublicadorEventos publicador,
             VerificadorUnicidadeEmail verificadorEmail,
-            VerificadorUnicidadeProfessor verificadorProfessor
+            VerificadorUnicidadeProfessor verificadorProfessor,
+            IdentificadorAutoridadesProfessor identificadorAutoridades
     ) {
         this.professorRepositorio = professorRepositorio;
         this.contaUsuarioRepositorio = contaUsuarioRepositorio;
@@ -41,6 +46,7 @@ public class CadastrarProfessorCaso {
         this.publicador = publicador;
         this.verificadorEmail = verificadorEmail;
         this.verificadorProfessor = verificadorProfessor;
+        this.identificadorAutoridades = identificadorAutoridades;
     }
 
     public record Comando(
@@ -62,13 +68,16 @@ public class CadastrarProfessorCaso {
         Email emailAlvo = new Email(comando.email());
         Matricula matriculaAlvo = new Matricula(comando.matricula());
         Nome nome = new Nome(comando.nome());
+        Set<Autoridade> autoridades = identificadorAutoridades
+                .identificar(comando.cargo());
 
         verificadorEmail.verificar(emailAlvo);
         verificadorProfessor.verificar(matriculaAlvo);
 
         ContaUsuario novaConta = gerarNovaConta(
                 emailAlvo,
-                comando.senhaLimpa()
+                comando.senhaLimpa(),
+                autoridades
         );
         Professor novoProfessor = gerarNovoProfessor(
                 nome, matriculaAlvo,
@@ -91,13 +100,18 @@ public class CadastrarProfessorCaso {
         );
     }
 
-    private ContaUsuario gerarNovaConta(Email email, String senhaLimpa) {
+    private ContaUsuario gerarNovaConta(
+            Email email,
+            String senhaLimpa,
+            Set<Autoridade> autoridades
+    ) {
         Senha senhaCriptografada = criptografo.criptografar(senhaLimpa);
 
         return ContaUsuario.novo(
                 new ContaUsuarioId(UUID.randomUUID()),
                 email,
-                senhaCriptografada
+                senhaCriptografada,
+                autoridades
         );
     }
 
