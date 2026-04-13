@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 import { Alert, Button, Container, Form, FormGroup } from "react-bootstrap"
 import { usuarioService } from "../../../services/usuario/usuarioService"
 
@@ -9,6 +10,7 @@ import { loginSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema"
 const Login = () => {
     const [erro, setErro] = useState()
 
+    const navigate = useNavigate();
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema),
@@ -19,19 +21,21 @@ const Login = () => {
         try {
             //Limpa erros anteriores
             setErro("");
+            console.log("Enviando dados ao backend", dadosValidados);
             // Chama o Service
             await usuarioService.login(dadosValidados);
 
             // Se chegou aqui, o Token já está salvo no localStorage!
             console.log("Login de sucesso!");
-
-            // Redireciona o usuário dependendo do cargo (se o backend enviar essa info)
-            const cargo = localStorage.getItem("cargo_usuario");
-            if (cargo === "aluno") {
-                window.location.href("/aluno/home");
-            } else {
-                window.location.href("/professor/bancas");
-            }
+            alert("Redirecionando para página logada..")
+            navigate("/aluno/")
+            // // Redireciona o usuário dependendo do cargo (se o backend enviar essa info)
+            // const cargo = localStorage.getItem("cargo_usuario");
+            // if (cargo === "aluno") {
+            //     window.location.href("/aluno/home");
+            // } else {
+            //     window.location.href("/professor/bancas");
+            // }
 
         } catch (error) {
             // Se a senha estiver errada, o apiClient joga o erro e cai aqui!

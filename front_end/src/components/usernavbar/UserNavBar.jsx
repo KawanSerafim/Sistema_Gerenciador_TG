@@ -1,9 +1,11 @@
 import { Container, Navbar } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
 import './Styles.css';
 
 const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWidth = "900px" }) => {
-    const handleSelect = () => alert(`Redirecionando .... `);
+    const navigate = useNavigate()
+    const handleSelect = (evento) => navigate(evento.target.attributes[0].value);
     let largura = "";
     if (opcoes.length == 1) {
         largura = "15%"
@@ -20,7 +22,7 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                 <Nav
                     variant="pills"
                     activeKey="1"
-                    onSelect={handleSelect}
+                    onClick={handleSelect}
                     className='bg-primary rounded d-flex align-items-center px-3'
                     style={{ minHeight: '60px', width: largura }}>
 
@@ -29,7 +31,7 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                         {opcoes.includes("inicio") &&
                             (
                                 <Nav.Item>
-                                    <Nav.Link eventKey="1" href="#/home" className='text-white nav__link fs-3 fs-md-4 fw-bold'>
+                                    <Nav.Link eventKey="1" href="/home" className='text-white nav__link fs-3 fs-md-4 fw-bold'>
                                         Inicio
                                     </Nav.Link>
                                 </Nav.Item>
@@ -50,7 +52,7 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                     <div className="d-flex flex-1 justify-content-end">
                         {opcoes.includes("sair") && (
                             <Nav.Item className={opcoes.includes("nome") ? "" : "ms-auto"}>
-                                <Nav.Link eventKey='3' href="#/home" className='text-white nav__link fs-3 fs-md-4 fw-bold'>
+                                <Nav.Link eventKey='3' href="/" className='text-white nav__link fs-3 fs-md-4 fw-bold'>
                                     {userName != "" ? "Sair" : "Voltar"}
                                 </Nav.Link>
                             </Nav.Item>

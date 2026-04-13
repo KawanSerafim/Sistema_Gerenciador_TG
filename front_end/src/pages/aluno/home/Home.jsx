@@ -1,8 +1,15 @@
 import { Button, Container } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
+import { useNavigate } from "react-router-dom"
 
 const Home = () => {
     const nomeAluno = "Aluno"
+    const navigate = useNavigate()
+    const handleClick = (evento) => {
+        navigate(`/aluno/${evento.target.value}`)
+        //navigate(evento.target.value);
+    }
+
     return (
         <>
             <UserNavBar
@@ -20,6 +27,8 @@ const Home = () => {
 
                         <Button variant="primary"
                             type="submit"
+                            onClick={handleClick}
+                            value={'/formarGrupo'}
                             id='btn-criar-grupo' className='fs-4 fw-medium w-100'
                         >
                             Criar Grupo
@@ -27,6 +36,8 @@ const Home = () => {
 
                         <Button variant="primary"
                             type="submit"
+                            onClick={handleClick}
+                            value={'/solicitarOrientacao'}
                             id='btn-criar-grupo' className='fs-4 fw-medium w-100'
                         >
                             Solicitar orientação
