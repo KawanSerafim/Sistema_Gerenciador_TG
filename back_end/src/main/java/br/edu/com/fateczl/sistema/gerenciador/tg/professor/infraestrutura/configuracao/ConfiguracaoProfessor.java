@@ -5,6 +5,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.C
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.CadastrarProfessorCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarCargosProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.servicos.IdentificadorAutoridadesProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.servicos.VerificadorUnicidadeProfessor;
@@ -45,5 +46,10 @@ public class ConfiguracaoProfessor {
                 verificadorProfessor,
                 identificadorAutoridades
         );
+    }
+
+    @Bean
+    public ListarCargosProfessorCaso listarCargosProfessorCaso() {
+        return new ListarCargosProfessorCaso();
     }
 }
