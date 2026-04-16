@@ -16,7 +16,8 @@ public class ContaUsuarioMapeador {
                 dominio.idTexto(),
                 dominio.emailTexto(),
                 dominio.senha().valor(),
-                dominio.status()
+                dominio.status(),
+                dominio.autoridades()
         );
     }
 
@@ -25,7 +26,8 @@ public class ContaUsuarioMapeador {
                 new ContaUsuarioId(UUID.fromString(modelo.getId())),
                 new Email(modelo.getEmail()),
                 new Senha(modelo.getSenha()),
-                modelo.getStatus()
+                modelo.getStatus(),
+                modelo.getAutoridades()
         );
     }
 }
