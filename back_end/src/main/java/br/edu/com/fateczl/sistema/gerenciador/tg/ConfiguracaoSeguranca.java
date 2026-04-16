@@ -30,6 +30,10 @@ public class ConfiguracaoSeguranca {
             "/validar-codigo/api"
     };
 
+    private static final String[] ROTAS_PUBLICAS_GET = {
+            "/professores/api/cargos"
+    };
+
     private final FiltroAutenticacaoJwt filtroJwt;
 
     @Bean
@@ -41,10 +45,18 @@ public class ConfiguracaoSeguranca {
                         SessionCreationPolicy.STATELESS
                 ))
                 .authorizeHttpRequests(auth -> auth
+                        //POST
                         .requestMatchers(
                                 HttpMethod.POST,
                                 ROTAS_PUBLICAS_POST
-                        ).permitAll().anyRequest().authenticated()
+                        ).permitAll()
+                        //GET
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                ROTAS_PUBLICAS_GET
+                        ).permitAll()
+                        //Bloqueia o resto
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         filtroJwt,
