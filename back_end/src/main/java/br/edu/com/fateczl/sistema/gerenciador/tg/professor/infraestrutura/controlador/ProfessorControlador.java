@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.controladores;
+package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarCargosProfessorCaso;
 import org.springframework.http.ResponseEntity;
