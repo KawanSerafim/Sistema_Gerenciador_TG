@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarProfessoresPorCargoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.CadastrarProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarCargosProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -51,5 +52,10 @@ public class ConfiguracaoProfessor {
     @Bean
     public ListarCargosProfessorCaso listarCargosProfessorCaso() {
         return new ListarCargosProfessorCaso();
+    }
+
+    @Bean
+    public ListarProfessoresPorCargoCaso buscarProfessoresPorCargoCaso(ProfessorRepositorio repositorio){
+        return new ListarProfessoresPorCargoCaso(repositorio);
     }
 }

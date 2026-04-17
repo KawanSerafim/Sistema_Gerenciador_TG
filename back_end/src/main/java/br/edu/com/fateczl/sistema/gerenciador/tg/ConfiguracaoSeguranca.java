@@ -31,7 +31,11 @@ public class ConfiguracaoSeguranca {
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
+            //Evita que o spring security mascare erros
+            "/error",
+            "/professores/api",
             "/professores/api/cargos"
+
     };
 
     private final FiltroAutenticacaoJwt filtroJwt;
