@@ -34,7 +34,8 @@ public class ConfiguracaoSeguranca {
             //Evita que o spring security mascare erros
             "/error",
             "/professores/api",
-            "/professores/api/cargos"
+            "/professores/api/cargos",
+            "/turmas/api"
 
     };
 

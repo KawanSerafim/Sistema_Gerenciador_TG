@@ -6,6 +6,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.persistenc
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,5 @@ public interface TurmaJpaRepositorio
             Integer ano,
             Integer semestre
     );
+    List<TurmaModelo> findByProfessorId(String professorId);
 }

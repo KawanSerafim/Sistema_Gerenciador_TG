@@ -3,6 +3,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
@@ -21,4 +22,5 @@ public interface TurmaRepositorio {
             Turno turno,
             PeriodoLetivo periodoLetivo
     );
+    List<Turma> buscarPorProfessorTgId(ProfessorId professorId);
 }

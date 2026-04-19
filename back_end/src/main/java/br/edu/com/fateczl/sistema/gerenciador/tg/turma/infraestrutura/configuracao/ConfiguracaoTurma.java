@@ -1,8 +1,9 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.persistencia.jpa.configuracao;
+package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.configuracao;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.ValidadorCoordenadorCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasPorProfessorTgIdCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.GerarTurmaCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.ValidadorComposicaoTurma;
@@ -42,5 +43,10 @@ public class ConfiguracaoTurma {
                 verificadorUnicidade,
                 validadorCoordenador
         );
+    }
+
+    @Bean
+    public BuscarTurmasPorProfessorTgIdCaso buscarTurmasPorProfessorTgIdCaso(TurmaRepositorio repositorio){
+        return new BuscarTurmasPorProfessorTgIdCaso(repositorio);
     }
 }
