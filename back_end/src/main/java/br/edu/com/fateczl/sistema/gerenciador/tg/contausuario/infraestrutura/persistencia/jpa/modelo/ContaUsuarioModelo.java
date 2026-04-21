@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,12 +31,10 @@ public class ContaUsuarioModelo {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            // Nome da nova tabela que o Hibernate vai criar
-            name = "contas_usuario_autoridades",
-            // Chave estrangeira
-            joinColumns = @JoinColumn(name = "conta_usuario_id")
+            name = "contas_autoridades",
+            joinColumns = @JoinColumn(name = "conta_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "autoridade", nullable = false)
-    private Set<Autoridade> autoridades = new HashSet<>();
+    @Column(nullable = false, length = 30)
+    private Set<Autoridade> autoridades;
 }
