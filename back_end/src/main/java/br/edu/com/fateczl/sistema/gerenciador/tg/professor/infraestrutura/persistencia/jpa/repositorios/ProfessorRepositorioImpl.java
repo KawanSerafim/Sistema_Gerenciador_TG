@@ -42,12 +42,12 @@ public class ProfessorRepositorioImpl implements ProfessorRepositorio {
 
     /**
      * Lista os professores por cargoProfessor
-     * @param cargoProfessor - enum cargoProfessor
-     * @return (List<Professor>) lista de professores
+     * @param cargoProfessor enum cargoProfessor
+     * @return (List<Professor>) lista de professores ou lista vazia
      */
+    @Override
     @Transactional(readOnly = true)
     public List<Professor> listarPorCargoProfessor(CargoProfessor cargoProfessor) {
-
         //Pega no BD como modelo
         List<ProfessorModelo> professoresModelo = repositorio.findByCargo(cargoProfessor);
         //Para cada modelo chama o mapeador e transforma em entidade dominio, junto tudo em lista
