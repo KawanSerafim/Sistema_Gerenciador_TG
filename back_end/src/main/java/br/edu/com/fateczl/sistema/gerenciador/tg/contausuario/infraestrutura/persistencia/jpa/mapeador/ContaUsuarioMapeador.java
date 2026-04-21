@@ -6,6 +6,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Senha;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.persistencia.jpa.modelo.ContaUsuarioModelo;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class ContaUsuarioMapeador {
@@ -16,7 +17,10 @@ public class ContaUsuarioMapeador {
                 dominio.idTexto(),
                 dominio.emailTexto(),
                 dominio.senha().valor(),
-                dominio.status()
+                dominio.status(),
+                dominio.autoridades() != null
+                        ? Set.copyOf(dominio.autoridades())
+                        : Set.of()
         );
     }
 
@@ -25,7 +29,10 @@ public class ContaUsuarioMapeador {
                 new ContaUsuarioId(UUID.fromString(modelo.getId())),
                 new Email(modelo.getEmail()),
                 new Senha(modelo.getSenha()),
-                modelo.getStatus()
+                modelo.getStatus(),
+                modelo.getAutoridades() != null
+                        ? Set.copyOf(modelo.getAutoridades())
+                        : Set.of()
         );
     }
 }
