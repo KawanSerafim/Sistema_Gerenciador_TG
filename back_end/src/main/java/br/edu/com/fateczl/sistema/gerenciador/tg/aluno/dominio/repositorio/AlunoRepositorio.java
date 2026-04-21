@@ -14,4 +14,5 @@ public interface AlunoRepositorio {
     Optional<List<Aluno>> buscarPorMatriculas(List<Matricula> matriculas);
     Optional<Aluno> buscarPorContaId(ContaUsuarioId contaUsuarioId);
     List<Aluno> buscarPorTurmaId(TurmaId turmaId);
+    List<Aluno> buscarSemGrupoPorTurmaId(TurmaId turmaId);
 }

@@ -76,4 +76,17 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
                     .stream().map(AlunoMapeador::paraDominio)
                 .toList();
     }
+
+    /**
+     * Busca a lista de alunoDtos que possuem o id de turma informado e não estão em um grupo
+     * @param turmaId TurmaId da turma de alunoDtos desejada
+     * @return (List<Aluno>) lista de alunoDtos ou lista vazia
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Aluno> buscarSemGrupoPorTurmaId(TurmaId turmaId) {
+        return repositorio.findAlunosSemGrupoPorTurma(turmaId.texto())
+                .stream().map(AlunoMapeador::paraDominio)
+                .toList();
+    }
 }
