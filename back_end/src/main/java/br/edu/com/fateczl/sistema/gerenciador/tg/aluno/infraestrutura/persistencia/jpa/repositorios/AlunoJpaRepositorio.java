@@ -13,4 +13,5 @@ public interface AlunoJpaRepositorio
     Optional<AlunoModelo> findByMatricula(String matricula);
     List<AlunoModelo> findByMatriculaIn(List<String> matriculas);
     Optional<AlunoModelo> findByContaUsuarioId(String contaUsuarioId);
+    List<AlunoModelo> findByTurmasIdsContaining(String turmasId);
 }

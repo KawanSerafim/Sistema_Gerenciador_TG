@@ -35,7 +35,8 @@ public class ConfiguracaoSeguranca {
             "/error",
             "/professores/api",
             "/professores/api/cargos",
-            "/turmas/api"
+            "/turmas/api",
+            "/alunos/api"
 
     };
 

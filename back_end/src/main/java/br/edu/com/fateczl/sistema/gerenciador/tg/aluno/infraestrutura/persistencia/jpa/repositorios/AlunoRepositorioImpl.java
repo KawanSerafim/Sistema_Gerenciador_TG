@@ -6,6 +6,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistenc
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.modelo.AlunoModelo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +62,18 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     public Optional<Aluno> buscarPorContaId(ContaUsuarioId id) {
         return repositorio.findByContaUsuarioId(id.texto())
                 .map(AlunoMapeador::paraDominio);
+    }
+
+    /**
+     * Busca a lista de alunos que possuem o id de turma informado
+     * @param turmaId TurmaId da turma de alunos desejada
+     * @return (List<Aluno>) lista de alunos ou lista vazia
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Aluno> buscarPorTurmaId(TurmaId turmaId) {
+        return repositorio.findByTurmasIdsContaining(turmaId.texto())
+                    .stream().map(AlunoMapeador::paraDominio)
+                .toList();
     }
 }
