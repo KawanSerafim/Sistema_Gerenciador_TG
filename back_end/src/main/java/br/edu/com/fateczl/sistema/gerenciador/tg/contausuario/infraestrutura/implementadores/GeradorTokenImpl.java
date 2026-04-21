@@ -16,10 +16,10 @@ import java.util.Date;
 @Component
 public class GeradorTokenImpl implements GeradorToken {
 
-    @Value("${app.jwt.secret}")
+    @Value("${jwt.secret}")
     private String segredoJwt;
 
-    @Value("${app.jwt.expiration-ms:86400000}")
+    @Value("${jwt.expiration-ms:86400000}")
     private long expiracaoMs;
 
     private SecretKey pegarChaveAssinatura() {
