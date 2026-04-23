@@ -17,15 +17,15 @@ public interface AlunoJpaRepositorio
     Optional<AlunoModelo> findByContaUsuarioId(String contaUsuarioId);
     List<AlunoModelo> findByTurmasIdsContaining(String turmasId);
 
-    // "Busque Alunos que estejam na Turma X,
+    // "Busque Alunos que estejam nas Turmas (x,y,z),
     // ONDE o ID do aluno NÃO ESTEJA na lista de alunosIds de nenhum GrupoTG"
     @Query("""
         SELECT a FROM AlunoModelo a
         JOIN a.turmasIds t
-        WHERE t = :turmaId
+        WHERE t IN :turmasIds
         AND a.id NOT IN (
             SELECT alunosIds FROM GrupoTgModelo g JOIN g.alunosIds alunosIds
         )
     """)
-    List<AlunoModelo> findAlunosSemGrupoPorTurma(@Param("turmaId") String turmaId);
+    List<AlunoModelo> findAlunosSemGrupoPorTurmasIds(@Param("turmasIds") List<String> turmasIds);
 }

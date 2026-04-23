@@ -84,8 +84,12 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Aluno> buscarSemGrupoPorTurmaId(TurmaId turmaId) {
-        return repositorio.findAlunosSemGrupoPorTurma(turmaId.texto())
+    public List<Aluno> buscarSemGrupoPorTurmasIds(List<TurmaId> turmaId) {
+        //Converte a lista de TurmaIds em Lista de strings
+        List<String> idsStr = turmaId.stream()
+                .map(TurmaId::texto)
+                .toList();
+        return repositorio.findAlunosSemGrupoPorTurmasIds(idsStr)
                 .stream().map(AlunoMapeador::paraDominio)
                 .toList();
     }
