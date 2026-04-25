@@ -5,10 +5,12 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.Curs
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.mapeador.GrupoTgMapeador;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -31,5 +33,15 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
     ) {
         return repositorio.findByAlunoAndCurso(alunoId.texto(), cursoId.texto())
                 .map(GrupoTgMapeador::paraDominio);
+    }
+
+    @Override
+    public List<GrupoTg> buscarPorTurmasIds(List<TurmaId> turmasIds) {
+        //Transforma cada id de TurmaId em string e gera lista
+        List<String> idsStr = turmasIds.stream().map(TurmaId::texto).toList();
+
+        return repositorio.findGruposByTurmasIds(idsStr)
+                .stream().map(GrupoTgMapeador::paraDominio)
+                .toList();
     }
 }

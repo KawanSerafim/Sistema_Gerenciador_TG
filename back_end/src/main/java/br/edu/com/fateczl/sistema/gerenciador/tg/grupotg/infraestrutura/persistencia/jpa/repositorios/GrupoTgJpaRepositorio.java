@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,14 @@ public interface GrupoTgJpaRepositorio
             @Param("alunoId") String alunoId,
             @Param("cursoId") String cursoId
     );
+
+    // Busca grupos distintos onde tenha o id de aluno que faça parte da/s turma/s informadas
+    @Query("""
+            SELECT DISTINCT g FROM GrupoTgModelo g
+        JOIN g.alunosIds alunoId
+        WHERE alunoId IN (
+            SELECT a.id FROM AlunoModelo a JOIN a.turmasIds t WHERE t IN :turmasIds
+        )
+    """)
+    List<GrupoTgModelo> findGruposByTurmasIds(@Param("turmasIds") List<String> turmasIds);
 }

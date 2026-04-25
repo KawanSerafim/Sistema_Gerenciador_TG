@@ -37,7 +37,8 @@ public class ConfiguracaoSeguranca {
             "/professores/api/cargos",
             "/turmas/api",
             "/alunos/api",
-            "/alunos/api/sem-grupo"
+            "/alunos/api/sem-grupo",
+            "/gruposTg/api"
 
     };
 
