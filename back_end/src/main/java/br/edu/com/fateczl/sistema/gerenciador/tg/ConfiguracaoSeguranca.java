@@ -24,10 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ConfiguracaoSeguranca {
     private static final String[] ROTAS_PUBLICAS_POST = {
             "/login/api",
-            "/professores/api/cadastrar",
+            "/professores/api",
             "/alunos/api/finalizar-cadastro",
             "/enviar-email/api/enviar",
-            "/validar-codigo/api"
+            "/validar-codigo/api",
+            "/conta-usuario/api/validar-codigo"
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {

@@ -53,7 +53,7 @@ public class CadastrarProfessorCaso {
             String nome,
             String matricula,
             String email,
-            String senhaLimpa,
+            String senha,
             CargoProfessor cargo
     ) {}
 
@@ -76,7 +76,7 @@ public class CadastrarProfessorCaso {
 
         ContaUsuario novaConta = gerarNovaConta(
                 emailAlvo,
-                comando.senhaLimpa(),
+                comando.senha(),
                 autoridades
         );
         Professor novoProfessor = gerarNovoProfessor(

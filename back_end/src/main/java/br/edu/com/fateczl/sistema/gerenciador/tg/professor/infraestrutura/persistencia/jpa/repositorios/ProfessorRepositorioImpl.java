@@ -59,8 +59,10 @@ public class ProfessorRepositorioImpl implements ProfessorRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Professor> buscarPorId(ProfessorId professorId) {
         return repositorio.findById(professorId.texto())
                 .map(ProfessorMapeador::paraDominio);
     }
+
 }

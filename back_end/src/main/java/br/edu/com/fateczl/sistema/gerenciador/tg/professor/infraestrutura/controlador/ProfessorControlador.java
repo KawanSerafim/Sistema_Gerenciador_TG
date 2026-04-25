@@ -1,7 +1,9 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.controlador;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.CadastrarProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarProfessoresPorCargoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarCargosProfessorCaso;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +15,27 @@ public class ProfessorControlador {
 
     private final ListarCargosProfessorCaso listarCargosProfessorCaso;
     private final ListarProfessoresPorCargoCaso listarProfessoresPorCargoCaso;
+    private final CadastrarProfessorCaso cadastrarProfessorCaso;
 
     public ProfessorControlador(
             ListarCargosProfessorCaso listarCargosProfessorCaso,
-            ListarProfessoresPorCargoCaso listarProfessoresPorCargoCaso){
+            ListarProfessoresPorCargoCaso listarProfessoresPorCargoCaso,
+            CadastrarProfessorCaso cadastrarProfessorCaso
+    ){
             this.listarCargosProfessorCaso = listarCargosProfessorCaso;
             this.listarProfessoresPorCargoCaso = listarProfessoresPorCargoCaso;
+            this.cadastrarProfessorCaso = cadastrarProfessorCaso;
 
+    }
+
+    @PostMapping
+    public ResponseEntity<CadastrarProfessorCaso.Resposta> cadastrarProfessor(
+            @RequestBody CadastrarProfessorCaso.Comando comando
+    ) {
+        // Aciona o ouvinte para enviar o email ao professor
+        var resposta = cadastrarProfessorCaso.executar(comando);
+        // Retorna 201
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
     @GetMapping("/cargos")
