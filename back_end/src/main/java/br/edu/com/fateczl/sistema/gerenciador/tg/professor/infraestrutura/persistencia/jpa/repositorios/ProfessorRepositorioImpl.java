@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosva
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.persistencia.jpa.mapeador.ProfessorMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.persistencia.jpa.modelo.ProfessorModelo;
@@ -55,5 +56,11 @@ public class ProfessorRepositorioImpl implements ProfessorRepositorio {
                     .map(ProfessorMapeador::paraDominio).toList();
 
 
+    }
+
+    @Override
+    public Optional<Professor> buscarPorId(ProfessorId professorId) {
+        return repositorio.findById(professorId.texto())
+                .map(ProfessorMapeador::paraDominio);
     }
 }

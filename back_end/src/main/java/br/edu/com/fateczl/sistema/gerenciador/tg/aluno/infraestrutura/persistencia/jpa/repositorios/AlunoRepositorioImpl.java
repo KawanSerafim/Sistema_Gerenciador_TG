@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.repositorios;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.mapeador.AlunoMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.modelo.AlunoModelo;
@@ -92,5 +93,11 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
         return repositorio.findAlunosSemGrupoPorTurmasIds(idsStr)
                 .stream().map(AlunoMapeador::paraDominio)
                 .toList();
+    }
+
+    @Override
+    public Optional<Aluno> buscarPorId(AlunoId alunoId) {
+        return repositorio.findById(alunoId.texto())
+                .map(AlunoMapeador::paraDominio);
     }
 }
