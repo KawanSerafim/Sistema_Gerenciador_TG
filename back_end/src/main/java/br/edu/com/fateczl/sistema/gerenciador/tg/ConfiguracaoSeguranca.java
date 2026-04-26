@@ -28,7 +28,8 @@ public class ConfiguracaoSeguranca {
             "/alunos/api/finalizar-cadastro",
             "/enviar-email/api/enviar",
             "/validar-codigo/api",
-            "/conta-usuario/api/validar-codigo"
+            "/conta-usuario/api/validar-codigo",
+            "/cursos/api"
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
@@ -39,7 +40,8 @@ public class ConfiguracaoSeguranca {
             "/turmas/api",
             "/alunos/api",
             "/alunos/api/sem-grupo",
-            "/gruposTg/api"
+            "/gruposTg/api",
+            "/cursos/api"
 
     };
 

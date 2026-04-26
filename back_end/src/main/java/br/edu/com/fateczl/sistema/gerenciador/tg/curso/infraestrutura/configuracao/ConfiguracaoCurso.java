@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.configura
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.GerarCursoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.ListarCursosCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.ValidadorCoordenadorCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.VerificadorUnicidadeCurso;
@@ -39,5 +40,13 @@ public class ConfiguracaoCurso {
                 verificadorUnicidade,
                 validadorCoordenador
         );
+    }
+
+    @Bean
+    public ListarCursosCaso listarCursosCaso(
+            CursoRepositorio repositorio,
+            ProfessorRepositorio professorRepositorio
+    ){
+        return new ListarCursosCaso(repositorio,professorRepositorio);
     }
 }
