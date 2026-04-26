@@ -29,7 +29,8 @@ public class ConfiguracaoSeguranca {
             "/enviar-email/api/enviar",
             "/validar-codigo/api",
             "/conta-usuario/api/validar-codigo",
-            "/cursos/api"
+            "/cursos/api",
+            "/turmas/api",
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
