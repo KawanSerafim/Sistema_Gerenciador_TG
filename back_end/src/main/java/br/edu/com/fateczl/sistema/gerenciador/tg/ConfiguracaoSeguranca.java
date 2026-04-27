@@ -43,6 +43,7 @@ public class ConfiguracaoSeguranca {
             "/turmas/api",
             "/alunos/api",
             "/alunos/api/sem-grupo",
+            "/alunos/api/importar",
             "/gruposTg/api",
             "/cursos/api"
 

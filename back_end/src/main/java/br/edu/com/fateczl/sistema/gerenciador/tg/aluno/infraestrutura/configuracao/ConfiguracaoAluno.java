@@ -1,9 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.configuracao;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosPorTurmaIdCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosSemGrupoPorTurmasIdsCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.ImportarAlunosCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.SolicitarAcessoAlunoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.portas.LeitorArquivoAlunos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.servicos.ValidadorAutorizacaoImportacao;
@@ -81,5 +78,12 @@ public class ConfiguracaoAluno {
             AlunoRepositorio repositorio
     ) {
         return new BuscarAlunosSemGrupoPorTurmasIdsCaso(repositorio);
+    }
+
+    @Bean
+    public BuscarAlunosImportadosCaso buscarAlunosImportadosCaso(
+            AlunoRepositorio repositorio
+    ) {
+        return new BuscarAlunosImportadosCaso(repositorio);
     }
 }

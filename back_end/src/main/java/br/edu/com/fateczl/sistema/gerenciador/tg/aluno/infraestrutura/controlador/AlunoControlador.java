@@ -1,15 +1,12 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.controlador;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosImportadosCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosPorTurmaIdCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosSemGrupoPorTurmasIdsCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.ImportarAlunosCaso;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,15 +18,17 @@ public class AlunoControlador {
     private final BuscarAlunosPorTurmaIdCaso buscarAlunosPorTurmaIdCaso;
     private final BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso;
     private final ImportarAlunosCaso importarAlunosCaso;
-
+    private final BuscarAlunosImportadosCaso buscarAlunosImportadosCaso;
     public AlunoControlador(
             BuscarAlunosPorTurmaIdCaso buscarAlunosPorTurmaIdCaso,
             BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso,
-            ImportarAlunosCaso importarAlunosCaso
+            ImportarAlunosCaso importarAlunosCaso,
+            BuscarAlunosImportadosCaso buscarAlunosImportadosCaso
     ){
         this.buscarAlunosPorTurmaIdCaso = buscarAlunosPorTurmaIdCaso;
         this.buscarAlunosSemGrupoPorTurmasIdsCaso = buscarAlunosSemGrupoPorTurmasIdsCaso;
         this.importarAlunosCaso = importarAlunosCaso;
+        this.buscarAlunosImportadosCaso = buscarAlunosImportadosCaso;
     }
 
     @PostMapping(value = "/importar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -51,6 +50,15 @@ public class AlunoControlador {
             return ResponseEntity.badRequest().build();
         }
 
+    }
+
+    @GetMapping("/importar")
+    public ResponseEntity<BuscarAlunosImportadosCaso.Resposta>
+        buscarAlunosImportados(@RequestParam("turmaId") String turmaId) {
+
+        var comando = new BuscarAlunosImportadosCaso.Comando(turmaId);
+        return ResponseEntity.ok()
+                .body(buscarAlunosImportadosCaso.executar(comando));
     }
 
 
