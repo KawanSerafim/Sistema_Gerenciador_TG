@@ -18,14 +18,15 @@ public class AlunoMapeador {
 
     public static AlunoModelo paraModelo(Aluno dominio) {
         Set<String> turmasIdsTexto = dominio.turmasIds().stream()
-                .map(TurmaId::toString)
+                .map(TurmaId::texto)
                 .collect(Collectors.toSet());
 
         return new AlunoModelo(
                 dominio.idTexto(),
                 dominio.matriculaTexto(),
                 dominio.nomeTexto(),
-                dominio.contaUsuarioIdTexto(),
+                //Lidando com alunos vindos de arquivo, sem conta ainda, deixa claro nulo
+                dominio.contaUsuarioId() != null ? dominio.contaUsuarioId().texto() : null,
                 turmasIdsTexto,
                 dominio.status()
         );
