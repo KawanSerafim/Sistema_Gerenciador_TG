@@ -47,6 +47,7 @@ public class ImportarAlunosCaso {
     }
 
     public record AlunoImportado(String id, String nome, String matricula) {}
+
     public record Comando(
             String idTurma,
             InputStream arquivoBruto,
@@ -60,8 +61,10 @@ public class ImportarAlunosCaso {
         Professor autor = buscarProfessorPorEmail(
                 new Email(comando.emailAutor())
         );
+        // Remove espaços e possíveis aspas duplas da ponta
+        String idTurmaLimpo = comando.idTurma().trim().replace("\"", "");
         Turma turma = buscarTurma(
-                new TurmaId(UUID.fromString(comando.idTurma()))
+                new TurmaId(UUID.fromString(idTurmaLimpo))
         );
 
         validadorAutorizacao.validar(autor, turma);
