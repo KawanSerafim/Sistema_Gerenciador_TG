@@ -30,8 +30,8 @@ public class ConfiguracaoSeguranca {
             "/alunos/api/importar",
             "/alunos/api",
             "/enviar-email/api/enviar",
-            "/validar-codigo/api",
             "/conta-usuario/api/validar-codigo",
+            "/conta-usuario/api/login",
             "/cursos/api",
             "/turmas/api",
     };

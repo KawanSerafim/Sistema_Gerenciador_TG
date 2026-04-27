@@ -23,7 +23,7 @@ public class AutenticarUsuarioCaso {
         this.geradorToken = geradorToken;
     }
 
-    public record Comando(String email, String senhaLimpa) {}
+    public record Comando(String email, String senha) {}
 
     public String executar(Comando comando) {
         Email emailAlvo = new Email(comando.email());
@@ -35,7 +35,7 @@ public class AutenticarUsuarioCaso {
         usuario.validarSePodeAutenticar();
 
         boolean senhaValida = criptografo.comparar(
-                comando.senhaLimpa(),
+                comando.senha(),
                 usuario.senha()
         );
 
