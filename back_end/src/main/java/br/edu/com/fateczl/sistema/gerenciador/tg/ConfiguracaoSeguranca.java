@@ -27,12 +27,13 @@ public class ConfiguracaoSeguranca {
             "/login/api",
             "/professores/api",
             "/alunos/api/finalizar-cadastro",
+            "/alunos/api/importar",
+            "/alunos/api",
             "/enviar-email/api/enviar",
             "/validar-codigo/api",
             "/conta-usuario/api/validar-codigo",
             "/cursos/api",
             "/turmas/api",
-            "/alunos/api/importar"
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {

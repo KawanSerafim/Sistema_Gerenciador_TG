@@ -1,9 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.controlador;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosImportadosCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosPorTurmaIdCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.BuscarAlunosSemGrupoPorTurmasIdsCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.ImportarAlunosCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +17,20 @@ public class AlunoControlador {
     private final BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso;
     private final ImportarAlunosCaso importarAlunosCaso;
     private final BuscarAlunosImportadosCaso buscarAlunosImportadosCaso;
+    private final SolicitarAcessoAlunoCaso solicitarAcessoAlunoCaso;
+
     public AlunoControlador(
             BuscarAlunosPorTurmaIdCaso buscarAlunosPorTurmaIdCaso,
             BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso,
             ImportarAlunosCaso importarAlunosCaso,
-            BuscarAlunosImportadosCaso buscarAlunosImportadosCaso
+            BuscarAlunosImportadosCaso buscarAlunosImportadosCaso,
+            SolicitarAcessoAlunoCaso solicitarAcessoAlunoCaso
     ){
         this.buscarAlunosPorTurmaIdCaso = buscarAlunosPorTurmaIdCaso;
         this.buscarAlunosSemGrupoPorTurmasIdsCaso = buscarAlunosSemGrupoPorTurmasIdsCaso;
         this.importarAlunosCaso = importarAlunosCaso;
         this.buscarAlunosImportadosCaso = buscarAlunosImportadosCaso;
+        this.solicitarAcessoAlunoCaso = solicitarAcessoAlunoCaso;
     }
 
     @PostMapping(value = "/importar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -59,6 +61,16 @@ public class AlunoControlador {
         var comando = new BuscarAlunosImportadosCaso.Comando(turmaId);
         return ResponseEntity.ok()
                 .body(buscarAlunosImportadosCaso.executar(comando));
+    }
+
+    @PostMapping
+    public ResponseEntity<SolicitarAcessoAlunoCaso.Resposta>
+        solicitarAcesso(@RequestBody SolicitarAcessoAlunoCaso.Comando comando) {
+
+        var resposta = solicitarAcessoAlunoCaso.executar(comando);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(resposta);
     }
 
 
