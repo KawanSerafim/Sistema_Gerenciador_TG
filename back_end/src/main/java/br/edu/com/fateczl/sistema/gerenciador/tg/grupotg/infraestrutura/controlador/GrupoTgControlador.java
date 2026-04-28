@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/gruposTg/api")
+@RequestMapping("/api/gruposTg")
 public class GrupoTgControlador {
 
     private final BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso;

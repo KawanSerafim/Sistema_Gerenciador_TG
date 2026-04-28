@@ -29,16 +29,18 @@ import java.util.List;
 public class ConfiguracaoSeguranca {
 
     private static final String[] ROTAS_PUBLICAS_POST = {
-            "/login/api",
-            "/professores/api",
-            "/alunos/api/finalizar-cadastro",
-            "/conta-usuario/api/validar-codigo",
-            "/conta-usuario/api/login",
+            "/api/professores",
+            "/api/alunos/finalizar-cadastro",
+            "/api/conta-usuario/validar-codigo",
+            "/api/conta-usuario/login",
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
             //Evita que o spring security mascare erros
             "/error",
+            "/api/cursos/tipos-tg",
+            "/api/compartilhado/turnos",
+            "/api/compartilhado/disciplinas"
 //            "/professores/api",
 //            "/professores/api/cargos",
 //            "/turmas/api",

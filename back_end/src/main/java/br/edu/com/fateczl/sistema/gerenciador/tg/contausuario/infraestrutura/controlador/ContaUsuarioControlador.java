@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/conta-usuario/api")
+@RequestMapping("/api/conta-usuario")
 public class ContaUsuarioControlador {
 
     private final ValidarCodigoCaso validarCodigoCaso;

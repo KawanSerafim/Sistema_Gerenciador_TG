@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("alunos/api")
+@RequestMapping("/api/alunos")
 public class AlunoControlador {
     private final BuscarAlunosPorTurmaIdCaso buscarAlunosPorTurmaIdCaso;
     private final BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso;

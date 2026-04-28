@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("professores/api")
+@RequestMapping("/api/professores")
 //Cross origin super permissivo temporário
 @CrossOrigin("*")
 public class ProfessorControlador {
