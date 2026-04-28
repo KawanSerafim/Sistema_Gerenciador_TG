@@ -2,23 +2,27 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.controlad
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.GerarCursoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.ListarCursosCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.ListarTiposTgCaso;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cursos/api")
+@RequestMapping("/api/cursos")
 public class CursoControlador {
 
     private final GerarCursoCaso gerarCursoCaso;
     private final ListarCursosCaso listarCursosCaso;
+    private final ListarTiposTgCaso listarTiposTgCaso;
 
     public CursoControlador(
             GerarCursoCaso gerarCursoCaso,
-            ListarCursosCaso listarCursosCaso
+            ListarCursosCaso listarCursosCaso,
+            ListarTiposTgCaso listarTiposTgCaso
     ) {
         this.gerarCursoCaso = gerarCursoCaso;
         this.listarCursosCaso = listarCursosCaso;
+        this.listarTiposTgCaso = listarTiposTgCaso;
     }
 
     @PostMapping
@@ -43,6 +47,15 @@ public class CursoControlador {
         var resposta = listarCursosCaso.executar(comando);
 
         return ResponseEntity.ok(resposta);
+    }
+
+    /**
+     * Get para listar todas as opções de tiposTg
+     * @returns List lista string com tipos
+     */
+    @GetMapping("/tipos-tg")
+    public ResponseEntity<ListarTiposTgCaso.Resposta> listarTiposTg() {
+        return ResponseEntity.ok(listarTiposTgCaso.executar());
     }
 
 }
