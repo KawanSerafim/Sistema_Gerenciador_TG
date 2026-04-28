@@ -16,37 +16,37 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableCaching
 @EnableMethodSecurity
 @AllArgsConstructor
 public class ConfiguracaoSeguranca {
+
     private static final String[] ROTAS_PUBLICAS_POST = {
-            "/error",
             "/login/api",
             "/professores/api",
             "/alunos/api/finalizar-cadastro",
-            "/alunos/api/importar",
-            "/alunos/api",
-            "/enviar-email/api/enviar",
             "/conta-usuario/api/validar-codigo",
             "/conta-usuario/api/login",
-            "/cursos/api",
-            "/turmas/api",
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
             //Evita que o spring security mascare erros
             "/error",
-            "/professores/api",
-            "/professores/api/cargos",
-            "/turmas/api",
-            "/alunos/api",
-            "/alunos/api/sem-grupo",
-            "/alunos/api/importar",
-            "/gruposTg/api",
-            "/cursos/api"
+//            "/professores/api",
+//            "/professores/api/cargos",
+//            "/turmas/api",
+//            "/alunos/api",
+//            "/alunos/api/sem-grupo",
+//            "/alunos/api/importar",
+//            "/gruposTg/api",
+//            "/cursos/api"
 
     };
 
@@ -57,6 +57,7 @@ public class ConfiguracaoSeguranca {
         throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS
                 ))
@@ -79,6 +80,20 @@ public class ConfiguracaoSeguranca {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuracao = new CorsConfiguration();
+        //Portas local do React
+        configuracao.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        configuracao.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuracao.setAllowedHeaders(List.of("*"));
+        configuracao.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
+        fonte.registerCorsConfiguration("/**", configuracao);
+        return fonte;
     }
 
     @Bean
