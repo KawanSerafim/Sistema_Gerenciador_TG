@@ -19,6 +19,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.Validado
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.VerificadorUnicidadeCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +48,6 @@ public class GerarCursoCaso {
     public record AjusteComando(TipoTg tipoTg, Integer maxAlunosGrupo) {}
 
     public record Comando(
-            String emailAutor,
             String nome,
             String matriculaCoordenador,
             List<Turno> turnos,
@@ -65,7 +65,10 @@ public class GerarCursoCaso {
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
-        buscarAdministrador(new Email(comando.emailAutor()));
+
+        // Puxa o e-mail de quem realmente está logado (o "subject" do token)
+        String emailAutor = SecurityContextHolder.getContext().getAuthentication().getName();
+        buscarAdministrador(new Email(emailAutor));
 
         Nome nome = new Nome(comando.nome());
         verificadorUnicidade.verificar(nome);

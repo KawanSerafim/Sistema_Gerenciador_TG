@@ -21,7 +21,7 @@ public class ListarProfessoresPorCargoCaso {
     public record Comando(String cargo){}
 
     // DTO para a saida
-    public record ProfessorResumoDTO(String id, String nome){}
+    public record ProfessorResumoDTO(String id, String nome, String matricula){}
 
     //Resposta empacotada
     public record Resposta(List<ProfessorResumoDTO> professoresDTO) {}
@@ -50,7 +50,8 @@ public class ListarProfessoresPorCargoCaso {
         List<ProfessorResumoDTO> dtos = professors.stream()
                 .map( professor -> new ProfessorResumoDTO(
                         professor.idTexto(),
-                        professor.nomeTexto()
+                        professor.nomeTexto(),
+                        professor.matriculaTexto()
                 ))
                 .toList();
         return new Resposta(dtos);
