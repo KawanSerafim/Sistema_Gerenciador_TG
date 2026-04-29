@@ -12,15 +12,22 @@ export const apiClient = async (endpoint, options = {}) => {
 
     // ======= Interceptando a requisição =======
 
-    //TODO: Veirificar o nome do item que contem o token jwt no localstorage
-    const token = localStorage.getItem("token")
+    //Pega o token do localStorage
+    const token = localStorage.getItem("meu_token_tg");
 
     //Pega headers padrões
     const headers = {
-        "Content-Type": "application/json",
-        //Mantem os outros headers que podem ter sido passados
+        //Mantem os headers que podem ter sido passados
         ...options.headers,
     }
+
+    // ========= Para Upload de arquivos ==============
+    // Só injeta application/json se não estiver enviando um arquivo (FormData)
+    if (!(options.body instanceof FormData)) {
+        //Se quem chamou a função não passou um Content-Type especifico, coloca no JSON
+        headers["Content-Type"] = headers["Content-Type"] || "application/json";
+    }
+
 
     //Se o token existir, coloca ele na requisição
     if (token) {
@@ -39,8 +46,11 @@ export const apiClient = async (endpoint, options = {}) => {
         //Se backend dizer que o token é invalido/expirado (401 ou 403)
         if (resposta.status === 401 || resposta.status === 403) {
             console.error("Sessão expirada. Deslogando usuário...");
-            // Limpa o token antigo
-            localStorage.removeItem("token");
+
+            // Limpa a sessão do sistema
+            localStorage.removeItem("meu_token_tg");
+            localStorage.removeItem("cargo_usuario");
+
             //Força o usuário de volta para a tela de login
             window.location.href = "/login";
 

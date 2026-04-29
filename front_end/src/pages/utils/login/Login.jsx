@@ -27,15 +27,23 @@ const Login = () => {
 
             // Se chegou aqui, o Token já está salvo no localStorage!
             console.log("Login de sucesso!");
-            alert("Redirecionando para página logada..")
-            navigate("/aluno/")
-            // // Redireciona o usuário dependendo do cargo (se o backend enviar essa info)
-            // const cargo = localStorage.getItem("cargo_usuario");
-            // if (cargo === "aluno") {
-            //     window.location.href("/aluno/home");
-            // } else {
-            //     window.location.href("/professor/bancas");
-            // }
+            // Pega o cargo que o jwt-decode salvou
+            // Dica: O Spring Security costuma colocar um prefixo "ROLE_", 
+            // ex: "ROLE_ADMIN", "ROLE_ALUNO", "ROLE_PROFESSOR"
+            const cargo = localStorage.getItem("cargo_usuario");
+
+            if (cargo === "ROLE_ADMIN") {
+                navigate("/curso/cadastro"); // Rota fictícia, ajuste para a sua
+            } else if (cargo === "ROLE_PROFESSOR") {
+                navigate("/professor/visaoGrupos");
+            } else if (cargo === "ROLE_COORDENADOR_CURSO") {
+                navigate("/coordenador/cadastrarTurmaTG");
+            }
+
+            else {
+                // Se for aluno (ou fallback padrão)
+                navigate("/aluno/");
+            }
 
         } catch (error) {
             // Se a senha estiver errada, o apiClient joga o erro e cai aqui!

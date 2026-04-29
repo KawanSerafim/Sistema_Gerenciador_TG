@@ -1,6 +1,6 @@
 import { obrigatorio } from "../../utils/utils";
 import { apiClient } from "../apiClient";
-
+import { jwtDecode } from "jwt-decode";
 
 export const usuarioService = {
 
@@ -61,20 +61,28 @@ export const usuarioService = {
    */
   login: async (credenciais) => {
     //Realiza requisição
-    const resposta = await apiClient(`/auth/login`, {
+    const resposta = await apiClient(`/conta-usuario/login`, {
       method: "POST",
       body: JSON.stringify(credenciais),
     });
 
     //Se não cair no catch, o login foi um sucesso
     //Então irá salvar o token JWT no local storage
-    //TODO: Verificar se o backend vai mandar o token na resposta e como
     if (resposta && resposta.token) {
       localStorage.setItem("meu_token_tg", resposta.token);
 
-      // Salva o role do usuario
-      if (resposta.cargo) {
-        localStorage.setItem("cargo_usuario", resposta.cargo);
+      try {
+        const payloadDecodificado = jwtDecode(resposta.token);
+
+        const cargo = payloadDecodificado.roles || payloadDecodificado.authorities;
+
+        if (cargo) {
+          //Salva o cargo
+          localStorage.setItem("cargo_usuario", cargo);
+        }
+
+      } catch (erro) {
+        console.error("Erro ao decodificar o token JWT: ", erro);
       }
     }
     return resposta;
