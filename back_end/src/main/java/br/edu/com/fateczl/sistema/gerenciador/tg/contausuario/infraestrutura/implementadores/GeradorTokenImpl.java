@@ -37,11 +37,16 @@ public class GeradorTokenImpl implements GeradorToken {
 
         final Date agora = new Date();
         final Date dataExpiracao = new Date(agora.getTime() + expiracaoMs);
+        //Extrai as autoridades do usuario para colocar como cargos no jwt
+        List<String> autoridadesUsuario = usuario.autoridades().stream()
+            .map(Enum::name)
+            .toList();
 
         return Jwts.builder()
                 .subject(usuario.emailTexto())
                 .claim("id", usuario.idTexto())
                 .claim("status", usuario.status().name())
+                .claim("cargos", autoridadesUsuario)
                 .issuedAt(agora)
                 .expiration(dataExpiracao)
                 .signWith(pegarChaveAssinatura())
