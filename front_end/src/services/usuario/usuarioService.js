@@ -74,11 +74,11 @@ export const usuarioService = {
       try {
         const payloadDecodificado = jwtDecode(resposta.token);
 
-        const cargo = payloadDecodificado.roles || payloadDecodificado.authorities;
+        const arrayCargos = payloadDecodificado.cargos;
 
-        if (cargo) {
-          //Salva o cargo
-          localStorage.setItem("cargo_usuario", cargo);
+        if (arrayCargos && arrayCargos.length > 0) {
+          //Salva o cargo convertendo o array em texto
+          localStorage.setItem("cargo_usuario", JSON.stringify(arrayCargos));
         }
 
       } catch (erro) {

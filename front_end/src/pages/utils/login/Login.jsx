@@ -27,19 +27,26 @@ const Login = () => {
 
             // Se chegou aqui, o Token já está salvo no localStorage!
             console.log("Login de sucesso!");
-            // Pega o cargo que o jwt-decode salvou
-            // Dica: O Spring Security costuma colocar um prefixo "ROLE_", 
-            // ex: "ROLE_ADMIN", "ROLE_ALUNO", "ROLE_PROFESSOR"
-            const cargo = localStorage.getItem("cargo_usuario");
+            // Pega o cargo que o jwt-decode salvou como string
+            const cargosTexto = localStorage.getItem("cargo_usuario");
 
-            if (cargo === "ROLE_ADMIN") {
-                navigate("/curso/cadastro"); // Rota fictícia, ajuste para a sua
-            } else if (cargo === "ROLE_PROFESSOR") {
-                navigate("/professor/visaoGrupos");
-            } else if (cargo === "ROLE_COORDENADOR_CURSO") {
+            //Pega a string e trasnforma em array novamente
+            const cargos = cargosTexto ? JSON.parse(cargosTexto) : [];
+
+            // ADMIN
+            if (cargos.includes("ROLE_ADMIN")) {
+                navigate("/curso/cadastro");
+            } //COORDENADOR 
+            else if (cargos.includes("ROLE_COORDENADOR_CURSO")) {
                 navigate("/coordenador/cadastrarTurmaTG");
+            } //PROFESSOR TG 
+            else if (cargos.includes("ROLE_PROFESSOR_TG")) {
+                navigate("/professor/enviarTurma");
             }
-
+            //ORIENTADOR 
+            else if (cargos.includes("ROLE_ORIENTADOR")) {
+                navigate("/professor/visaoGrupos");
+            } //ALUNO
             else {
                 // Se for aluno (ou fallback padrão)
                 navigate("/aluno/");
