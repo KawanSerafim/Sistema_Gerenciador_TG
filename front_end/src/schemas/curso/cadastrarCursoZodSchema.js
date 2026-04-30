@@ -7,12 +7,15 @@ export const cursoSchema = z.object({
 
     turno: z.array(z.string()).min(1, "Selecione pelo menos um turno"),
     disciplina: z.array(z.string()).min(1, "Selecione pelo menos uma disciplina"),
-    coordenador: z.string().min(1, "Selecione pelo menos um tipo coordenador"),
+    coordenador: z.string()
+        .length(13, "A matrícula deve ter exatamente 13 dígitos")
+        .regex(/^\d+$/, "A matrícula deve conter apenas números"),
+
     tiposTG: z.array(z.object({
         id: z.string(),
         label: z.string(),
         ativo: z.boolean(),
-        qntMax: z.coerce.number().min(0).optional(),
+        qntMax: z.coerce.number().optional(),
     }))
         .superRefine((tgs, ctx) => {
             //ctx = contexto, permite enviar mais de 1 msg de erro
@@ -23,24 +26,37 @@ export const cursoSchema = z.object({
             if (ativos.length === 0) {
                 ctx.addIssue({
                     code: z.custom,
-                    message: "Selecione pelo menos um tipo de trabalho de conclusão (TG)",
+                    message: "Selecione pelo menos um tipo de trabalho de graduação (TG)",
                     //Caminho para o acesso ao root para exibição do errro
                     path: []
                 });
                 return; // Se não tem nenhum, nem adianta verificar as quantidades
             }
-
-            // 3. Se tem ativos, verifica se todos têm quantidade > 0
-            const temQuantidadeZerada = ativos.some(tg => !tg.qntMax || tg.qntMax <= 0);
-            if (temQuantidadeZerada) {
-                ctx.addIssue({
-                    code: z.custom,
-                    message: "Informe a quantidade máxima (maior que zero) para os TGs selecionados",
-                    //Parametro para o acesso ao root para exibição do errro
-                    path: []
-                });
-            }
+            // Validação 2: Verifica as quantidades INDIVIDUALMENTE (O pulo do gato)
+            tgs.forEach((tg, index) => {
+                // Só validamos a quantidade se o checkbox estiver marcado
+                if (tg.ativo) {
+                    if (!tg.qntMax || tg.qntMax < 1) {
+                        ctx.addIssue({
+                            code: z.custom,
+                            message: "A quantidade deve ser no mínimo 1",
+                            // Isso injeta o erro especificamente em errors.tiposTG[index].qntMax
+                            path: [index, "qntMax"]
+                        });
+                    }
+                }
+            });
         })
-        // 4. Só DEPOIS que tudo está validado, transformamos para o backend!
-        .transform(tgs => tgs.filter(tg => tg.ativo))
 })
+    .transform((dados) => ({
+        nome: dados.nome,
+        turnos: dados.turno,
+        disciplinas: dados.disciplina,
+        matriculaCoordenador: dados.coordenador,
+        ajustes: dados.tiposTG
+            .filter(tg => tg.ativo)
+            .map(tg => ({
+                tipoTg: tg.label,
+                maxAlunosGrupo: tg.qntMax
+            }))
+    }));

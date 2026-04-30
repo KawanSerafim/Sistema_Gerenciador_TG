@@ -8,9 +8,11 @@ export const cursoService = {
      * @returns {Promise<string[]>} disciplinas
      */
     buscaDisciplinas: async () => {
-        return await apiClient(`/disciplinas`, {
+        const resposta = await apiClient(`/compartilhado/disciplinas`, {
             method: "GET"
-        })
+        });
+        //Devolve apenas o array
+        return Array.isArray(resposta) ? resposta : (resposta?.nomes || []);
     },
 
     /**
@@ -18,9 +20,21 @@ export const cursoService = {
      * @returns {Promise<string[]>} turnos
      */
     buscaTurnos: async () => {
-        return await apiClient(`/turnos`, {
+        const resposta = await apiClient(`/compartilhado/turnos`, {
             method: "GET"
-        })
+        });
+        return Array.isArray(resposta) ? resposta : (resposta?.turnos || []);
+    },
+
+    /**
+     * Busca os tipos de TG disponíveis
+     * @returns {Promise<string[]>} Array de strings com os tipos de TG
+     */
+    buscaTiposTg: async () => {
+        const resposta = await apiClient(`/cursos/tipos-tg`, {
+            method: "GET"
+        });
+        return Array.isArray(resposta) ? resposta : (resposta?.tipos || []);
     },
 
     /**
@@ -32,8 +46,8 @@ export const cursoService = {
         return await apiClient(`/cursos`, {
             method: "POST",
             body: JSON.stringify(payload)
-        })
+        });
     }
 
 
-}
+};

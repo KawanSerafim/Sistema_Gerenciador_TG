@@ -29,7 +29,7 @@ const Login = () => {
             console.log("Login de sucesso!");
             // Pega o cargo que o jwt-decode salvou como string
             const cargosTexto = localStorage.getItem("cargo_usuario");
-
+            console.log(cargosTexto)
             //Pega a string e trasnforma em array novamente
             const cargos = cargosTexto ? JSON.parse(cargosTexto) : [];
 

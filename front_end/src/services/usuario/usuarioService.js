@@ -79,6 +79,9 @@ export const usuarioService = {
         if (arrayCargos && arrayCargos.length > 0) {
           //Salva o cargo convertendo o array em texto
           localStorage.setItem("cargo_usuario", JSON.stringify(arrayCargos));
+          console.log("Cargos salvos com sucesso!");
+        } else {
+          console.warn("A chave 'cargos' não existe no payload do token.");
         }
 
       } catch (erro) {

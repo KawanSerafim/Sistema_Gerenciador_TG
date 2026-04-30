@@ -9,8 +9,10 @@ export const professorService = {
      * @returns {Promise<Object[]>} resposta da requisição
      */
     buscaProfessoresPorCargo: async (cargo = obrigatorio("cargo")) => {
-        return await apiClient(`/professor/cargo/${cargo}`, {
+        const resposta = await apiClient(`/professores?cargo=${cargo}`, {
             method: "GET"
-        })
+        });
+        // Se a resposta existir, retorna o array. Se não, retorna um array vazio.
+        return resposta?.professoresDTO || [];
     }
 }
