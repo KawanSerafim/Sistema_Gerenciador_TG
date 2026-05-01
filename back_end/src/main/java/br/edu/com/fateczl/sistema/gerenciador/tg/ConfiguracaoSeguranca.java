@@ -31,8 +31,9 @@ public class ConfiguracaoSeguranca {
     private static final String[] ROTAS_PUBLICAS_POST = {
             "/api/professores",
             "/api/alunos/finalizar-cadastro",
-            "/api/conta-usuario/validar-codigo",
-            "/api/conta-usuario/login",
+            "/api/autenticacao/validar-codigo",
+            "/api/autenticacao/login",
+            "/api/autenticacao/reenviar-codigo"
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
