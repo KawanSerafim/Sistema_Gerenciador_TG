@@ -38,6 +38,8 @@ const CadastrarCurso = () => {
     register,
     handleSubmit,
     control,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(cursoSchema),
@@ -83,7 +85,7 @@ const CadastrarCurso = () => {
         //Popula o fieldArray do zod com os tipos vindos do backend
         const tgsIniciais = listaTipos.map(tipo => ({
           id: tipo, // O ID técnico (ex: "DESENVOLVIMENTO_SOFTWARE")
-          label: tipo.replace(/_/g, ' '), // Transforma em algo legível para o label
+          label: tipo,
           ativo: false,
           qntMax: 0
         }));
@@ -110,6 +112,21 @@ const CadastrarCurso = () => {
         variante: "success",
         mensagem: "Curso cadastrado com sucesso!",
       });
+
+      const tgsAtuais = getValues("tiposTG");
+
+      reset({
+        nome: "",
+        turno: [],
+        disciplina: [],
+        coordenador: "",
+        // Mapeia a lista atual, forçando tudo a ficar desmarcado e zerado
+        tiposTG: tgsAtuais.map((tg) => ({
+          ...tg,
+          ativo: false,
+          qntMax: 0
+        }))
+      })
 
     } catch (erro) {
       console.error("Falha ao cadastrar curso: ", erro);
@@ -219,16 +236,17 @@ const CadastrarCurso = () => {
                   >
                     <Form.Check
                       type="checkbox"
-                      title={opcao.label}
+                      // usa o replace para transformar em algo legível para o label
+                      title={opcao.label.replace(/_/g, ' ')}
                       id={idCheckbox}
-                      label={opcao.label.toUpperCase()}
+                      label={opcao.label.replace(/_/g, ' ').toUpperCase()}
                       className="fw-bold"
                       {...register(`tiposTG.${index}.ativo`)}
                     />
                     <div className="d-flex align-items-center gap-2 ms-auto">
                       <FormLabel
                         className="text-secondary fs-6 fw-bold"
-                        title={"Quantidade maxima de " + opcao.label}
+                        title={"Quantidade maxima de " + opcao.label.replace(/_/g, ' ')}
                         htmlFor={idInputQtd}
                       >
                         Quantidade maxima de integrantes do grupo:{" "}
@@ -236,7 +254,7 @@ const CadastrarCurso = () => {
                       <Form.Control
                         type="number"
                         id={idInputQtd}
-                        title={"Quantidade maxima de " + opcao.label}
+                        title={"Quantidade maxima de " + opcao.label.replace(/_/g, ' ')}
                         disabled={!isAtivo}
                         className={isAtivo ? "bg-white fw-medium" : "bg-light"}
                         style={{ maxWidth: "10rem" }}
