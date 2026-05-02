@@ -303,7 +303,7 @@ const CadastrarTurma = () => {
                                                 {...register(`turmas.${chaveTurma}`)}
                                                 isInvalid={!!errors?.turmas?.[chaveTurma]}
                                             >
-                                                <option value="" disabled>Selecione o professor de TG</option>
+                                                <option value="" disabled selected>Selecione o professor de TG</option>
                                                 {todosProfessores.map((professor) => (
                                                     <option key={professor.id} value={professor.matricula.trim()}>
                                                         {professor.nome}
