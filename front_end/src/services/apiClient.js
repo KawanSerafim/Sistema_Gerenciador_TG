@@ -61,7 +61,7 @@ export const apiClient = async (endpoint, options = {}) => {
         if (!resposta.ok) {
             // Tenta ler a mensagem de erro que o backend enviou, ou usa uma generica
             const dadosErro = await resposta.json().catch(() => null);
-            throw new Error(dadosErro?.message || "Erro de comunicação com o servidor.");
+            throw new Error(dadosErro?.mensagem || "Erro de comunicação com o servidor.");
         }
 
         //Se deu tudo certo, tenta devolver o JSON (ou vazio dependendo do caso)

@@ -20,7 +20,7 @@ export const usuarioService = {
     }
 
     // Remove o confirmarSenha antes de enviar, dado que não faz parte da requisição
-    const { confirmarSenha, ...dadosParaEnvio } = payload;
+    const { _confirmarSenha, ...dadosParaEnvio } = payload;
     return await apiClient(`${urlBase}`, {
       method: "POST",
       body: JSON.stringify(dadosParaEnvio),
