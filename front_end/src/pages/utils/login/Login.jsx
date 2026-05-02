@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Alert, Button, Container, Form, FormGroup } from "react-bootstrap"
-import { usuarioService } from "../../../services/usuario/usuarioService"
+import { autenticacaoService } from "../../../services/usuario/autenticacaoService"
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -23,7 +23,7 @@ const Login = () => {
             setErro("");
             console.log("Enviando dados ao backend", dadosValidados);
             // Chama o Service
-            await usuarioService.login(dadosValidados);
+            await autenticacaoService.login(dadosValidados);
 
             // Se chegou aqui, o Token já está salvo no localStorage!
             console.log("Login de sucesso!");
