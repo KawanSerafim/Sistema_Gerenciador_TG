@@ -23,7 +23,10 @@ const Login = () => {
             setErro("");
             console.log("Enviando dados ao backend", dadosValidados);
             // Chama o Service
-            await autenticacaoService.login(dadosValidados);
+            await autenticacaoService.login({
+                email: dadosValidados.email,
+                senha: dadosValidados.senha
+            });
 
             // Se chegou aqui, o Token já está salvo no localStorage!
             console.log("Login de sucesso!");
@@ -52,10 +55,31 @@ const Login = () => {
                 navigate("/aluno/");
             }
 
-        } catch (error) {
-            // Se a senha estiver errada, o apiClient joga o erro e cai aqui!
-            console.error("Falha ao logar:", error);
-            setErro(error.message || "E-mail ou senha incorretos.");
+        } catch (erro) {
+            console.log("Erro capturado no login:", erro.codigo, erro.message);
+            const mensagemErro = (erro.message || "").toLowerCase();
+            const codigoErro = erro.codigo || ""; // Pega o código que o apiClient injetou!
+
+            // Substitua "RN_XXX" pelo código real que o seu Java devolve quando a conta está pendente
+            const codigoContaPendente = "RN_001_ESTADO_INVALIDO_PARA_ACAO";
+            // Verifica se a mensagem do backend tem palavras-chave que indicam pendência
+            // (Ajuste as palavras abaixo de acordo com a Exception que o seu Java lança)
+            if (codigoErro === codigoContaPendente ||
+                mensagemErro.includes("deve ter o estado 'ativo'"),
+                mensagemErro.includes("verificação")
+            ) {
+
+                alert("Seu e-mail ainda não foi confirmado. Vamos te levar para a tela de verificação!");
+
+                // Joga para a tela de código passando o e-mail que ele acabou de tentar logar
+                navigate("/confirmarEmail", {
+                    state: { emailCapturado: dadosValidados.email }
+                });
+                return; // Para a execução da função aqui
+            }
+
+            // Se for outro erro (senha errada, não existe, etc), exibe o erro normal
+            setErro(erro.message || "Usuário ou senha incorretos");
         }
     };
 

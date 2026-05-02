@@ -52,16 +52,31 @@ export const apiClient = async (endpoint, options = {}) => {
             localStorage.removeItem("cargo_usuario");
 
             //Força o usuário de volta para a tela de login
-            window.location.href = "/login";
-
-            throw new Error("Sessão expirada");
+            window.location.href = "/";
+            // Isso "congela" a execução aqui. O componente React que chamou o service
+            // não vai continuar o 'try' e nem vai cair no 'catch', morrendo em silêncio
+            // enquanto o navegador faz o redirecionamento de página.
+            return new Promise(() => { });
         }
 
         //Se deu qualquer erro (400, 404, 500)
         if (!resposta.ok) {
             // Tenta ler a mensagem de erro que o backend enviou, ou usa uma generica
             const dadosErro = await resposta.json().catch(() => null);
-            throw new Error(dadosErro?.mensagem || "Erro de comunicação com o servidor.");
+
+            // Tenta pegar a mensagem
+            const textoErro = dadosErro?.mensagem || "Erro de comunicação com o servidor.";
+
+            // TENTA PEGAR O CÓDIGO (Ajuste a chave 'codigo' para o nome exato que vem no JSON do seu Java)
+            const codigoErro = dadosErro?.codigo || null;
+
+            // Cria o erro padrão do JS
+            const erroCustomizado = new Error(textoErro);
+
+            // "Gruda" o código no erro para o Front-end conseguir ler depois
+            erroCustomizado.codigo = codigoErro;
+
+            throw erroCustomizado;
         }
 
         //Se deu tudo certo, tenta devolver o JSON (ou vazio dependendo do caso)

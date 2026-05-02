@@ -9,7 +9,11 @@ import { professorSchema } from "../../../schemas/utils/usuarios/usuariosZodSche
 import { usuarioService } from "../../../services/usuario/usuarioService";
 import { professorService } from "../../../services/professor/professorService";
 
+import { useNavigate } from "react-router-dom";
+
 const CadastroProfessor = () => {
+  const navigate = useNavigate();
+
   const [resultado, setResultado] = useState({
     exibir: false,
     variante: "",
@@ -22,7 +26,6 @@ const CadastroProfessor = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(professorSchema),
@@ -70,10 +73,15 @@ const CadastroProfessor = () => {
       setResultado({
         exibir: true,
         variante: "success",
-        mensagem: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
+        mensagem: "Cadastro realizado! Redirecionando para confirmar seu e-mail...",
       });
 
-      reset(); // Limpa o formulário após o sucesso
+      // Aguarda 2 segundos para o usuário ler, e manda pra tela com o e-mail preenchido
+      setTimeout(() => {
+        navigate("/confirmar-email", {
+          state: { emailCapturado: dadosValidados.email }
+        });
+      }, 2000);
 
     } catch (erro) {
       console.error("Falha no cadastro: ", erro);

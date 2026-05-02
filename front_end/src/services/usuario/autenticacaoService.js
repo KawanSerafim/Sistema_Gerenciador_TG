@@ -39,6 +39,16 @@ export const autenticacaoService = {
         return resposta;
     },
 
+    validarCodigo: async (email, codigoInformado) => {
+        return await apiClient(`/autenticacao/validar-codigo`, {
+            method: "POST",
+            body: JSON.stringify({
+                email: email,
+                codigoInformado: codigoInformado
+            })
+        })
+    },
+
     reenviarCodigo: async (email) => {
         return await apiClient(`/autenticacao/reenviar-codigo`, {
             method: "POST",
@@ -53,6 +63,6 @@ export const autenticacaoService = {
         localStorage.removeItem("meu_token_tg");
         localStorage.removeItem("cargo_usuario");
         //Redireciona para a tela de login
-        window.location.href = "/login";
+        window.location.href = "/";
     }
 }

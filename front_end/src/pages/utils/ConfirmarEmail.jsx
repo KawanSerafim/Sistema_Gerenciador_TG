@@ -56,10 +56,10 @@ const ConfirmarEmail = () => {
 
         try {
             // Chama a rota de validação de codigo
-            await autenticacaoService.validarCodigo({
-                email: emailUsuario,
-                codigoInformado: dadosValidados.codigo
-            });
+            await autenticacaoService.validarCodigo(
+                emailUsuario,
+                dadosValidados.codigo
+            );
 
             setResultado({
                 exibir: true,
@@ -68,7 +68,7 @@ const ConfirmarEmail = () => {
             });
 
             // Aguarda 3 segundos para o usuário ler a mensagem e manda para o login
-            setTimeout(() => navigate("/login"), 3000);
+            setTimeout(() => navigate("/"), 3000);
 
         } catch (erro) {
             setResultado({
@@ -88,7 +88,7 @@ const ConfirmarEmail = () => {
             setMensagemReenvio("Enviando um novo código...");
 
             // Chama a rota /api/autenticacao/reenviar-codigo
-            await autenticacaoService.reenviarCodigo({ email: emailUsuario });
+            await autenticacaoService.reenviarCodigo(emailUsuario);
 
             setMensagemReenvio("Novo código enviado! Verifique sua caixa de entrada.");
 
