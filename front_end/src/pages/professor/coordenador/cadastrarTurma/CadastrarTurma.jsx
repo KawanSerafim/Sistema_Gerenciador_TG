@@ -108,27 +108,38 @@ const CadastrarTurma = () => {
     // ======= Funções =========
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
+    // A função que envia os dados caso passe na validação do frontend
     const enviarParaBackend = async (dadosValidados) => {
         try {
-            const turmasArray = Object.entries(dadosValidados.turmas).map(([chave, idProfessor]) => {
-                const [disciplina, turno] = chave.split('-');
-                return {
-                    disciplina,
-                    turno,
-                    idProfessor
+            const anoFormatado = parseInt(dadosValidados.ano, 10);
+            const semestreFormatado = parseInt(dadosValidados.semestre, 10);
+
+            // Mapeamos o formulário para um Array de PROMESSAS (requisições)
+            const promessasDeCadastro = Object.entries(dadosValidados.turmas).map(([chave, matriculaProf]) => {
+                const [disciplina, turnoFront] = chave.split('-');
+
+                // Formata o turno para bater com o Enum do Java (ex: "MANhã" vira "MANHA")
+                const turnoFormatado = turnoFront.toUpperCase().replace("Ã", "A");
+
+                // Monta o payload exato que o backend espera
+                const payloadUnico = {
+                    matriculaProfessorTg: matriculaProf,
+                    disciplina: disciplina,
+                    turno: turnoFormatado,
+                    ano: anoFormatado,
+                    semestre: semestreFormatado
                 };
+
+                // Retorna a requisição para a lista (NÃO colocamos await aqui dentro do map)
+                return turmasService.cadastrarTurmas(payloadUnico);
             });
 
-            const payload = {
-                ano: parseInt(dadosValidados.ano, 10),
-                semestre: parseInt(dadosValidados.semestre, 10),
-                turmas: turmasArray
-            };
+            console.log(`Disparando ${promessasDeCadastro.length} requisições de cadastro...`);
 
-            console.log("Enviando payload:", payload);
+            // 2. Dispara todas as requisições simultaneamente e aguarda todas terminarem
+            await Promise.all(promessasDeCadastro);
 
-            await turmasService.cadastrarTurmas(payload);
-
+            // Se chegou aqui, TODAS as turmas foram cadastradas com sucesso (Status 201 CREATED)
             setResultado({
                 exibir: true,
                 variante: "success",
@@ -147,10 +158,11 @@ const CadastrarTurma = () => {
             setTimeout(() => setResultado({ exibir: false, variante: "", mensagem: "" }), 5000);
 
         } catch (erro) {
+            // Se QUALQUER uma das requisições der erro, ele cai aqui
             setResultado({
                 exibir: true,
                 variante: "danger",
-                mensagem: erro.message || "Erro ao cadastrar turmas."
+                mensagem: erro.message || "Erro ao cadastrar algumas turmas. Verifique os dados."
             });
         }
     };
@@ -293,7 +305,7 @@ const CadastrarTurma = () => {
                                             >
                                                 <option value="" disabled>Selecione o professor de TG</option>
                                                 {todosProfessores.map((professor) => (
-                                                    <option key={professor.id} value={professor.matricula}>
+                                                    <option key={professor.id} value={professor.matricula.trim()}>
                                                         {professor.nome}
                                                     </option>
                                                 ))}
