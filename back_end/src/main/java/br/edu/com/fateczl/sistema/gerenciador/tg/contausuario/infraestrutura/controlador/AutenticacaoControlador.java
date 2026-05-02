@@ -45,7 +45,7 @@ public class AutenticacaoControlador {
 
         enviarEmailCaso.executar(comando);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     // ===================== LOGIN =========================//
