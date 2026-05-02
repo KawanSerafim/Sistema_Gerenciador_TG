@@ -16,12 +16,12 @@ export const usuarioService = {
     if (tipoUsuario === "aluno") {
       urlBase = "/aluno";
     } else if (tipoUsuario === "professor") {
-      urlBase = "/professor";
+      urlBase = "/professores";
     }
 
     // Remove o confirmarSenha antes de enviar, dado que não faz parte da requisição
     const { confirmarSenha, ...dadosParaEnvio } = payload;
-    return await apiClient(`${urlBase}/cadastro`, {
+    return await apiClient(`${urlBase}`, {
       method: "POST",
       body: JSON.stringify(dadosParaEnvio),
     });

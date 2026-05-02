@@ -14,5 +14,17 @@ export const professorService = {
         });
         // Se a resposta existir, retorna o array. Se não, retorna um array vazio.
         return resposta?.professoresDTO || [];
+    },
+
+    /**
+     * Busca as opções de cargos do professor
+     * @returns {Promise<string[]>} lista de cargos em string
+     */
+    buscarCargos: async () => {
+        const resposta = await apiClient(`/professores/cargos`, {
+            method: "GET"
+        });
+
+        return resposta?.cargos || [];
     }
 }

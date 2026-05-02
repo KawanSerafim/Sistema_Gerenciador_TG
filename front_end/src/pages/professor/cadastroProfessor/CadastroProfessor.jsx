@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Button, Form, Alert } from "react-bootstrap";
 import { bloquearCaracteresInputNome } from "../../../utils/utils";
 
@@ -7,13 +7,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { professorSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
 import { usuarioService } from "../../../services/usuario/usuarioService";
+import { professorService } from "../../../services/professor/professorService";
 
 const CadastroProfessor = () => {
   const [resultado, setResultado] = useState({
-    show: false,
-    variant: "",
-    message: "",
+    exibir: false,
+    variante: "",
+    mensagem: "",
   });
+
+  const [cargos, setCargos] = useState([]);
 
   // 3. Configuração do Hook
   const {
@@ -33,6 +36,27 @@ const CadastroProfessor = () => {
     },
   });
 
+
+  //Buscar dados de cargo
+  useEffect(() => {
+    const inicializarDados = async () => {
+      try {
+        const cargos = await professorService.buscarCargos();
+        setCargos(cargos)
+      } catch (erro) {
+        console.error("Erro na carga inicial:", erro);
+        setResultado({
+          exibir: true,
+          variante: "danger",
+          mensagem: "Erro ao carregar dados do servidor. Verifique sua conexão.",
+        });
+      }
+    }
+    inicializarDados()
+  }, [])
+
+
+
   // 4. Função de envio (Só roda se o formulário estiver 100% válido)
   const enviarParaBackend = async (dadosValidados) => {
     try {
@@ -44,29 +68,21 @@ const CadastroProfessor = () => {
       console.log("Enviando payload para a API Java:", dadosValidados);
       //Se chegou aqui deu tudo certo
       setResultado({
-        show: true,
-        variant: "success",
-        message: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
+        exibir: true,
+        variante: "success",
+        mensagem: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
       });
 
-      // Joga a tela pra baixo suavemente para o usuário ler o sucesso
-      window.scrollTo(0, document.body.scrollHeight);
-
       reset(); // Limpa o formulário após o sucesso
-      //Some a mensagem depois de um tempo
-      setTimeout(
-        () => setResultado({ show: false, variant: "", message: "" }),
-        5000,
-      );
+
     } catch (erro) {
       console.error("Falha no cadastro: ", erro);
       setResultado({
-        show: true,
-        variant: "danger",
-        message: erro.message || "Erro ao cadastrar. Tente novamente.",
+        exibir: true,
+        variante: "danger",
+        mensagem: erro.message || "Erro ao cadastrar. Tente novamente.",
       });
-      // Joga a tela pra baixo suavemente para o usuário ler o sucesso
-      window.scrollTo(0, document.body.scrollHeight);
+
     }
   };
 
@@ -178,9 +194,18 @@ const CadastroProfessor = () => {
             isInvalid={!!errors.cargo}
           >
             <option value="">Selecione seu cargo</option>
-            <option value="professor">Professor de TG</option>
-            <option value="coordenador">Coordenador</option>
-            <option value="orientador">Orientador</option>
+            {cargos && (
+              cargos.map((cargo, index) => (
+                <option
+                  key={index}
+                  value={cargo}
+                  title={cargo.replace(/_/g, '')}
+                >
+                  {/* //Exibe o cargo tirando os '_' do valor do enum */}
+                  {cargo.replace(/_/g, ' ')}
+                </option>
+              ))
+            )}
           </Form.Select>
           <Form.Control.Feedback type="invalid">
             {errors.cargo?.message}
@@ -199,16 +224,16 @@ const CadastroProfessor = () => {
         </div>
       </Form>
 
-      {resultado.show && (
+      {resultado.exibir && (
         <Alert
-          variant={resultado.variant}
+          variant={resultado.variante}
           onClose={() =>
-            setResultado({ show: false, variant: "", message: "" })
+            setResultado({ exibir: false, variante: "", mensagem: "" })
           }
           dismissible
           className="mt-3 shadow-sm fw-bold text-center"
         >
-          {resultado.message}
+          {resultado.mensagem}
         </Alert>
       )}
     </Container>
