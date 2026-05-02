@@ -20,6 +20,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Turm
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.ValidadorComposicaoTurma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.VerificadorUnicidadeTurma;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.UUID;
 
@@ -48,7 +49,6 @@ public class GerarTurmaCaso {
     }
 
     public record Comando(
-            String emailCoordenador,
             String matriculaProfessorTg,
             Disciplina disciplina,
             Turno turno,
@@ -69,7 +69,8 @@ public class GerarTurmaCaso {
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
-        Email emailCoordenador = new Email(comando.emailCoordenador());
+        // Pega o email de quem fez a requisição direto do Token JWT validado
+        String emailDoUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Matricula matriculaProfessorTg = new Matricula(
                 comando.matriculaProfessorTg()
@@ -79,7 +80,7 @@ public class GerarTurmaCaso {
                 new Semestre(comando.semestre())
         );
 
-        Professor coordenador = buscarCoordenador(emailCoordenador);
+        Professor coordenador = buscarCoordenador(new Email(emailDoUsuarioLogado));
         validadorCoordenador.validar(coordenador);
 
         Curso curso = buscarCursoDoCoordenador(coordenador.id());
