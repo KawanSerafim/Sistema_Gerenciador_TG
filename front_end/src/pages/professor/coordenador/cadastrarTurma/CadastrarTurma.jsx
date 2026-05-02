@@ -1,4 +1,4 @@
-import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Alert } from "react-bootstrap";
+import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Alert, Spinner } from "react-bootstrap";
 import UserNavBar from "../../../../components/usernavbar/UserNavBar";
 import { useEffect, useState } from "react";
 import { bloquearCaracteresInputNumber } from "../../../../utils/utils";
@@ -9,23 +9,22 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { camposSchema } from "../../../../schemas/professor/coordenador/cadastrarTurma/cadastrarTurmaZodSchema";
 
+// Services (Importe corretamente conforme sua estrutura)
+import { turmasService } from "../../../../services/turmas/turmasService";
+import { professorService } from "../../../../services/professor/professorService";
 
-
-//Mock de curso, fica de fora pois é dado constante
-const curso = {
-    turnos: ["Noite", "Tarde", "Manhã"],
-    disciplinas: ["TG1", "TG2"]
-};
 
 const CadastrarTurma = () => {
-    //TODO: Trocar mocks pelos dados do backend
+    // ======== Estados ========
 
-    //Estado para o sucesso
-    const [exibirSucesso, setExibirSucesso] = useState(false)
+    const [resultado, setResultado] = useState({ exibir: false, variante: "", mensagem: "" })
+    const [carregandoDados, setCarregandoDados] = useState(true);
 
-    const todosProfessores = ["Cristina", "Luciano", "Antonio", "Rogerio", "Colevati"];
+    //Estados vindos do backend
+    const [cursoConfig, setCursoConfig] = useState({ turnos: [], disciplinas: [] })
+    const [todosProfessores, setTodosProfessores] = useState([]);
 
-    //Conf do RHF
+    //========= Conf do RHF =========
     const {
         register,
         handleSubmit,
@@ -38,11 +37,14 @@ const CadastrarTurma = () => {
         defaultValues: {
             ano: new Date().getFullYear(),
             semestre: "",
-            turmas: {}
+            turmas: {},
+            //Usado para evitar warnings do React
+            checkUnico: false,
+            profUnico: ""
         }
-    })
+    });
 
-    //Observadores
+    // ========== Observadores ==========
     // Checkbox
     const apenasUmProf = useWatch({
         control,
@@ -53,38 +55,115 @@ const CadastrarTurma = () => {
         control,
         name: "profUnico"
     });
-    //Valores dos selects individuais
-    const turmasWatched = useWatch({
-        control,
-        name: "turmas"
-    });
+
+
+    //========= Effects para chamadas da service =====
 
     //Efeito para aplicar professor unico em tempo real, semnpre que os observadores forem acionados
     useEffect(() => {
-        if (apenasUmProf && profUnico) {
-            const novaConfiguracao = {};
-            curso.turnos.forEach(t => {
-                curso.disciplinas.forEach(d => {
-                    novaConfiguracao[`${d}-${t}`] = profUnico
-                })
-            })
-            //Atualiza o RHF
-            setValue("turmas", novaConfiguracao, { shouldValidate: true });
+        const inicializarDados = async () => {
+            try {
+                setCarregandoDados(true);
+                // Busca as configurações (turnos, disciplinas) e os professores ao mesmo tempo
+                const [turnos, disciplinas, professores] = await Promise.all([
+                    turmasService.buscaTurnos(),
+                    turmasService.buscaDisciplianas(),
+                    professorService.buscaProfessoresPorCargo("PROFESSOR_TG")
+                ]);
+
+                setCursoConfig({ turnos: turnos, disciplinas: disciplinas });
+                setTodosProfessores(professores);
+            } catch (erro) {
+                console.error("Erro ao carregar dados:", erro);
+                setResultado({
+                    exibir: true,
+                    variante: "danger",
+                    mensagem: "Erro ao carregar dados do servidor. Tente atualizar a página."
+                });
+            } finally {
+                setCarregandoDados(false);
+            }
+        };
+
+        inicializarDados();
+    }, []);
+
+    //Aplica prof unico
+    useEffect(() => {
+        if (apenasUmProf && profUnico && cursoConfig.turnos.length > 0) {
+            cursoConfig.turnos.forEach(t => {
+                cursoConfig.disciplinas.forEach(d => {
+                    const chaveTurma = `${d}-${t}`;
+
+                    // Seta o valor diretamente no caminho exato (ex: turmas.TG1-Noite)
+                    setValue(`turmas.${chaveTurma}`, profUnico, {
+                        shouldValidate: true, // Força o Zod a validar que agora tem valor
+                        shouldDirty: true     // Avisa o RHF que o campo foi alterado
+                    });
+                });
+            });
         }
-    }, [apenasUmProf, profUnico, setValue])
+    }, [apenasUmProf, profUnico, setValue, cursoConfig]);
+
+    // ======= Funções =========
 
     // A função mock que realmente envia os dados caso passe na validação do frontend
-    const enviarParaBackend = (dadosValidados) => {
-        // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
-        console.log("Enviando payload para a API:", dadosValidados);
-        //Ativa alerta de sucesso
-        setExibirSucesso(true);
-        //Limpa o form após sucesso
-        reset()
-        //Esconde depois de alguns segundos
-        setTimeout(() => setExibirSucesso(false), 5000);
-    };
+    const enviarParaBackend = async (dadosValidados) => {
+        try {
+            const turmasArray = Object.entries(dadosValidados.turmas).map(([chave, idProfessor]) => {
+                const [disciplina, turno] = chave.split('-');
+                return {
+                    disciplina,
+                    turno,
+                    idProfessor
+                };
+            });
 
+            const payload = {
+                ano: parseInt(dadosValidados.ano, 10),
+                semestre: parseInt(dadosValidados.semestre, 10),
+                turmas: turmasArray
+            };
+
+            console.log("Enviando payload:", payload);
+
+            await turmasService.cadastrarTurmas(payload);
+
+            setResultado({
+                exibir: true,
+                variante: "success",
+                mensagem: "Turmas cadastradas com sucesso!"
+            });
+
+            // Limpa o form, mas mantém o ano atual
+            reset({
+                ano: new Date().getFullYear(),
+                semestre: "",
+                turmas: {},
+                checkUnico: false,
+                profUnico: ""
+            });
+
+            setTimeout(() => setResultado({ exibir: false, variante: "", mensagem: "" }), 5000);
+
+        } catch (erro) {
+            setResultado({
+                exibir: true,
+                variante: "danger",
+                mensagem: erro.message || "Erro ao cadastrar turmas."
+            });
+        }
+    };
+    // ======== Renderização ========
+
+    // Se estiver carregando, mostra um spinner
+    if (carregandoDados) {
+        return (
+            <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "50vh" }}>
+                <Spinner animation="border" variant="primary" />
+            </Container>
+        );
+    }
 
     return (
         <>
@@ -183,8 +262,8 @@ const CadastrarTurma = () => {
                         >
                             <option value="" disabled selected> Selecione o professor de TG</option>
                             {todosProfessores.map((professor) => (
-                                <option id={professor} key={professor} value={professor}>
-                                    {professor}
+                                <option key={professor.id} value={professor.matricula}>
+                                    {professor.nome}
                                 </option>
                             ))}
                         </FormSelect>
@@ -192,10 +271,10 @@ const CadastrarTurma = () => {
                     </div>
                     <hr className="my-4" />
                     {/* Linha 3: Opções de disciplinas e turnos */}
-                    {curso.turnos.map((turno) => (
+                    {cursoConfig.turnos.map((turno) => (
                         <Row key={turno} className="gy-3 mb-3">
                             {/* Dentro da linha itera as disciplinas (colunas) */}
-                            {curso.disciplinas.map((disciplina) => {
+                            {cursoConfig.disciplinas.map((disciplina) => {
                                 //id da turma para o estado
                                 const chaveTurma = `${disciplina}-${turno}`;
 
@@ -210,20 +289,18 @@ const CadastrarTurma = () => {
                                                 title={"Selecione o professor da turma " + disciplina + ' ' + turno}
                                                 className='bg-white text-black border-secondary-subtle fw-medium fs-5'
                                                 {...register(`turmas.${chaveTurma}`)}
-                                                //Garante que o valor venha do observador
-                                                value={turmasWatched?.[chaveTurma] || ""}
-                                                isInvalid={!!errors.turmas}
+                                                isInvalid={!!errors?.turmas?.[chaveTurma]}
                                             >
                                                 <option value="" disabled>Selecione o professor de TG</option>
                                                 {todosProfessores.map((professor) => (
-                                                    <option key={professor} value={professor}>{professor}</option>
+                                                    <option key={professor.id} value={professor.matricula}>
+                                                        {professor.nome}
+                                                    </option>
                                                 ))}
                                             </FormSelect>
                                         </FormGroup>
-
                                     </Col>
                                 );
-
                             })}
                         </Row>
                     ))}
@@ -251,9 +328,12 @@ const CadastrarTurma = () => {
                     </Row>
                 </Form>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirSucesso && (
-                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                        Turma cadastrada com sucesso!
+                {resultado.exibir && (
+                    <Alert
+                        variant={resultado.variante}
+                        onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                        dismissible className="mt-3" >
+                        {resultado.mensagem}
                     </Alert>
                 )}
             </Container >

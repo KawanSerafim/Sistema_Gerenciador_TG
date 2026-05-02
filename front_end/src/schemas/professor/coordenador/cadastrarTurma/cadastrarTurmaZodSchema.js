@@ -18,22 +18,24 @@ export const camposSchema = z.object({
 })
     .superRefine((dados, ctx) => {
         //Pega todas as opções de disciplinas e turnos do curso
-        const disciplinas = ["TG1", "TG2"];
-        const turnos = ["Noite", "Tarde", "Manhã"];
-
-        // Valida se todas as combinaçõẽs existem no objeto
-        turnos.forEach(t => {
-            disciplinas.forEach(d => {
-                const chave = `${d}-${t}`;
-                if (!dados.turmas[chave]) {
-                    ctx.addIssue({
-                        code: z.custom(),
-                        message: "Selecione professores para todas as turmas.",
-                        //Atrela o erro ao campo "turmas"
-                        path: ["turmas"]
-                    })
-                    return;
-                }
+        const chavesRegistradas = Object.keys(dados.turmas);
+        //Se o objeto estiver totalmente vazio (nenhum select na tela ou form intocado)
+        if (chavesRegistradas.length == 0) {
+            ctx.addIssue({
+                code: z.custom(),
+                message: "Aguarde o carregamento das turmas ou selecione os professores.",
+                path: ["turmas"]
             });
-        });
+            return;
+        }
+        //Verifica se algum dos selects que estão na tela ficou sem professor (valor "")
+        const existeTurmaSemProf = chavesRegistradas.some(chave => !dados.turmas[chave] || dados.turmas[chave].trim() === "");
+
+        if (existeTurmaSemProf) {
+            ctx.addIssue({
+                code: z.custom(),
+                message: "Selecione professores para todas as turmas.",
+                path: ["turmas"] // Joga o erro para o Alert geral no final da página
+            })
+        }
     })
