@@ -16,6 +16,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.P
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,16 +51,17 @@ public class ImportarAlunosCaso {
 
     public record Comando(
             String idTurma,
-            InputStream arquivoBruto,
-            String emailAutor
+            InputStream arquivoBruto
     ) {}
     public record Resposta(List<AlunoImportado> alunos) {}
 
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
+        // Descobre quem é o usuario do JWT
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         Professor autor = buscarProfessorPorEmail(
-                new Email(comando.emailAutor())
+                new Email(emailLogado)
         );
         // Remove espaços e possíveis aspas duplas da ponta
         String idTurmaLimpo = comando.idTurma().trim().replace("\"", "");
