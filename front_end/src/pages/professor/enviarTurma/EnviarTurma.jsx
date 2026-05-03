@@ -57,7 +57,7 @@ const EnviarTurma = () => {
     const enviarParaBackend = async (dadosValidados) => {
         try {
             setCarregando(true);
-            setExibirResultado({ exibir: true, variante: "info", menssagem: "Enviando arquivo e processando alunos. Aguarde..." });
+            setExibirResultado({ exibir: true, variante: "info", mensagem: "Enviando arquivo e processando alunos. Aguarde..." });
             setAlunosCadastrados([]); // Limpa a tabela anterior caso haja uma
 
             // Montagem do FormData
@@ -73,7 +73,7 @@ const EnviarTurma = () => {
             // o Java devolva a lista de alunos [{ id, nome, ra }]
             setAlunosCadastrados(respostaBackend);
 
-            setExibirResultado({ exibir: true, variante: "success", menssagem: "Turma enviada e alunos registrados com sucesso!" });
+            setExibirResultado({ exibir: true, variante: "success", mensagem: "Turma enviada e alunos registrados com sucesso!" });
 
             // Limpa o formulário para um novo envio
             reset({ turmaId: '', arquivo: undefined });
@@ -81,9 +81,9 @@ const EnviarTurma = () => {
         } catch (e) {
             console.error("Erro no envio:", e);
             setExibirResultado({
-                show: true,
-                variant: "danger",
-                message: e.message || "Erro ao processar o arquivo. Verifique se a planilha não está corrompida e segue o padrão."
+                exibir: true,
+                variante: "danger",
+                mensagem: e.message || "Erro ao processar o arquivo. Verifique se a planilha não está corrompida e segue o padrão."
             });
         } finally {
             setCarregando(false);
