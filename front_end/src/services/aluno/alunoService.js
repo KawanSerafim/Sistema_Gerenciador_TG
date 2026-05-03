@@ -17,4 +17,13 @@ export const alunoService = {
       throw erro;
     }
   },
+
+  enviarPlanilhaAlunos: async (formData) => {
+    // Confirme com seu par qual é a rota exata (ex: /turmas/upload-alunos)
+    return await apiClient(`/alunos/importar-alunos`, {
+      method: "POST",
+      body: formData
+      //Sem content-type pois o apiClient ja lida com isso
+    });
+  }
 };

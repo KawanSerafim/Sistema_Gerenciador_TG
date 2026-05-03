@@ -28,5 +28,13 @@ export const turmasService = {
             method: "POST",
             body: JSON.stringify(payload)
         });
+    },
+
+    buscarTurmasPorProfessorId: async (professorId = obrigatorio("professorId")) => {
+        const resposta = await apiClient(`/turmas?professorTgId=${professorId}`, {
+            method: "GET"
+        });
+
+        return resposta.turmas || [];
     }
 }

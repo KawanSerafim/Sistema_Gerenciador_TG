@@ -1,4 +1,4 @@
-import { Alert, Button, Container, Form, FormControl, FormGroup, FormLabel, FormSelect } from "react-bootstrap"
+import { Alert, Button, Container, Form, FormControl, FormGroup, FormLabel, FormSelect, Spinner } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import TableComponent from "../../../components/table/TableComponent"
 import "./EnviarTurma.css"
@@ -9,19 +9,20 @@ import { useForm, useWatch } from "react-hook-form"
 import { enviarTurmaSchema } from "../../../schemas/professor/enviarTurma/enviarTurmaSchema"
 import { useState } from "react"
 
-//Mock de turmas
-const turmas = [
-    { id: "TG1N", nome: "TG1 - Noite" },
-    { id: "TG2N", nome: "TG2 - Noite" },
-    { id: "TG1T", nome: "TG1 - Tarde" },
-    { id: "TG2T", nome: "TG2 - Tarde" }
-]
+import { alunoService } from "../../../services/aluno/alunoService"
+import { turmasService } from "../../../services/turmas/turmasService"
+
+//TODO: Substituir este mock por uma chamada GET à API para buscar as turmas do professor logado
+const turmas = await turmasService.buscarTurmasPorProfessorId()
 
 const EnviarTurma = () => {
-    // Estados exclusivos da interface (resultado da operação)
-    const [alunosCadastrados, setAlunosCadastrados] = useState([]);
-    const [exibirResultado, setExibirResultado] = useState({ show: false, variant: "", message: "" })
 
+    // ======== ESTADOS ==========
+    const [alunosCadastrados, setAlunosCadastrados] = useState([]);
+    const [exibirResultado, setExibirResultado] = useState({ exibir: false, variante: "", mensagem: "" })
+    const [carregando, setCarregando] = useState(false);
+
+    //======== RHF =========
     const {
         register,
         control,
@@ -36,6 +37,7 @@ const EnviarTurma = () => {
             arquivo: undefined
         }
     })
+
     // Observa se alguma turma foi selecionada, para liberar o input de envio
     const turmaSelecionada = useWatch({ control, name: "turmaId" })
     //Observa arquivo para pegar o nome e mostrar na tela 
@@ -51,31 +53,40 @@ const EnviarTurma = () => {
     ]
 
 
-    // Simula a Camada de Serviço (Comunicação com Backend)
+    // Comunicação com Backend
     const enviarParaBackend = async (dadosValidados) => {
         try {
-            // Aqui você usaria o FormData para enviar o arquivo para o backend Java
+            setCarregando(true);
+            setExibirResultado({ exibir: true, variante: "info", menssagem: "Enviando arquivo e processando alunos. Aguarde..." });
+            setAlunosCadastrados([]); // Limpa a tabela anterior caso haja uma
+
+            // Montagem do FormData
             const formData = new FormData();
             formData.append("turmaId", dadosValidados.turmaId);
-            formData.append("file", dadosValidados.arquivo[0]); // Pega o arquivo real
+            formData.append("file", dadosValidados.arquivo[0]);
 
             console.log("Enviando para o backend...", dadosValidados.arquivo[0].name);
 
-            // Simula o delay da rede e a resposta do backend lendo o CSV/XLSX
-            setTimeout(() => {
-                const respostaBackend = [
-                    { id: 1, nome: "Ana Costa", ra: "111222333" },
-                    { id: 2, nome: "Bruno Silva", ra: "444555666" }
-                ];
+            // Chamada para o backend
+            const respostaBackend = await alunoService.importarAlunos(formData);
 
-                setAlunosCadastrados(respostaBackend);
-                setExibirResultado({ show: true, variant: "success", message: "Turma enviada e alunos registrados com sucesso!" });
-                reset({ turmaId: '', arquivo: undefined }); // Limpa o formulário
-            }, 1500);
+            // o Java devolva a lista de alunos [{ id, nome, ra }]
+            setAlunosCadastrados(respostaBackend);
+
+            setExibirResultado({ exibir: true, variante: "success", menssagem: "Turma enviada e alunos registrados com sucesso!" });
+
+            // Limpa o formulário para um novo envio
+            reset({ turmaId: '', arquivo: undefined });
 
         } catch (e) {
-            console.log(e)
-            setExibirResultado({ show: true, variant: "danger", message: "Erro ao processar o arquivo. Verifique se a planilha não está corrompida." });
+            console.error("Erro no envio:", e);
+            setExibirResultado({
+                show: true,
+                variant: "danger",
+                message: e.message || "Erro ao processar o arquivo. Verifique se a planilha não está corrompida e segue o padrão."
+            });
+        } finally {
+            setCarregando(false);
         }
     };
 
@@ -84,7 +95,6 @@ const EnviarTurma = () => {
             <UserNavBar
                 userName="Professor de TG"
                 maxWidth="1200px"
-
             ></UserNavBar>
             <Container className="mt-5" style={{ maxWidth: "1200px" }}>
                 <h2 className='bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0'>Envio de planilha de alunos</h2>
@@ -101,11 +111,11 @@ const EnviarTurma = () => {
                                 className='bg-white text-black fw-medium fs-4 w-50 text-center'
                                 {...register("turmaId")}
                                 isInvalid={!!errors.turmaId}
+                                disabled={carregando}
                             >
                                 <option value="" disabled selected>Selecione a turma que deseja exibir</option>
                                 {turmas.map(t => (
-
-                                    <option key={t.id} value={t.id}>{t.nome}</option>
+                                    <option key={t.id} value={t.id}>{t.disciplina} - {t.turno}</option>
                                 ))}
 
                             </FormSelect>
@@ -116,7 +126,6 @@ const EnviarTurma = () => {
                     {/* Exibe o input de arquivo apenas se a turma foi selecionada */}
                     {turmaSelecionada && (
                         <>
-
                             <FormGroup className="mb-3 gap-3" controlId="formSendTurma">
                                 <div className="d-flex justify-content-center">
 
@@ -126,6 +135,7 @@ const EnviarTurma = () => {
                                         style={{ display: 'none' }}
                                         {...register("arquivo")}
                                         accept=".xlsx"
+                                        disabled={carregando}
                                         className='input-send text-black fw-bold fs-4 w-75' />
                                     {/* Label personalizada como botão */}
                                     <FormLabel
@@ -139,29 +149,38 @@ const EnviarTurma = () => {
                                 </div>
                                 {/* Feedback visual */}
                                 {errors.arquivo && <div className="text-danger fw-bold mt-2 text-center">{errors.arquivo?.message}</div>}
-
                             </FormGroup>
+
                             <FormGroup className="text-center">
                                 <Button
                                     variant="primary"
                                     type="submit"
                                     title="Enviar turma"
                                     id='btn-cadastro' className='mb-2 fs-4 fw-medium w-25'
+                                    disabled={carregando}
                                 >
-                                    Enviar Turma
+                                    {carregando ? (
+                                        <>
+                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        "Enviar Turma"
+                                    )}
                                 </Button>
                             </FormGroup>
-                            {nomeArquivo && !errors.arquivo && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
+                            {nomeArquivo && !errors.arquivo && !carregando && <p className="text-primary mt-2 text-center">Arquivo pronto para envio!</p>}
                         </>
                     )}
-
                 </Form>
+
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado.show && (
-                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
-                        {exibirResultado.message}
+                {exibirResultado.exibir && (
+                    <Alert variant={exibirResultado.variante} onClose={() => setExibirResultado({ ...exibirResultado, exibir: false })} dismissible className="mt-3" >
+                        {exibirResultado.mensagem}
                     </Alert>
                 )}
+
                 {/* Renderiza a tabela se o backend retornar dados */}
                 {alunosCadastrados.length > 0 && (
 
