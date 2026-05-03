@@ -37,13 +37,11 @@ public class AlunoControlador {
     public ResponseEntity<ImportarAlunosCaso.Resposta>
     importarAlunos(
             @RequestParam("arquivo") MultipartFile arquivo,
-            @RequestParam("idTurma") String idTurma,
-            @RequestParam("emailAutor") String emailAutor) {
+            @RequestParam("idTurma") String idTurma) {
         try {
             var comando = new ImportarAlunosCaso.Comando(
                     idTurma,
-                    arquivo.getInputStream(),
-                    emailAutor
+                    arquivo.getInputStream()
             );
             var resposta = importarAlunosCaso.executar(comando);
             return ResponseEntity.ok().body(resposta);
