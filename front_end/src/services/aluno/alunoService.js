@@ -19,8 +19,7 @@ export const alunoService = {
   },
 
   enviarPlanilhaAlunos: async (formData) => {
-    // Confirme com seu par qual é a rota exata (ex: /turmas/upload-alunos)
-    return await apiClient(`/alunos/importar-alunos`, {
+    return await apiClient(`/alunos/importar`, {
       method: "POST",
       body: formData
       //Sem content-type pois o apiClient ja lida com isso

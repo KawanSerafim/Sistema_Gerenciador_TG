@@ -30,8 +30,9 @@ export const turmasService = {
         });
     },
 
-    buscarTurmasPorProfessorId: async (professorId = obrigatorio("professorId")) => {
-        const resposta = await apiClient(`/turmas?professorTgId=${professorId}`, {
+    buscarMinhasTurmas: async () => {
+        // Agora usando uma rota que segue o padrão REST!
+        const resposta = await apiClient(`/turmas/me`, {
             method: "GET"
         });
 

@@ -13,7 +13,7 @@ import { alunoService } from "../../../services/aluno/alunoService"
 import { turmasService } from "../../../services/turmas/turmasService"
 
 //TODO: Substituir este mock por uma chamada GET à API para buscar as turmas do professor logado
-const turmas = await turmasService.buscarTurmasPorProfessorId()
+const turmas = await turmasService.buscarMinhasTurmas();
 
 const EnviarTurma = () => {
 
@@ -62,13 +62,13 @@ const EnviarTurma = () => {
 
             // Montagem do FormData
             const formData = new FormData();
-            formData.append("turmaId", dadosValidados.turmaId);
-            formData.append("file", dadosValidados.arquivo[0]);
+            formData.append("idTurma", dadosValidados.turmaId);
+            formData.append("arquivo", dadosValidados.arquivo[0]);
 
             console.log("Enviando para o backend...", dadosValidados.arquivo[0].name);
 
             // Chamada para o backend
-            const respostaBackend = await alunoService.importarAlunos(formData);
+            const respostaBackend = await alunoService.enviarPlanilhaAlunos(formData);
 
             // o Java devolva a lista de alunos [{ id, nome, ra }]
             setAlunosCadastrados(respostaBackend);
