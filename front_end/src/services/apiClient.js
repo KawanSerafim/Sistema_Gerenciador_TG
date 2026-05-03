@@ -45,20 +45,26 @@ export const apiClient = async (endpoint, options = {}) => {
 
         //Se backend dizer que o token é invalido/expirado (401 ou 403)
         if (resposta.status === 401 || resposta.status === 403) {
-            console.error("Sessão expirada. Deslogando usuário...");
+            // Verifica se a requisição atual é para a rota de login 
+            // (Ajuste a string "/autenticacao/login" para a rota exata que você chama no realizarLogin)
+            const isRotaDeLogin = endpoint.includes("/login") || endpoint.includes("/autenticar");
 
-            // Limpa a sessão do sistema
-            localStorage.removeItem("meu_token_tg");
-            localStorage.removeItem("cargo_usuario");
+            // Só desloga e redireciona se der 401/403 E NÃO FOR a rota de login
+            if ((resposta.status === 401 || resposta.status === 403) && !isRotaDeLogin) {
+                console.error("Sessão expirada. Deslogando usuário...");
 
-            //Força o usuário de volta para a tela de login
-            window.location.href = "/";
-            // Isso "congela" a execução aqui. O componente React que chamou o service
-            // não vai continuar o 'try' e nem vai cair no 'catch', morrendo em silêncio
-            // enquanto o navegador faz o redirecionamento de página.
-            return new Promise(() => { });
+                // Limpa a sessão do sistema
+                localStorage.removeItem("meu_token_tg");
+                localStorage.removeItem("cargo_usuario");
+
+                //Força o usuário de volta para a tela de login
+                window.location.href = "/";
+                // Isso "congela" a execução aqui. O componente React que chamou o service
+                // não vai continuar o 'try' e nem vai cair no 'catch', morrendo em silêncio
+                // enquanto o navegador faz o redirecionamento de página.
+                return new Promise(() => { });
+            }
         }
-
         //Se deu qualquer erro (400, 404, 500)
         if (!resposta.ok) {
             // Tenta ler a mensagem de erro que o backend enviou, ou usa uma generica
