@@ -1,13 +1,16 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.modelo;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.StatusAluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.TipoRedeSocial;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -44,4 +47,11 @@ public class AlunoModelo {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private StatusAluno status;
+
+    @ElementCollection
+    @CollectionTable(name = "alunos_redes_sociais", joinColumns = @JoinColumn(name = "aluno_id"))
+    @MapKeyColumn(name = "rede_social")
+    @MapKeyEnumerated(EnumType.STRING)
+    @Column(name = "url", length = 500)
+    private Map<TipoRedeSocial, String> redesSociais = new HashMap<>();
 }

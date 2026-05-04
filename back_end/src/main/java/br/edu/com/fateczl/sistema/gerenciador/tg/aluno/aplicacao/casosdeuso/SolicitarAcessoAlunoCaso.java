@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.TipoRedeSocial;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
@@ -16,6 +17,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosval
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,7 +42,12 @@ public class SolicitarAcessoAlunoCaso {
         this.verificadorEmail = verificadorEmail;
     }
 
-    public record Comando(String matricula, String email, String senha) {}
+    public record Comando(
+            String matricula,
+            String email,
+            String senha,
+            Map<TipoRedeSocial, String> redesSociais
+    ) {}
     public record Resposta(String idAluno, String nome, String email) {}
 
     // FLUXO PRINCIPAL ---------------------------------------------------------
@@ -54,6 +61,8 @@ public class SolicitarAcessoAlunoCaso {
 
         Aluno aluno = buscarAluno(matricula);
         aluno.validarSolicitacaoAcesso();
+
+        aluno.atualizarRedesSociais(comando.redesSociais());
 
         ContaUsuarioId novaContaId = new ContaUsuarioId(UUID.randomUUID());
         Senha senhaCriptografada = criptografo.criptografar(

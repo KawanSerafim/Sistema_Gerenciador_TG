@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.StatusAluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.TipoRedeSocial;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
@@ -19,6 +20,8 @@ public class Aluno {
     private ContaUsuarioId contaUsuarioId;
     private StatusAluno status;
     private List<TurmaId> turmasIds;
+    //Redes Sociais é campo opcional
+    private Map<TipoRedeSocial, String> redesSociais;
 
     private Aluno(
             AlunoId id,
@@ -26,7 +29,8 @@ public class Aluno {
             Matricula matricula,
             ContaUsuarioId contaUsuarioId,
             StatusAluno status,
-            List<TurmaId> turmasIds
+            List<TurmaId> turmasIds,
+            Map<TipoRedeSocial, String> redesSociais
     ) {
         this.id = assegurarPresenca(id, "ID");
         this.nome = assegurarPresenca(nome, "nome");
@@ -36,6 +40,9 @@ public class Aluno {
         this.turmasIds = new ArrayList<>(
                 assegurarPresenca(turmasIds, "IDs das turmas")
         );
+        //Tratamento para campo opcional garante que nunca será null internamente
+        this.redesSociais = redesSociais != null ?
+                new HashMap<>(redesSociais) : new HashMap<>();
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
@@ -59,7 +66,9 @@ public class Aluno {
                 matricula,
                 null,
                 StatusAluno.PRE_CADASTRO,
-                List.of(turmaInicial)
+                List.of(turmaInicial),
+                //Inicia vazio por padrão
+                new HashMap<>()
         );
     }
 
@@ -69,7 +78,9 @@ public class Aluno {
             Matricula matricula,
             ContaUsuarioId contaUsuarioId,
             StatusAluno status,
-            List<TurmaId> turmasIds
+            List<TurmaId> turmasIds,
+            // Recebe o mapa do banco
+            Map<TipoRedeSocial, String> redesSociais
     ) {
         return new Aluno(
                 id,
@@ -77,7 +88,8 @@ public class Aluno {
                 matricula,
                 contaUsuarioId,
                 status,
-                turmasIds
+                turmasIds,
+                redesSociais
         );
     }
 
@@ -157,6 +169,22 @@ public class Aluno {
         );
     }
 
+    public void atualizarRedesSociais(Map<TipoRedeSocial, String> novasRedesSociais) {
+        this.redesSociais = novasRedesSociais
+                != null ? new HashMap<>(novasRedesSociais) : new HashMap<>();
+    }
+
+    public void adicionarRedeSocial(TipoRedeSocial tipo, String url) {
+        assegurarPresenca(tipo, "tipo da rede social");
+        assegurarPresenca(url, "URL da rede social");
+        this.redesSociais.put(tipo, url);
+    }
+
+    public void removerRedeSocial(TipoRedeSocial tipo) {
+        assegurarPresenca(tipo, "tipo da rede social");
+        this.redesSociais.remove(tipo);
+    }
+
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
 
     public String idTexto() { return id.texto(); }
@@ -174,4 +202,5 @@ public class Aluno {
     public List<TurmaId> turmasIds() {
         return Collections.unmodifiableList(turmasIds);
     }
+    public Map<TipoRedeSocial, String> redesSociais() { return Collections.unmodifiableMap(redesSociais);}
 }
