@@ -31,7 +31,6 @@ export const turmasService = {
     },
 
     buscarMinhasTurmas: async () => {
-        // Agora usando uma rota que segue o padrão REST!
         const resposta = await apiClient(`/turmas/me`, {
             method: "GET"
         });

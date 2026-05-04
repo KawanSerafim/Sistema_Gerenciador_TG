@@ -7,17 +7,18 @@ import "./EnviarTurma.css"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { enviarTurmaSchema } from "../../../schemas/professor/enviarTurma/enviarTurmaSchema"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { alunoService } from "../../../services/aluno/alunoService"
 import { turmasService } from "../../../services/turmas/turmasService"
 
-//TODO: Substituir este mock por uma chamada GET à API para buscar as turmas do professor logado
-const turmas = await turmasService.buscarMinhasTurmas();
+
+
 
 const EnviarTurma = () => {
 
     // ======== ESTADOS ==========
+    const [turmas, setTurmas] = useState([]);
     const [alunosCadastrados, setAlunosCadastrados] = useState([]);
     const [exibirResultado, setExibirResultado] = useState({ exibir: false, variante: "", mensagem: "" })
     const [carregando, setCarregando] = useState(false);
@@ -38,6 +39,25 @@ const EnviarTurma = () => {
         }
     })
 
+    // ======== EFEITOS ==========
+    // Busca as turmas assim que o componente aparecer na tela
+    useEffect(() => {
+        const carregarTurmas = async () => {
+            try {
+                const minhasTurmas = await turmasService.buscarMinhasTurmas();
+                if (minhasTurmas) {
+                    setTurmas(minhasTurmas);
+                }
+            } catch (erro) {
+                console.error("Erro ao carregar turmas:", erro);
+                // O apiClient já vai redirecionar se for erro de token (401/403)
+            }
+        };
+
+        carregarTurmas();
+    }, []);
+
+
     // Observa se alguma turma foi selecionada, para liberar o input de envio
     const turmaSelecionada = useWatch({ control, name: "turmaId" })
     //Observa arquivo para pegar o nome e mostrar na tela 
@@ -51,7 +71,6 @@ const EnviarTurma = () => {
         { header: "Nome do aluno", accessor: "nome" },
         { header: "RA", accessor: "ra" }
     ]
-
 
     // Comunicação com Backend
     const enviarParaBackend = async (dadosValidados) => {
