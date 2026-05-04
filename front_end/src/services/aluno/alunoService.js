@@ -24,5 +24,12 @@ export const alunoService = {
       body: formData
       //Sem content-type pois o apiClient ja lida com isso
     });
+  },
+
+  buscarAlunosPorTurmaId: async (turmaId) => {
+    const resposta = await apiClient(`/alunos/importar?turmaId=${turmaId}`, {
+      method: "GET"
+    });
+    return resposta?.alunos || [];
   }
 };
