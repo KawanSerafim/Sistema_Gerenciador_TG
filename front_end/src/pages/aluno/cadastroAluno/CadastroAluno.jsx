@@ -12,12 +12,15 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { alunoSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
 import { useState } from "react";
 import { usuarioService } from "../../../services/usuario/usuarioService";
+import { useNavigate } from "react-router-dom";
 
 const CadastroAluno = () => {
+  // Inicializa o navegador do React
+  const navigate = useNavigate();
   const [resultado, setResultado] = useState({
-    show: false,
-    variant: "",
-    message: "",
+    exibir: false,
+    variante: "",
+    mensagem: "",
   });
 
   // Inicializa react hook form
@@ -61,25 +64,52 @@ const CadastroAluno = () => {
   // A função que realmente envia os dados caso passe na validação do frontend
   const enviarParaBackend = async (dadosValidados) => {
     try {
-      //Aguarda o service com o uso do Interceptador
+      // Cria um objeto vazio para ser o nosso Map do Java
+      const redesMap = {};
+
+      // Transforma o Array do RHF no formato de Map do Java
+      if (dadosValidados.redes && dadosValidados.redes.length > 0) {
+        dadosValidados.redes.forEach(item => {
+          // Transforma "linkedin" em "LINKEDIN" e atribui a URL
+          redesMap[item.rede.toUpperCase()] = item.url;
+        });
+      }
+
+      // Monta o payload (DTO) final exatamente como o Java espera
+      const payloadJava = {
+        nome: dadosValidados.nome,
+        matricula: dadosValidados.matricula,
+        email: dadosValidados.email,
+        telefone: dadosValidados.telefone,
+        senha: dadosValidados.senha,
+        // Envia o mapa formatado em vez do array cru do RHF
+        redesSociais: redesMap
+      };
+
+      navigate("/confirmarEmail", {
+        state: { emailCadastro: dadosValidados.email }
+      });
+      console.debug("Enviando payload para a API Java:", payloadJava);
+
+      // Aguarda o service com o payload formatado
       await usuarioService.cadastrarUsuario(
-        dadosValidados,
+        payloadJava,
         "aluno",
       );
-      console.log("Enviando payload para a API Java:", dadosValidados);
+
       //Se chegou aqui deu tudo certo
       setResultado({
-        show: true,
-        variant: "success",
-        message: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
+        exibir: true,
+        variante: "success",
+        mensagem: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
       });
       reset(); // Limpa o formulário após o sucesso
     } catch (erro) {
       console.error("Falha no cadastro: ", erro);
       setResultado({
-        show: true,
-        variant: "danger",
-        message: erro.message || "Erro ao cadastrar. Tente novamente.",
+        exibir: true,
+        variante: "danger",
+        mensagem: erro.message || "Erro ao cadastrar. Tente novamente.",
       });
     }
   };
@@ -282,16 +312,16 @@ const CadastroAluno = () => {
             </Button>
           </FormGroup>
         </Form>
-        {resultado.show && (
+        {resultado.exibir && (
           <Alert
-            variant={resultado.variant}
+            variant={resultado.variante}
             onClose={() =>
-              setResultado({ show: false, variant: "", message: "" })
+              setResultado({ exibir: false, variante: "", mensagem: "" })
             }
             dismissible
             className="mt-3 shadow-sm fw-bold text-center"
           >
-            {resultado.message}
+            {resultado.mensagem}
           </Alert>
         )}
       </Container>

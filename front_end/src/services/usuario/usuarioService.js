@@ -14,7 +14,7 @@ export const usuarioService = {
   ) => {
     let urlBase = "";
     if (tipoUsuario === "aluno") {
-      urlBase = "/aluno";
+      urlBase = "/alunos";
     } else if (tipoUsuario === "professor") {
       urlBase = "/professores";
     }

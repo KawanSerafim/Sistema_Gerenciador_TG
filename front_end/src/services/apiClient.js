@@ -47,7 +47,7 @@ export const apiClient = async (endpoint, options = {}) => {
         if (resposta.status === 401 || resposta.status === 403) {
             // Verifica se a requisição atual é para a rota de login 
             // (Ajuste a string "/autenticacao/login" para a rota exata que você chama no realizarLogin)
-            const isRotaDeLogin = endpoint.includes("/login") || endpoint.includes("/autenticar");
+            const isRotaDeLogin = endpoint.includes("/login") || endpoint.includes("/autenticacao");
 
             // Só desloga e redireciona se der 401/403 E NÃO FOR a rota de login
             if ((resposta.status === 401 || resposta.status === 403) && !isRotaDeLogin) {
