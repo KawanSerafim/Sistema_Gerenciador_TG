@@ -1,6 +1,8 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.repositorios;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.modelo.AlunoModelo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +17,7 @@ public interface AlunoJpaRepositorio
     Optional<AlunoModelo> findByMatricula(String matricula);
     List<AlunoModelo> findByMatriculaIn(List<String> matriculas);
     Optional<AlunoModelo> findByContaUsuarioId(String contaUsuarioId);
-    List<AlunoModelo> findByTurmasIdsContaining(String turmasId);
+    Page<AlunoModelo> findByTurmasIdsContaining(String turmasId, Pageable paginavel);
 
     // "Busque Alunos que estejam nas Turmas (x,y,z),
     // ONDE o ID do aluno NÃO ESTEJA na lista de alunosIds de nenhum GrupoTG"

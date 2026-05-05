@@ -54,9 +54,14 @@ public class AlunoControlador {
 
     @GetMapping("/importar")
     public ResponseEntity<BuscarAlunosImportadosCaso.Resposta>
-        buscarAlunosImportados(@RequestParam("turmaId") String turmaId) {
+        buscarAlunosImportados(@RequestParam("turmaId") String turmaId,
+                               // Define 0 como padrão se não for enviado
+                               @RequestParam(value = "pagina", defaultValue = "0") Integer pagina,
+                               // Define 10 itens por página como padrão
+                               @RequestParam(value = "tamanho", defaultValue = "10") Integer tamanho
+    ) {
 
-        var comando = new BuscarAlunosImportadosCaso.Comando(turmaId);
+        var comando = new BuscarAlunosImportadosCaso.Comando(turmaId, pagina, tamanho);
         return ResponseEntity.ok()
                 .body(buscarAlunosImportadosCaso.executar(comando));
     }
@@ -74,9 +79,14 @@ public class AlunoControlador {
 
     @GetMapping
     public ResponseEntity<BuscarAlunosPorTurmaIdCaso.Resposta>
-        buscarAlunosPorTurmaId(@RequestParam("turmaId") String turmaId){
+        buscarAlunosPorTurmaId(@RequestParam("turmaId") String turmaId,
+                               // Define 0 como padrão se não for enviado
+                               @RequestParam(value = "pagina", defaultValue = "0") Integer pagina,
+                               // Define 10 itens por página como padrão
+                               @RequestParam(value = "tamanho", defaultValue = "10") Integer tamanho
+    ){
         BuscarAlunosPorTurmaIdCaso.Comando comando = new
-                BuscarAlunosPorTurmaIdCaso.Comando(turmaId);
+                BuscarAlunosPorTurmaIdCaso.Comando(turmaId, pagina, tamanho);
         //Se tudo deu certo retorna 200 com a lista de DTOs no corpo da requisição
         return ResponseEntity.ok(buscarAlunosPorTurmaIdCaso.executar(comando));
 
