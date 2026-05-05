@@ -30,12 +30,14 @@ public class ConfiguracaoGrupoTg {
             GrupoTgRepositorio grupoTgRepositorio,
             CursoRepositorio cursoRepositorio,
             AlunoRepositorio alunoRepositorio,
+            TurmaRepositorio turmaRepositorio,
             ValidadorComposicaoGrupoTg validadorComposicao
     ) {
         return new GerarGrupoTgCaso(
                 grupoTgRepositorio,
                 cursoRepositorio,
                 alunoRepositorio,
+                turmaRepositorio,
                 validadorComposicao
         );
     }
