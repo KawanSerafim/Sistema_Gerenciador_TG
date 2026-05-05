@@ -1,11 +1,10 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGrupoTgPorTurmasIdsCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,9 +13,14 @@ import java.util.List;
 public class GrupoTgControlador {
 
     private final BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso;
+    private final GerarGrupoTgCaso gerarGrupoTgCaso;
 
-    public GrupoTgControlador(BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso) {
+    public GrupoTgControlador(
+            BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso,
+            GerarGrupoTgCaso gerarGrupoTgCaso
+    ) {
         this.buscarGruposCaso = buscarGruposCaso;
+        this.gerarGrupoTgCaso = gerarGrupoTgCaso;
     }
 
     /**
@@ -32,5 +36,21 @@ public class GrupoTgControlador {
         var resposta = buscarGruposCaso.executar(comando);
 
         return ResponseEntity.ok(resposta);
+    }
+
+    /**
+     * Rota para criar o grupoTG
+     * @param comando recebe idCurso, disciplinas, tema, descricaoTema, tipoTg e lista de alunos integrantes
+     * @return 201
+     */
+    @PostMapping
+    public ResponseEntity<Void> gerarGrupo(
+            @RequestBody GerarGrupoTgCaso.Comando comando
+    ) {
+
+        gerarGrupoTgCaso.executar(comando);
+
+        // Retorna 201 Created com corpo vazio
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
