@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Pagina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
 
@@ -18,25 +19,35 @@ public class BuscarAlunosImportadosCaso {
 
     }
 
-    public record Comando(String idTurma){}
+    public record Comando(String idTurma, Integer pagina, Integer tamanho){}
 
     public record AlunoImportadoDTO(String nome, String matricula, String estado) {}
 
-    public record Resposta(List<AlunoImportadoDTO> alunos){}
+    public record Resposta(Pagina<AlunoImportadoDTO> alunos){}
 
     public Resposta executar(Comando comando){
-        List<Aluno> alunos = repositorio.buscarPorTurmaId
-                (new TurmaId(
-                        UUID.fromString(comando.idTurma())
-                ));
-        return new Resposta(
-                alunos.stream()
+        //Busca paginas no banco
+        Pagina<Aluno> paginaDominio = repositorio.buscarPorTurmaId(
+                new TurmaId(UUID.fromString(comando.idTurma())),
+                        comando.pagina(),
+                        comando.tamanho()
+                );
+        List<AlunoImportadoDTO> conteudoDTO = paginaDominio.conteudo().stream()
                 .map(aluno -> new AlunoImportadoDTO(
                         aluno.nomeTexto(),
                         aluno.matriculaTexto(),
-                        aluno.status().name())
-                )
-                .toList()
+                        aluno.status().name()
+                ))
+                .toList();
+
+        // 5. Remontamos a Pagina com o novo conteúdo, preservando os metadados
+        Pagina<AlunoImportadoDTO> paginaRetorno = new Pagina<>(
+                conteudoDTO,
+                paginaDominio.paginaAtual(),
+                paginaDominio.totalPaginas(),
+                paginaDominio.totalElementos()
         );
+
+        return new Resposta(paginaRetorno);
     }
 }

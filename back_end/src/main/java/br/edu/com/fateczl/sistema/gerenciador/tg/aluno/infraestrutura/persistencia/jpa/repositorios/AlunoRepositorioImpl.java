@@ -6,11 +6,16 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.Aluno
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.mapeador.AlunoMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.modelo.AlunoModelo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Pagina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -68,14 +73,29 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     /**
      * Busca a lista de alunos que possuem o id de turma informado
      * @param turmaId TurmaId da turma de alunos desejada
-     * @return (List<Aluno>) lista de alunos ou lista vazia
+     * @param pagina Integer numero da pagina
+     * @param tamanho Integer quantidade de itens da pagina
+     * @return (Pagina<Aluno>) Pagina de alunos ou lista vazia
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Aluno> buscarPorTurmaId(TurmaId turmaId) {
-        return repositorio.findByTurmasIdsContaining(turmaId.texto())
-                    .stream().map(AlunoMapeador::paraDominio)
+    public Pagina<Aluno> buscarPorTurmaId(TurmaId turmaId, Integer pagina, Integer tamanho) {
+        Pageable paginavel = PageRequest.of(pagina, tamanho);
+        Page<AlunoModelo> paginaSpring = repositorio.findByTurmasIdsContaining(turmaId.texto(), paginavel);
+
+
+        // Mapeia de Modelo para Entidade
+        List<Aluno> alunosDominio = paginaSpring.getContent().stream()
+                .map(AlunoMapeador::paraDominio) // Aquele mapeador que arrumamos com EnumMap!
                 .toList();
+
+        // Retorna o seu Record puro
+        return new Pagina<>(
+                alunosDominio,
+                paginaSpring.getNumber(),
+                paginaSpring.getTotalPages(),
+                paginaSpring.getTotalElements()
+        );
     }
 
     /**

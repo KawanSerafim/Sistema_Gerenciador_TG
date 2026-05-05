@@ -3,6 +3,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Pagina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
 import java.util.List;
@@ -19,10 +20,12 @@ public class BuscarAlunosPorTurmaIdCaso {
     }
 
     /**
-     * Comando que recebe a turmaID vinda da requisição
+     * Comando que recebe a turmaID, o numero da pagina e o tamanho, vinda da requisição
      * @param turmaId string
+     * @param pagina Integer numero da pagina
+     * @param tamanho Integer tamanho da pagina
      */
-    public record Comando(String turmaId){}
+    public record Comando(String turmaId, Integer pagina, Integer tamanho){}
 
 
     /**
@@ -43,7 +46,7 @@ public class BuscarAlunosPorTurmaIdCaso {
      * Resposta que envia uma lista de AlunoDTO
      * @param alunoDtos Lista de AlunoDto
      */
-    public record Resposta(List<AlunoDto> alunoDtos){}
+    public record Resposta(Pagina<AlunoDto> alunoDtos){}
 
 
     /**
@@ -53,15 +56,19 @@ public class BuscarAlunosPorTurmaIdCaso {
      */
     public Resposta executar(Comando comando){
         String turmaIdStr = comando.turmaId();
-        List<Aluno> alunos;
+        Pagina<Aluno> paginaDominio;
         try {
-            alunos = repositorio.buscarPorTurmaId
-                    (new TurmaId(UUID.fromString(turmaIdStr)));
+            paginaDominio = repositorio.buscarPorTurmaId(
+                    new TurmaId(UUID.fromString(turmaIdStr)),
+                    comando.pagina(),
+                    comando.tamanho()
+            );
         }catch (IllegalArgumentException erro){
             throw new ValidacaoExcecao(VD_002_FORMATO_INVALIDO,"turmaId","UUID (hexadecimal)");
         }
+
         //Se lista contem itens então cria lista com dto de cada aluno
-        List<AlunoDto> dtos = alunos.stream()
+        List<AlunoDto> conteudoDto = paginaDominio.conteudo().stream()
                 .map(aluno ->
                     new AlunoDto(aluno.idTexto(),
                             aluno.nomeTexto(),
@@ -69,8 +76,15 @@ public class BuscarAlunosPorTurmaIdCaso {
                             aluno.status().name()
                             )
                 ).toList();
+        Pagina<AlunoDto> paginaRetorno = new Pagina<>(
+                conteudoDto,
+                paginaDominio.paginaAtual(),
+                paginaDominio.totalPaginas(),
+                paginaDominio.totalElementos()
 
-        return new Resposta(dtos);
+        );
+
+        return new Resposta(paginaRetorno);
     }
 
 }
