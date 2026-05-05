@@ -5,4 +5,5 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.C
 public interface GeradorToken {
     String gerarToken(ContaUsuario usuario);
     String extrairTopico(String token);
+    String extrairId(String token);
 }

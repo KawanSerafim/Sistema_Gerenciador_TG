@@ -54,6 +54,11 @@ public class GeradorTokenImpl implements GeradorToken {
                 .compact();
     }
 
+    /**
+     * Extrai o email do usuario logado
+     * @param token string do token jwt
+     * @return String email usuario logado
+     */
     @Override
     public String extrairTopico(String token) {
         try {
@@ -63,6 +68,27 @@ public class GeradorTokenImpl implements GeradorToken {
                     .parseSignedClaims(token)
                     .getPayload()
                     .getSubject();
+        } catch (Exception e) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_006_TOKEN_INVALIDO_EXPIRADO
+            );
+        }
+    }
+
+    /**
+     * Extrai o id do usuario logado
+     * @param token string do token jwt
+     * @return String id usuario logado
+     */
+    @Override
+    public String extrairId(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(pegarChaveAssinatura())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("id", String.class); // Pega exatamente a chave que você salvou no claim!
         } catch (Exception e) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_006_TOKEN_INVALIDO_EXPIRADO
