@@ -12,12 +12,18 @@ const VisaoAlunosEnviados = () => {
     const [turmaSelecionada, setTurmaSelecionada] = useState("");
     const [alunos, setAlunos] = useState([]);
 
+    // Estados de Paginação
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(1);
+    // Quantos alunos por página
+    const tamanhoPagina = 10;
+
+
     // Estados de UI (Carregamento e Erros)
     const [carregandoTurmas, setCarregandoTurmas] = useState(false);
     const [carregandoAlunos, setCarregandoAlunos] = useState(false);
     const [erro, setErro] = useState("");
 
-    //TODO: Criar logica para preencher a tabela com os alunos quando a turma for selecionada
 
     //Colunas da tabela
     const columns = [
@@ -59,21 +65,32 @@ const VisaoAlunosEnviados = () => {
             try {
                 setCarregandoAlunos(true);
                 setErro(""); // Limpa erros anteriores
-                setAlunos([]); // Limpa a tabela anterior
+                // Passa os parâmetros de paginação para o Service
+                const resposta = await alunoService.buscarAlunosPorTurmaId(
+                    turmaSelecionada,
+                    paginaAtual,
+                    tamanhoPagina
+                );
 
-                // Chama o backend pedindo os alunos desta turma específica
-                const resposta = await alunoService.buscarAlunosPorTurmaId(turmaSelecionada);
+                //Extrai informações da pagina, que esta na raiz
+                const paginaDominio = resposta;
 
-                // Formata os dados para a tabela exibir bonito
-                const alunosFormatados = resposta.map(aluno => ({
-                    id: aluno.id, // Importante ter um id único se a tabela precisar de key
+                // Acessa o 'conteudo' contendo a lista de alunos
+                const listaAlunos = paginaDominio?.conteudo || [];
+
+                // Faz o mapeamento usando os nomes do dto
+                const alunosFormatados = listaAlunos.map(aluno => ({
+                    id: aluno.matricula, // Usamos a matrícula como ID único da linha
                     nome: aluno.nome,
                     matricula: aluno.matricula,
-                    // Traduz o Enum do Java para texto amigável
+                    // Mudou de aluno.status para aluno.estado (conforme seu DTO)
                     estado: traduzirStatus(aluno.estado)
                 }));
 
                 setAlunos(alunosFormatados);
+
+                // Atualiza as páginas lendo do seu record Pagina
+                setTotalPaginas(paginaDominio.totalPaginas || 1);
             } catch (error) {
                 console.error("Erro ao buscar alunos:", error);
                 setErro("Erro ao buscar a lista de alunos desta turma.");
@@ -83,7 +100,7 @@ const VisaoAlunosEnviados = () => {
         };
         carregarAlunosDaTurma();
         //Sempre que a turmaSelecionada mudar aciona o efeito
-    }, [turmaSelecionada])
+    }, [turmaSelecionada, paginaAtual])
 
 
     // ======== FUNÇÕES AUXILIARES ==========
@@ -99,6 +116,12 @@ const VisaoAlunosEnviados = () => {
             default:
                 return statusJava || "Desconhecido";
         }
+    };
+
+    const handleTrocarTurma = (e) => {
+        setTurmaSelecionada(e.target.value);
+        // Reseta a página para a primeira
+        setPaginaAtual(0);
     };
 
     return (
@@ -120,7 +143,7 @@ const VisaoAlunosEnviados = () => {
                             required={true}
                             title="Selecione a turma que deseja exibir"
                             value={turmaSelecionada}
-                            onChange={(e) => setTurmaSelecionada(e.target.value)}
+                            onChange={handleTrocarTurma}
                             className='bg-white text-black fw-medium fs-4 w-50 text-center'
                         >
                             <option value="" disabled selected>
@@ -158,6 +181,9 @@ const VisaoAlunosEnviados = () => {
                         <TableComponent
                             colunas={columns}
                             dados={alunos}
+                            paginaAtual={paginaAtual}
+                            totalPaginas={totalPaginas}
+                            setPaginaAtual={setPaginaAtual}
                         />
                     </div>
                 )}

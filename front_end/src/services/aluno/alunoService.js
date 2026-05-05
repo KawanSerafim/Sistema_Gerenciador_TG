@@ -26,8 +26,8 @@ export const alunoService = {
     });
   },
 
-  buscarAlunosPorTurmaId: async (turmaId) => {
-    const resposta = await apiClient(`/alunos/importar?turmaId=${turmaId}`, {
+  buscarAlunosPorTurmaId: async (turmaId, pagina, tamanho) => {
+    const resposta = await apiClient(`/alunos/importar?turmaId=${turmaId}&pagina=${pagina}&tamanho=${tamanho}`, {
       method: "GET"
     });
     return resposta?.alunos || [];
