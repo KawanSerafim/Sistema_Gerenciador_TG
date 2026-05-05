@@ -1,11 +1,11 @@
 import addIcon from '../../../assets/add.svg'
 import CancelIcon from '../../../assets/Cancel.svg'
 import "./formarGrupo.css"
-import { Alert, Col, Container, FormControl, FormLabel, FormSelect, ListGroup, Row, Stack, Table } from 'react-bootstrap';
+import { Alert, Col, Container, FormControl, FormLabel, FormSelect, ListGroup, Row, Spinner, Stack, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TableComponent from '../../../components/table/TableComponent';
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
 
@@ -14,18 +14,29 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { camposSchema } from '../../../schemas/aluno/formarGrupo/formarGrupoZodSchema';
 
+
+import { grupoTgService } from '../../../services/grupoTg/grupoTgService';
+import { alunoService } from '../../../services/aluno/alunoService';
+
 const FormarGrupo = () => {
-    const [exibirSucesso, setExibirSucesso] = useState(false)
+    // Estado para exibição do resultado de requisições
+    const [resultado, setResultado] = useState({
+        exibir: false,
+        variante: "",
+        mensagem: "",
+    });
 
     const {
         register,
         handleSubmit,
         control,
-        formState: { errors }
+        formState: { errors },
+        reset
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
             tema: "",
+            descricaoTema: "",
             tipoTG: "",
             aluno: "", // Usado apenas para o input de digitação
             integrantes: [] // Referência para validação
@@ -40,49 +51,64 @@ const FormarGrupo = () => {
         name: "integrantes"
     });
 
-    //Mock de alunos, TODO: pegar do backend
+    // ======== ESTADOS DA API ========
+    const [alunosDisponiveis, setAlunosDisponiveis] = useState([]);
+    const [carregandoAlunos, setCarregandoAlunos] = useState(false);
 
-    const [listaAlunosDB] = useState([
-        {
-            id: 1,
-            nome: "Joe",
-        },
-        {
-            id: 2,
-            nome: "Ana Maria",
-
-        },
-        {
-            id: 3,
-            nome: "Mariana Silva",
-        },
-        {
-            id: 4,
-            nome: "Leon Kennedy"
-        },
-        {
-            id: 5,
-            nome: "Jill Valentine"
-        }
-    ])
-
+    // ======== ESTADOS DO AUTOCOMPLETE ========
     // Estado do que esta escrito no input de aluno
     const [buscaAluno, setBuscaAluno] = useState("")
     //Lista filtrada de opções com base no input
     const [sugestoes, setSugestoes] = useState([]);
     const [alunoSelecionado, setAlunoSelecionado] = useState(null)
 
+
+    // ======== EFEITOS ========
+    useEffect(() => {
+        const carregarAlunosElegiveis = async () => {
+            try {
+                setCarregandoAlunos(true);
+                const resposta = await alunoService.buscarAlunosParaGrupo();
+
+                const listaAlunos = resposta.conteudo || resposta || [];
+
+                const formatados = listaAlunos.map(aluno => ({
+                    // Usa a matrícula como ID único se o backend não mandar um ID próprio
+                    id: aluno.id || aluno.matricula,
+                    nome: aluno.nome,
+                    matricula: aluno.matricula
+                }));
+
+                setAlunosDisponiveis(formatados);
+            } catch (error) {
+                console.error("Erro ao carregar lista de alunos:", error);
+                setResultado({
+                    exibir: true,
+                    variante: "danger",
+                    mensagem: "Não foi possível carregar a lista de alunos disponíveis."
+                });
+            } finally {
+                setCarregandoAlunos(false);
+            }
+        };
+
+        carregarAlunosElegiveis();
+    }, []);
+
+
+    // ======== LÓGICA DE AUTOCOMPLETE ========
     // Filtra sugestões garantindo que o aluno não esteja no grupo (fields)
     const handleBuscaAluno = (e) => {
         const termo = e.target.value;
         setBuscaAluno(termo);
-        setAlunoSelecionado(null); // Reseta a seleção se o usuário voltar a digitar
+        // Reseta a seleção se o usuário voltar a digitar
+        setAlunoSelecionado(null);
 
-        const opcoesDisponiveis = listaAlunosDB.
+        const opcoesDisponiveis = alunosDisponiveis.
             filter(aluno => !fields.some(i => i.id === aluno.id))
 
         if (termo.length > 1) { // Só filtra após digitar 2 letras
-            const filtrados = listaAlunosDB.filter(aluno =>
+            const filtrados = alunosDisponiveis.filter(aluno =>
                 aluno.nome.toLowerCase().includes(termo.toLowerCase()) &&
                 !fields.some(jaAdicionado => jaAdicionado.id === aluno.id) // Não sugere quem já está no grupo
             );
@@ -102,7 +128,7 @@ const FormarGrupo = () => {
     const handleSugestoesFocus = () => {
         // Quando clica no input, se estiver vazio, mostra os 5 primeiros disponíveis
         if (buscaAluno.length === 0) {
-            const opcoesDisponiveis = listaAlunosDB.
+            const opcoesDisponiveis = alunosDisponiveis.
                 filter(aluno => !fields.some((i) => i.id === aluno.id))
                 .slice(0, 3)
             //Exibe as primeiras 3 opções
@@ -119,6 +145,7 @@ const FormarGrupo = () => {
     // Tabela
     const colunas = [
         { header: "Nome do aluno", accessor: "nome" },
+        { header: "RA", accessor: "matricula" },
         {
             header: "Remover",
             // Render customizado para os botões de Aceitar/Recusar
@@ -138,11 +165,13 @@ const FormarGrupo = () => {
 
     const adicionarIntegrante = () => {
         // Só adiciona se houver um aluno selecionado do dropdown
-        const alunoParaAdicionar = alunoSelecionado;
-
-        if (alunoParaAdicionar) {
+        if (alunoSelecionado) {
             //Adiciona no RHF, Zod fará a validação pelo array integrantes
-            append({ id: alunoSelecionado.id, nome: alunoSelecionado.nome });
+            append({
+                id: alunoSelecionado.matricula,
+                nome: alunoSelecionado.nome,
+                matricula: alunoSelecionado.matricula
+            });
             //Limpa a busca
             setBuscaAluno("");
             setAlunoSelecionado(null);
@@ -151,14 +180,41 @@ const FormarGrupo = () => {
     };
 
 
-    // A função mock que realmente envia os dados caso passe na validação do frontend
-    const enviarParaBackend = (dadosValidados) => {
-        // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
-        console.log("Enviando payload para a API:", dadosValidados);
-        //Ativa alerta de sucesso
-        setExibirSucesso(true);
-        //Esconde depois de alguns segundos
-        setTimeout(() => setExibirSucesso(false), 5000);
+    // ======== INTEGRAÇÃO COM BACK-END ========
+    const enviarParaBackend = async (dadosValidados) => {
+
+        try {
+            const payloadJava = {
+                //TODO: Tirar do backend o cursoId e a disciplina, pegar do próprio aluno logado com o jwt
+                tema: dadosValidados.tema,
+                descricaoTema: dadosValidados.descricaoTema,
+                tipoTg: dadosValidados.tipoTG.toUpperCase().replace("-", "_"),
+                matriculasAlunos: dadosValidados.integrantes.map(aluno => aluno.matricula)
+            };
+
+            await grupoTgService.criarGrupo(payloadJava);
+
+            setResultado({
+                exibir: true,
+                variante: "success",
+                mensagem: "Grupo Criado com sucesso!"
+            });
+            // Limpa o formulário após criar o grupo
+            reset();
+            // Limpa o autocomplete
+            setBuscaAluno("");
+            setAlunoSelecionado(null);
+            // Esconde a mensagem verde após 5 segundos
+            setTimeout(() => setResultado((prev) => ({ ...prev, exibir: false, })), 5000);
+
+        } catch (erro) {
+            console.error("Erro ao gerar grupo:", erro);
+            setResultado({
+                exibir: true,
+                variante: "danger",
+                mensagem: erro.message || "Erro ao criar grupo. Verifique as informações."
+            });
+        }
     };
     return (
         <>
@@ -227,7 +283,8 @@ const FormarGrupo = () => {
                                 onFocus={handleSugestoesFocus}
                                 onBlur={handleSugestoesBlur}
                                 autoComplete="off"
-                                placeholder="Digite ou selecione o nome do integrante"
+                                disabled={carregandoAlunos}
+                                placeholder={carregandoAlunos ? "Carregando alunos disponíveis..." : "Digite ou selecione o nome"}
                                 className='bg-white text-black fw-bold fs-5 '
                                 isInvalid={!!errors.integrantes}
                             />
@@ -242,24 +299,29 @@ const FormarGrupo = () => {
                                             className="list-group-item list-group-item-action cursor-pointer py-2 fs-6"
                                             onClick={() => selecionarSugestao(aluno)}
                                         >
-                                            {aluno.nome}
+                                            <div className="fw-bold">{aluno.nome}</div>
+                                            <small className="text-muted">RA: {aluno.matricula}</small>
                                         </ListGroup.Item>
                                     ))}
                                 </ul>
                             )}
                         </Col>
-                        <Col md={1}>
-                            <img
-                                src={addIcon} alt="Add"
-                                style={{
-                                    cursor: alunoSelecionado ? 'pointer' : 'not-allowed',
-                                    width: '45px',
-                                    opacity: alunoSelecionado ? 1 : 0.4
-                                }}
-                                // Só clica se tiver selecionado
-                                onClick={alunoSelecionado ? adicionarIntegrante : undefined}
-                                title="Adicionar integrante"
-                            />
+                        <Col md={1} className="text-start p-0 d-flex align-items-center" >
+                            {carregandoAlunos ? (
+                                <Spinner animation="border" variant="primary" size="sm" className="ms-2" />
+                            ) : (
+                                <img
+                                    src={addIcon} alt="Add"
+                                    style={{
+                                        cursor: alunoSelecionado ? 'pointer' : 'not-allowed',
+                                        width: '45px',
+                                        opacity: alunoSelecionado ? 1 : 0.4
+                                    }}
+                                    // Só clica se tiver selecionado
+                                    onClick={alunoSelecionado ? adicionarIntegrante : undefined}
+                                    title="Adicionar integrante"
+                                />
+                            )}
                         </Col>
                     </Row>
 
@@ -267,10 +329,12 @@ const FormarGrupo = () => {
                     {/* tabela de integrantes */}
                     <FormGroup className="mb-3 d-flex flex-column" controlId="formBasicConfirmPassword">
                         <FormLabel className='text-secondary fs-4 fw-bold text-center'>Integrantes do Grupo</FormLabel>
-                        <TableComponent
-                            colunas={colunas}
-                            dados={fields}
-                        />
+                        <div className="mx-auto w-75">
+                            <TableComponent
+                                colunas={colunas}
+                                dados={fields}
+                            />
+                        </div>
                         {/* Exibe erro de validação se a lista estiver vazia */}
                         {errors.integrantes && (
                             <div className="text-danger text-center fw-bold mt-2">
@@ -291,10 +355,16 @@ const FormarGrupo = () => {
                     </FormGroup>
 
                 </Form>
-                {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirSucesso && (
-                    <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                        Turma cadastrada com sucesso!
+
+                {/* Renderiza o alerta de resultado após passar nas validações */}
+                {resultado.exibir && (
+                    <Alert
+                        variant={resultado.variante}
+                        onClose={() => setResultado({ ...resultado, exibir: false })}
+                        dismissible
+                        className="mt-4 fw-bold fs-5 shadow-sm"
+                    >
+                        {resultado.mensagem}
                     </Alert>
                 )}
             </Container >
