@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.*;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +19,22 @@ public class AlunoControlador {
     private final ImportarAlunosCaso importarAlunosCaso;
     private final BuscarAlunosImportadosCaso buscarAlunosImportadosCaso;
     private final SolicitarAcessoAlunoCaso solicitarAcessoAlunoCaso;
+    private final GeradorToken geradorToken;
 
     public AlunoControlador(
             BuscarAlunosPorTurmaIdCaso buscarAlunosPorTurmaIdCaso,
             BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosSemGrupoPorTurmasIdsCaso,
             ImportarAlunosCaso importarAlunosCaso,
             BuscarAlunosImportadosCaso buscarAlunosImportadosCaso,
-            SolicitarAcessoAlunoCaso solicitarAcessoAlunoCaso
+            SolicitarAcessoAlunoCaso solicitarAcessoAlunoCaso,
+            GeradorToken geradorToken
     ){
         this.buscarAlunosPorTurmaIdCaso = buscarAlunosPorTurmaIdCaso;
         this.buscarAlunosSemGrupoPorTurmasIdsCaso = buscarAlunosSemGrupoPorTurmasIdsCaso;
         this.importarAlunosCaso = importarAlunosCaso;
         this.buscarAlunosImportadosCaso = buscarAlunosImportadosCaso;
         this.solicitarAcessoAlunoCaso = solicitarAcessoAlunoCaso;
+        this.geradorToken = geradorToken;
     }
 
     @PostMapping(value = "/importar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -94,11 +98,15 @@ public class AlunoControlador {
 
     @GetMapping("sem-grupo")
     public ResponseEntity<BuscarAlunosSemGrupoPorTurmasIdsCaso.Resposta>
-        buscarAlunosSemGrupoPorTurmaId(@RequestParam("turmasIds") List<String> turmasIds) {
-        var comando = new
-                BuscarAlunosSemGrupoPorTurmasIdsCaso.Comando(turmasIds);
+        buscarAlunosSemGrupoPorTurmaId(@RequestHeader("Authorization") String headerAutorizacao) {
+        //Pega o id do usuario logado pelo jwt
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String idContaUsuarioLogada = geradorToken.extrairId(token);
+        //Busca os alunos pelos ids de turma do usuario logado
+        var comando = new BuscarAlunosSemGrupoPorTurmasIdsCaso.Comando(idContaUsuarioLogada);
+        var resposta = buscarAlunosSemGrupoPorTurmasIdsCaso.executar(comando);
         //Se tudo deu certo retorna 200 com a lista de DTOs no corpo da requisição
-        return ResponseEntity.ok(buscarAlunosSemGrupoPorTurmasIdsCaso.executar(comando));
+        return ResponseEntity.ok(resposta);
     }
 
 }

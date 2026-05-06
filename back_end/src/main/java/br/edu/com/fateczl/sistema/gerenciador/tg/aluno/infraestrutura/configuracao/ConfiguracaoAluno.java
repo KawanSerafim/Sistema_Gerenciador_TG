@@ -75,9 +75,10 @@ public class ConfiguracaoAluno {
 
     @Bean
     public BuscarAlunosSemGrupoPorTurmasIdsCaso buscarAlunosPorTurmaIdSemGrupoCaso(
-            AlunoRepositorio repositorio
+            AlunoRepositorio repositorio,
+            TurmaRepositorio turmaRepositorio
     ) {
-        return new BuscarAlunosSemGrupoPorTurmasIdsCaso(repositorio);
+        return new BuscarAlunosSemGrupoPorTurmasIdsCaso(repositorio, turmaRepositorio);
     }
 
     @Bean
