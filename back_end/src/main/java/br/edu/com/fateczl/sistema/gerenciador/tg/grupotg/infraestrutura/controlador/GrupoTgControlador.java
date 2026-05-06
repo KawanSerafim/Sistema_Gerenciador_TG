@@ -2,7 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.control
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGrupoTgPorTurmasIdsCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,31 +14,39 @@ import java.util.List;
 @RequestMapping("/api/gruposTg")
 public class GrupoTgControlador {
 
-    private final BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso;
+    private final BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso;
     private final GerarGrupoTgCaso gerarGrupoTgCaso;
     private final GeradorToken geradorToken;
 
     public GrupoTgControlador(
-            BuscarGrupoTgPorTurmasIdsCaso buscarGruposCaso,
+            BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso,
             GerarGrupoTgCaso gerarGrupoTgCaso, GeradorToken geradorToken
     ) {
-        this.buscarGruposCaso = buscarGruposCaso;
+        this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
         this.geradorToken = geradorToken;
     }
 
     /**
      * Rota para buscar grupos tg por lista de turmasId
-     * @param turmasIds - Lista de string com os ids de turmas (1 ou mais)
+     * @param headerAutorizacao - Cabeçalho de autorização para extrair token jwt
      * @return (ResponseEntity) - 200 com DTO de gruposTG
      */
-    @GetMapping()
-    public ResponseEntity<BuscarGrupoTgPorTurmasIdsCaso.Resposta> buscarGruposPorTurmas(
-                @RequestParam("turmasIds") List<String> turmasIds
+    @GetMapping("/visao-gruposTg")
+    public ResponseEntity<BuscarVisaoGruposProfessorCaso.Resposta> buscarGruposPorTurmas(
+            @RequestHeader("Authorization") String headerAutorizacao
     ) {
-        var comando = new BuscarGrupoTgPorTurmasIdsCaso.Comando(turmasIds);
-        var resposta = buscarGruposCaso.executar(comando);
+        // Limpa o token
+        String token = headerAutorizacao.replace("Bearer ", "");
 
+        // Usa metodo da implementação do jwt para pegar o email (topico) do usuario logado
+        String emailUsuarioLogado = geradorToken.extrairTopico(token);
+
+        // Monta o comando e executa o caso de uso
+        var comando = new BuscarVisaoGruposProfessorCaso.Comando(emailUsuarioLogado);
+        var resposta = buscarVisaoGruposProfessorCaso.executar(comando);
+
+        // 4. Devolve o HTTP 200 OK com o JSON pronto
         return ResponseEntity.ok(resposta);
     }
 

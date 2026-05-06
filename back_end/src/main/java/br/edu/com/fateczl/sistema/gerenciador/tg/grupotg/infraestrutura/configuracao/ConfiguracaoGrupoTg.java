@@ -2,7 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.configu
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGrupoTgPorTurmasIdsCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servicos.ValidadorComposicaoGrupoTg;
@@ -43,11 +43,12 @@ public class ConfiguracaoGrupoTg {
     }
 
     @Bean
-    public BuscarGrupoTgPorTurmasIdsCaso buscarGrupoTgPorTurmasIdsCaso(
+    public BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso(
             GrupoTgRepositorio repositorio,
             AlunoRepositorio alunoRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            TurmaRepositorio turmaRepositorio
     ) {
-        return new BuscarGrupoTgPorTurmasIdsCaso(repositorio, alunoRepositorio, professorRepositorio);
+        return new BuscarVisaoGruposProfessorCaso(repositorio, alunoRepositorio, professorRepositorio, turmaRepositorio);
     }
 }
