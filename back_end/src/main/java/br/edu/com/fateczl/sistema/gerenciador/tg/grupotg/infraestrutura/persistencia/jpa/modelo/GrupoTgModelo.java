@@ -21,7 +21,8 @@ public class GrupoTgModelo {
     @Column(length = 36, updatable = false)
     private String id;
 
-    @Column(length = 36, name = "orientador_id", nullable = false)
+    //Orientador pode ser nulo, pois se cria o grupoTG primeiro para depois associar
+    @Column(length = 36, name = "orientador_id", nullable = true)
     private String orientadorId;
 
     @Column(length = 36, name = "coorientador_id")

@@ -164,7 +164,7 @@ public class GrupoTg {
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
 
     public String idTexto() { return id.texto(); }
-    public String orientadorIdTexto() { return orientadorId.texto(); }
+    public String orientadorIdTexto() { return this.orientadorId != null ? this.orientadorId.texto() : null; }
     public String cursoIdTexto() { return cursoId.texto(); }
     public String nomeTemaTg() { return temaTg.nome(); }
     public String descricaoTemaTg() { return temaTg.descricao(); }
