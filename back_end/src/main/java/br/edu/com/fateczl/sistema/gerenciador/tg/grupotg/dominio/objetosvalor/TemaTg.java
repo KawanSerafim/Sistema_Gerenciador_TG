@@ -16,7 +16,7 @@ public record TemaTg(String nome, String descricao) {
         }
         if(descricao.length() < 50) {
             throw new ValidacaoExcecao(CodigoErro.VD_002_FORMATO_INVALIDO,
-                    "descrição do tema do TG", "3 dígitos ou mais");
+                    "descrição do tema do TG", "50 caracteres ou mais");
         }
         if (!nome.matches("^[a-zA-ZÀ-ÿ0-9\\s.\\-/&]+$") ||
                 !descricao.matches("^[a-zA-ZÀ-ÿ0-9\\s.\\-/&]+$")) {
