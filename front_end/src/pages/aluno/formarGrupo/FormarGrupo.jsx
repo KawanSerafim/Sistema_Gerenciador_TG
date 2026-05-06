@@ -54,6 +54,7 @@ const FormarGrupo = () => {
     // ======== ESTADOS DA API ========
     const [alunosDisponiveis, setAlunosDisponiveis] = useState([]);
     const [carregandoAlunos, setCarregandoAlunos] = useState(false);
+    const [enviando, setEnviando] = useState(false);
 
     // ======== ESTADOS DO AUTOCOMPLETE ========
     // Estado do que esta escrito no input de aluno
@@ -190,6 +191,8 @@ const FormarGrupo = () => {
     // ======== INTEGRAÇÃO COM BACK-END ========
     const enviarParaBackend = async (dadosValidados) => {
         setResultado({ exibir: false, variante: "", mensagem: "" });
+        //Inicia o carregamento visual
+        setEnviando(true);
         try {
             const payloadJava = {
                 //TODO: Tirar do backend o cursoId e a disciplina, pegar do próprio aluno logado com o jwt
@@ -221,6 +224,9 @@ const FormarGrupo = () => {
                 variante: "danger",
                 mensagem: erro.message || "Erro ao criar grupo. Verifique as informações."
             });
+        } finally {
+            //Finaliza o carregamento visual
+            setEnviando(false);
         }
     };
     return (
@@ -373,6 +379,7 @@ const FormarGrupo = () => {
                             variant="primary"
                             type="submit"
                             id='btn-cadastro' className='mb-2 fs-4 fw-medium w-100'
+                            disabled={enviando}
                         >
                             Criar Grupo
                         </Button>
