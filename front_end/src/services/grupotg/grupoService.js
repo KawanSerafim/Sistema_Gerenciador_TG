@@ -1,4 +1,4 @@
-import { apiClient } from "../../apiClient";
+import { apiClient } from "../apiClient";
 
 export const grupoService = {
   /**
@@ -7,7 +7,7 @@ export const grupoService = {
    * @returns {Promise<any>} - Promise com a resposta da criação do grupo
    */
   criarGrupo: async (payloadGrupo) => {
-    return await apiClient(`/grupos`, {
+    return await apiClient(`/gruposTg`, {
       method: "POST",
       body: JSON.stringify(payloadGrupo),
     });

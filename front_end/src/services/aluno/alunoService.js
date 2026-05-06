@@ -31,5 +31,13 @@ export const alunoService = {
       method: "GET"
     });
     return resposta?.alunos || [];
+  },
+
+  buscarAlunosElegiveisParaGrupo: async () => {
+    const resposta = await apiClient(`/alunos/sem-grupo`, {
+      method: "GET"
+    });
+    console.log(resposta)
+    return resposta?.alunoDtos || [];
   }
 };

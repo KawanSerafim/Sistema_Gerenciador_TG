@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { camposSchema } from '../../../schemas/aluno/formarGrupo/formarGrupoZodSchema';
 
 
-import { grupoTgService } from '../../../services/grupoTg/grupoTgService';
+import { grupoService } from '../../../services/grupotg/grupoService';
 import { alunoService } from '../../../services/aluno/alunoService';
 
 const FormarGrupo = () => {
@@ -68,7 +68,7 @@ const FormarGrupo = () => {
         const carregarAlunosElegiveis = async () => {
             try {
                 setCarregandoAlunos(true);
-                const resposta = await alunoService.buscarAlunosParaGrupo();
+                const resposta = await alunoService.buscarAlunosElegiveisParaGrupo();
 
                 const listaAlunos = resposta.conteudo || resposta || [];
 
@@ -145,21 +145,28 @@ const FormarGrupo = () => {
     // Tabela
     const colunas = [
         { header: "Nome do aluno", accessor: "nome" },
-        { header: "RA", accessor: "matricula" },
         {
             header: "Remover",
             // Render customizado para os botões de Aceitar/Recusar
-            render: (row, index) => (
-                //index vem do mapeamento da tabela
-                <Stack direction="horizontal" gap={5} className="justify-content-center">
+            render: (row) => (
+                <Stack direction="horizontal" gap={5} className="justify-content-center" >
                     <img
                         src={CancelIcon}
                         alt="Remover"
                         style={{ cursor: 'pointer', width: '3rem' }}
-                        onClick={() => remove(index)}
+                        onClick={() => {
+                            // Encontra o índice exato deste aluno específico no array do formulário
+                            const indexExato = fields.findIndex(integrante => integrante.id === row.id);
+                            // Se encontrou, remove só ele
+                            if (indexExato !== -1) {
+                                remove(indexExato);
+                            }
+                        }}
                     />
-                </Stack>
+
+                </Stack >
             )
+
         }
     ]
 
@@ -182,7 +189,7 @@ const FormarGrupo = () => {
 
     // ======== INTEGRAÇÃO COM BACK-END ========
     const enviarParaBackend = async (dadosValidados) => {
-
+        setResultado({ exibir: false, variante: "", mensagem: "" });
         try {
             const payloadJava = {
                 //TODO: Tirar do backend o cursoId e a disciplina, pegar do próprio aluno logado com o jwt
@@ -192,7 +199,7 @@ const FormarGrupo = () => {
                 matriculasAlunos: dadosValidados.integrantes.map(aluno => aluno.matricula)
             };
 
-            await grupoTgService.criarGrupo(payloadJava);
+            await grupoService.criarGrupo(payloadJava);
 
             setResultado({
                 exibir: true,
@@ -247,7 +254,25 @@ const FormarGrupo = () => {
                         </Col>
                         <Col md={1}></Col> {/* Coluna vazia para compensar o ícone do aluno abaixo */}
                     </Row>
-
+                    {/* Descrição do Tema */}
+                    <Row className="mb-4 justify-content-center align-items-center">
+                        <Col md={2} className="text-end">
+                            <FormLabel className='text-secondary fs-4 fw-bold m-0'>Descrição:</FormLabel>
+                        </Col>
+                        <Col md={6}>
+                            <FormControl
+                                as="textarea"
+                                rows={3}
+                                name="descricaoTema"
+                                {...register("descricaoTema")}
+                                isInvalid={!!errors.descricaoTema}
+                                placeholder="Descreva brevemente o tema do grupo (mínimo de 50 caracteres)"
+                                className='bg-white text-black fw-bold fs-5'
+                            />
+                            <Form.Control.Feedback type="invalid">{errors.descricaoTema?.message}</Form.Control.Feedback>
+                        </Col>
+                        <Col md={1}></Col>
+                    </Row>
                     {/* Tipo de TG */}
                     <Row className="mb-4 justify-content-center align-items-center">
                         <Col md={2} className="text-end">
@@ -300,7 +325,6 @@ const FormarGrupo = () => {
                                             onClick={() => selecionarSugestao(aluno)}
                                         >
                                             <div className="fw-bold">{aluno.nome}</div>
-                                            <small className="text-muted">RA: {aluno.matricula}</small>
                                         </ListGroup.Item>
                                     ))}
                                 </ul>

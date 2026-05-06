@@ -10,7 +10,6 @@ export const camposSchema = z.object({
         .min(1, "O Tipo de TG é um campo obrigatório"),
     integrantes: z.array(z.object({
         // Aceita string ou number
-        id: z.union([z.string(), z.number()]),
-        nome: z.string()
+        matricula: z.string(),
     })).min(1, "Adicione pelo menos um integrante ao grupo.")
 })

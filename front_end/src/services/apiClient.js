@@ -87,7 +87,11 @@ export const apiClient = async (endpoint, options = {}) => {
 
         //Se deu tudo certo, tenta devolver o JSON (ou vazio dependendo do caso)
         if (resposta.status !== 204) {
-            return await resposta.json();
+            const text = await resposta.text();
+            // Se tiver texto, faz o parse. Se não (como no 201 vazio), devolve um objeto vazio ou null
+            const data = text ? JSON.parse(text) : {};
+
+            return data;
         }
         return null;
 
