@@ -1,18 +1,20 @@
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row, Spinner } from "react-bootstrap";
 import TableComponent from "../../../components/table/TableComponent";
 import { useModal } from "../../../hooks/useModal/useModal";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { grupoService } from "../../../services/grupotg/grupoService";
 
 const VisaoGrupos = () => {
 
     // Estado para o nosso filtro específico da página
     const [somenteSemGrupo, setSomenteSemGrupo] = useState(false);
 
-    //TODO: Buscar do backend os grupos
-    //columns = buscara do backend
-    //data = buscara do backend
-    //Modal integrantes
+    /// Estados da API
+    const [data, setData] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState(null);
 
     const {
         show,
@@ -21,7 +23,7 @@ const VisaoGrupos = () => {
         handleClose
     } = useModal();
 
-    //Mocks temporarios
+    // Colunas da Tabela
     const columns = useMemo(() => [
         { header: "IdGrupo", accessor: "id", filtravel: true, tipoFiltro: "text" },
         { header: "Tipo de TG", accessor: "tipoTG", filtravel: true, tipoFiltro: "select" },
@@ -37,7 +39,6 @@ const VisaoGrupos = () => {
 
                 if (isSemGrupo) {
                     // Exibe o nome direto em texto, sem botão
-                    // Como row.grupo é um array, pega a primeira posição [0]
                     return <span className="fw-medium text-black fs-6">{row.grupo[0]}</span>;
                 }
 
@@ -55,46 +56,53 @@ const VisaoGrupos = () => {
             }
         },
         { header: "Orientador", accessor: "orientador", filtravel: true, tipoFiltro: "select" }
-    ], [handleOpen]); // Depende do handleOpen do modal
+        // Executa toda vez que handleOpen executar
+    ], [handleOpen]);
 
-    // TODO: Quando integrar com o backend, isso vai virar um: const [data, setData] = useState([])
-    const data = useMemo(() => [
-        {
-            id: 1,
-            tipoTG: "Artigo",
-            tema: "Ética no desenvolvimento de IA",
-            grupo: ["Joe", "Miranda", "Nat"],
-            orientador: "Cristina"
-        },
-        {
-            id: 2,
-            tipoTG: "Monografia",
-            tema: "A importância da Cibersegurança",
-            grupo: ["Ana Maria", "Ashlhey", "James"],
-            orientador: "Luciano"
-        },
-        {
-            id: 3,
-            tipoTG: "Monografia",
-            tema: "Os perigos do Vibe Coding",
-            grupo: ["Mariana Silva", "Samuel", "Geraldo"],
-            orientador: "Sem orientador"
-        },
-        {
-            id: "-",
-            tipoTG: "",
-            tema: "",
-            grupo: ["Thiago Oliveira"], // O nome do aluno sozinho
-            orientador: ""
-        }
-    ], []); // Array de dependências vazio = cria esse mock apenas 1 vez ao carregar a página
+    // Busca os dados no Backend ao montar a tela
+    useEffect(() => {
+        const carregarGrupos = async () => {
+            try {
+                setCarregando(true);
+                setErro(null);
+
+                // Pega a lista do backend (O service já retorna o array resposta.grupos)
+                const listaDoBackend = await grupoService.listarVisaoGrupos();
+
+                // Faz a tradução (De -> Para) do Backend para o Frontend
+                const dadosFormatados = listaDoBackend.map(item => ({
+                    id: item.idGrupo,
+
+                    // Limpa os textos "feios" do backend para não aparecerem na UI
+                    tipoTG: item.tipoTg === "NÃO_DEFINIDO" ? "" : item.tipoTg,
+                    tema: item.tema === "Sem tema definido" ? "" : item.tema,
+                    orientador: item.nomeOrientador,
+
+                    // Transforma o array de objetos [{id, nome}] em um array de strings
+                    // Isso faz o render customizado (que usa row.grupo[0]) e o Modal funcionarem
+                    grupo: item.integrantes ? item.integrantes.map(integrante => integrante.nome) : []
+                }));
+
+                setData(dadosFormatados);
+
+            } catch (error) {
+                console.error(error);
+                setErro("Não foi possível carregar a lista de grupos. Tente novamente.");
+            } finally {
+                setCarregando(false);
+            }
+        };
+
+        carregarGrupos();
+    }, []);
 
     const dadosFiltrados = useMemo(() => {
         if (somenteSemGrupo) {
             // Filtra apenas onde não tem tema ou não tem orientador definido formalmente
             return data.filter(item => !item.tema || item.tema.trim() === "");
         }
-        return data; // Se o check estiver desligado, retorna todos (a tabela cuida dos outros filtros)
+        // Se o check estiver desligado, retorna todos (a tabela cuida dos outros filtros)
+        return data;
     }, [somenteSemGrupo, data])
 
 
@@ -120,16 +128,30 @@ const VisaoGrupos = () => {
                             className="fs-4 fw-bold text-secondary"
                             checked={somenteSemGrupo}
                             onChange={(e) => setSomenteSemGrupo(e.target.checked)}
+                            disabled={carregando || !!erro}
                         />
                     </Col>
                 </Row>
+                {/* Área Principal de Conteúdo */}
                 <div className="mt-5">
-                    <TableComponent
-                        colunas={columns}
-                        dados={dadosFiltrados}
+                    {carregando ? (
+                        <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                            <Spinner animation="border" variant="primary" style={{ width: '4rem', height: '4rem' }} />
+                            <h4 className="mt-3 text-secondary">Carregando grupos...</h4>
+                        </div>
+                    ) : erro ? (
+                        <Alert variant="danger" className="text-center fw-bold fs-5 shadow-sm">
+                            {erro}
+                        </Alert>
+                    ) : (
+                        <TableComponent
+                            colunas={columns}
+                            dados={dadosFiltrados}
 
-                    />
+                        />
+                    )}
                 </div>
+
                 {/* Modal integrantes */}
                 <Modal show={show} onHide={handleClose} centered contentClassName="custom-modal-content">
 
@@ -148,8 +170,7 @@ const VisaoGrupos = () => {
                                 <li className="custom-list-item text-muted">
                                     Nenhum integrante encontrado.
                                 </li>
-                            )
-                            }
+                            )}
 
                         </ul>
                     </Modal.Body>
