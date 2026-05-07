@@ -75,6 +75,21 @@ const Inicio = () => {
 
                     <div className="d-flex flex-wrap justify-content-center gap-4 m-3 px-4">
 
+                        {/* BOTÕES DO ADMIN */}
+                        {roles.includes("ROLE_ADMIN") && (
+                            <>
+                                <Button variant="dark" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/admin/cadastrar-professor')}>
+                                    Cadastrar Professor
+                                </Button>
+                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/curso/cadastro')}>
+                                    Cadastrar Professor
+                                </Button>
+                                {/* Outras telas de admin... */}
+                            </>
+                        )}
+
                         {/* ========================================== */}
                         {/* BOTÕES DO ALUNO                          */}
                         {/* ========================================== */}
