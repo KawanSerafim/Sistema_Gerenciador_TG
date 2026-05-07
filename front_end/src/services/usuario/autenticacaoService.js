@@ -62,7 +62,6 @@ export const autenticacaoService = {
     logout: () => {
         localStorage.removeItem("meu_token_tg");
         localStorage.removeItem("cargo_usuario");
-        //Redireciona para a tela de login
-        window.location.href = "/";
+        //redirecionamento para login feito por quem chama a função
     }
 }

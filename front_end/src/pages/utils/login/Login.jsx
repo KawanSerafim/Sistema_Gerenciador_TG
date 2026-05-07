@@ -6,6 +6,7 @@ import { autenticacaoService } from "../../../services/usuario/autenticacaoServi
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema"
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
     const [erro, setErro] = useState()
@@ -28,31 +29,21 @@ const Login = () => {
                 senha: dadosValidados.senha
             });
 
-            // Se chegou aqui, o Token já está salvo no localStorage!
-            console.log("Login de sucesso!");
-            // Pega o cargo que o jwt-decode salvou como string
-            const cargosTexto = localStorage.getItem("cargo_usuario");
-            console.debug(cargosTexto)
-            //Pega a string e trasnforma em array novamente
-            const cargos = cargosTexto ? JSON.parse(cargosTexto) : [];
+            // 2. Recupera e decodifica o token para decidir a rota inicial
+            const token = localStorage.getItem("meu_token_tg");
+            const payload = jwtDecode(token);
+            const cargos = payload.cargos || [];
 
-            // ADMIN
+            console.log("Login realizado com sucesso. Redirecionando...");
+
+            // 3. Lógica de Redirecionamento simplificada
             if (cargos.includes("ROLE_ADMIN")) {
+                // Admin geralmente tem um painel de controle totalmente diferente
                 navigate("/curso/cadastro");
-            } //COORDENADOR 
-            else if (cargos.includes("ROLE_COORDENADOR_CURSO")) {
-                navigate("/coordenador/cadastrarTurmaTG");
-            } //PROFESSOR TG 
-            else if (cargos.includes("ROLE_PROFESSOR_TG")) {
-                navigate("/professor/enviarTurma");
-            }
-            //ORIENTADOR 
-            else if (cargos.includes("ROLE_ORIENTADOR")) {
-                navigate("/professor/visaoGrupos");
-            } //ALUNO
-            else {
-                // Se for aluno (ou fallback padrão)
-                navigate("/aluno/");
+            } else {
+                // ALUNO, PROFESSOR_TG, COORDENADOR e ORIENTADOR 
+                // Todos vão para a tela de inicio universal
+                navigate("/inicio");
             }
 
         } catch (erro) {
@@ -62,7 +53,6 @@ const Login = () => {
 
             const codigoContaPendente = "RN_001_ESTADO_INVALIDO_PARA_ACAO";
             // Verifica se a mensagem do backend tem palavras-chave que indicam pendência
-            // (Ajuste as palavras abaixo de acordo com a Exception que o seu Java lança)
             if (codigoErro === codigoContaPendente ||
                 mensagemErro.includes("deve ter o estado 'ativo'") ||
                 mensagemErro.includes("verificação")
