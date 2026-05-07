@@ -12,13 +12,14 @@ export const grupoService = {
       body: JSON.stringify(payloadGrupo),
     });
   },
-  listarVisaoGrupos: async () => {
+  listarVisaoGrupos: async (pagina = 0, tamanho = 10, somenteSemGrupo = false) => {
     try {
-      const resposta = await apiClient(`/gruposTg/visao-gruposTg`, {
-        method: "GET"
-      });
-      // Adapte conforme o formato que o seu backend devolver (ex: resposta.grupos, resposta.conteudo)
-      return resposta?.grupos || resposta || [];
+      // Ajuste a rota para suportar as Query Params
+      const url = `/gruposTg/visao-gruposTg?pagina=${pagina}&tamanho=${tamanho}&somenteSemGrupo=${somenteSemGrupo}`;
+      const resposta = await apiClient(url, { method: "GET" });
+
+      // Retorna o objeto Pagina completo
+      return resposta?.grupos || resposta;
     } catch (erro) {
       console.error("Erro ao buscar visão dos grupos:", erro);
       throw erro;
