@@ -4,8 +4,17 @@ import Nav from 'react-bootstrap/Nav';
 import './Styles.css';
 
 const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWidth = "900px" }) => {
-    const navigate = useNavigate()
-    const handleSelect = (evento) => navigate(evento.target.attributes[0].value);
+    const navigate = useNavigate();
+
+    // Lógica para deduzir a rota com base no nome do usuário
+    const rotaInicio = userName.toLowerCase().includes("professor") ? "/professor" : "/aluno";
+
+    // Função de clique mais segura: previne o reload da página e usa o navigate do React Router
+    const handleNavegacao = (evento, rota) => {
+        evento.preventDefault();
+        navigate(rota);
+    };
+
     let largura = "";
     if (opcoes.length == 1) {
         largura = "15%"
@@ -22,7 +31,8 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                 <Nav
                     variant="pills"
                     activeKey="1"
-                    onClick={handleSelect}
+                    href={rotaInicio}
+                    onClick={(e) => handleNavegacao(e, rotaInicio)}
                     className='bg-primary rounded d-flex align-items-center px-3'
                     style={{ minHeight: '60px', width: largura }}>
 
@@ -52,7 +62,10 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                     <div className="d-flex flex-1 justify-content-end">
                         {opcoes.includes("sair") && (
                             <Nav.Item className={opcoes.includes("nome") ? "" : "ms-auto"}>
-                                <Nav.Link eventKey='3' href="/" className='text-white nav__link fs-3 fs-md-4 fw-bold'>
+                                <Nav.Link eventKey='3'
+                                    href="/"
+                                    onClick={(e) => handleNavegacao(e, "/")}
+                                    className='text-white nav__link fs-3 fs-md-4 fw-bold'>
                                     {userName != "" ? "Sair" : "Voltar"}
                                 </Nav.Link>
                             </Nav.Item>

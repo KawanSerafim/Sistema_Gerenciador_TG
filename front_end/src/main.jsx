@@ -23,6 +23,7 @@ import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrie
 import Home from './pages/aluno/home/Home.jsx';
 import CadastrarProfessor from './pages/adm/CadastrarProfessor.jsx';
 import VisaoBancasArtigos from './pages/professor/visaoBancasArtigos/VisaoBancasArtigos.jsx';
+import InicioProfessor from './pages/professor/home/InicioProfessor.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -33,6 +34,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/professor/cadastro" element={<CadastroProfessor />} />
         <Route path="/confirmarEmail" element={<ConfirmarEmail />} />
         <Route path="/curso/cadastro" element={<CadastrarCurso />} />
+        <Route path="/professor/" element={<InicioProfessor />} />
         <Route path="/coordenador/cadastrarTurmaTG" element={<CadastrarTurma />} />
         <Route path="/professor/enviarTurma" element={<EnviarTurma />} />
         <Route path="/professor/visaoAlunosEnviados" element={<VisaoAlunosEnviados />} />
