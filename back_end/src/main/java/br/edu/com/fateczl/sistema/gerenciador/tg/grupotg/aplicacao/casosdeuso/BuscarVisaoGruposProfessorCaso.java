@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Pagina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+
 
 public class BuscarVisaoGruposProfessorCaso {
 
@@ -38,21 +39,26 @@ public class BuscarVisaoGruposProfessorCaso {
             this.turmaRepositorio = turmaRepositorio;
         }
 
-        // Comando recebe o ID da conta do professor logado (via JWT)
-        public record Comando(String emailUsuarioLogado) {}
+        // Comando recebe o email da conta do professor logado (via JWT)
+        public record Comando(
+                String emailUsuarioLogado,
+                Boolean somenteSemGrupo,
+                Integer pagina,
+                Integer tamanho
+        ) {}
 
         public record IntegranteDTO(String id, String nome) {}
 
+        //O record Pagina que você criou
         public record GrupoResumoDTO(
-                String idGrupo,
                 String tipoTg,
                 String tema,
                 String nomeOrientador,
                 String turmaId,
                 List<IntegranteDTO> integrantes
         ) {}
-
-        public record Resposta(List<GrupoResumoDTO> grupos) {}
+        // Resposta embrulhando a página
+        public record Resposta(Pagina<GrupoResumoDTO> grupos) {}
 
         public Resposta executar(Comando comando) {
             // Busca o Professor logado
@@ -68,7 +74,7 @@ public class BuscarVisaoGruposProfessorCaso {
                     .toList();
 
             if (turmasAtivasDoProfessor.isEmpty()) {
-                return new Resposta(Collections.emptyList());
+                return new Resposta(new Pagina<>(Collections.emptyList(), comando.pagina(), 0, 0L));
             }
 
             List<TurmaId> idsDasTurmasAtivas = turmasAtivasDoProfessor.stream().map(Turma::id).toList();
@@ -76,67 +82,74 @@ public class BuscarVisaoGruposProfessorCaso {
             // =========================================================
             //  BUSCA OS GRUPOS FORMADOS
             // =========================================================
-            List<GrupoTg> grupos = grupoTgRepositorio.buscarPorTurmasIds(idsDasTurmasAtivas);
+            List<GrupoResumoDTO> listaCompleta = new ArrayList<>();
 
-            List<GrupoResumoDTO> dtosGrupos = grupos.stream().map(grupo -> {
-                String nomeOrientador = "Sem orientador";
-                if (grupo.orientadorId() != null) {
-                    nomeOrientador = professorRepositorio.buscarPorId(grupo.orientadorId())
-                            .map(Professor::nomeTexto)
-                            .orElse("Orientador não encontrado");
-                }
+            // Só busca os grupos formados se o switch de "somente alunos sem grupo" estiver DESLIGADO
+            if (Boolean.FALSE.equals(comando.somenteSemGrupo())) {
+                List<GrupoTg> grupos = grupoTgRepositorio.buscarPorTurmasIds(idsDasTurmasAtivas);
+                List<GrupoResumoDTO> dtosGrupos = grupos.stream().map(grupo -> {
+                    String nomeOrientador = grupo.orientadorId() != null ?
+                            professorRepositorio.buscarPorId(grupo.orientadorId()).map(Professor::nomeTexto).orElse("Orientador não encontrado")
+                            : "Sem orientador";
 
-                List<IntegranteDTO> integrantes = grupo.alunosIds().stream()
-                        .map(alunoRepositorio::buscarPorId)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .map(aluno -> new IntegranteDTO(aluno.idTexto(), aluno.nomeTexto()))
-                        .toList();
+                    List<IntegranteDTO> integrantes = grupo.alunosIds().stream()
+                            .map(alunoRepositorio::buscarPorId)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .map(aluno -> new IntegranteDTO(aluno.idTexto(), aluno.nomeTexto()))
+                            .toList();
 
-                return new GrupoResumoDTO(
-                        grupo.idTexto(),
-                        grupo.tipoTg() != null ? grupo.tipoTg().name() : "NÃO_DEFINIDO",
-                        grupo.temaTg() != null ? grupo.temaTg().nome() : "Sem tema definido",
-                        nomeOrientador,
-                        "TURMA_ATIVA", // Simplificado: você pode cruzar com o ID real depois
-                        integrantes
-                );
-            }).toList();
+                    return new GrupoResumoDTO(
+                            grupo.tipoTg() != null ? grupo.tipoTg().name() : "NÃO_DEFINIDO",
+                            grupo.temaTg() != null ? grupo.temaTg().nome() : "Sem tema definido",
+                            nomeOrientador,
+                            "TURMA_ATIVA",
+                            integrantes
+                    );
+                }).toList();
+                listaCompleta.addAll(dtosGrupos);
+            }
+
 
             // =========================================================
             // BUSCA OS ALUNOS SEM GRUPO
             // =========================================================
             List<GrupoResumoDTO> dtosAlunosAvulsos = buscaAlunosSemGrupos(idsDasTurmasAtivas);
-
+            listaCompleta.addAll(dtosAlunosAvulsos);
 
             // =========================================================
-            // JUNTA TUDO E RETORNA
+            // LÓGICA DE PAGINAÇÃO EM MEMÓRIA
             // =========================================================
-            List<GrupoResumoDTO> listaFinal = Stream.concat(dtosGrupos.stream(), dtosAlunosAvulsos.stream())
-                    .toList();
+            int totalElementos = listaCompleta.size();
+            int totalPaginas = (int) Math.ceil((double) totalElementos / comando.tamanho());
 
-            return new Resposta(listaFinal);
+            int inicio = comando.pagina() * comando.tamanho();
+            int fim = Math.min(inicio + comando.tamanho(), totalElementos);
+
+            List<GrupoResumoDTO> conteudoPaginado = inicio < totalElementos ?
+                    listaCompleta.subList(inicio, fim) : Collections.emptyList();
+
+            Pagina<GrupoResumoDTO> pagina = new Pagina<>(
+                    conteudoPaginado,
+                    comando.pagina(),
+                    totalPaginas,
+                    (long) totalElementos);
+
+            return new Resposta(pagina);
         }
 
         // METODOS AUXILIARES
 
-        private List<GrupoResumoDTO> buscaAlunosSemGrupos(List<TurmaId> idsDasTurmasAtivas){
-            List<Aluno> alunosSemGrupo = alunoRepositorio.buscarSemGrupoPorTurmasIds(idsDasTurmasAtivas);
-            // Cria um DTO falso representando um aluno sem grupo
-            List<GrupoResumoDTO> listaDtos = new ArrayList<>();
-            for (Aluno aluno : alunosSemGrupo) {
-                GrupoResumoDTO turmaAtiva = new GrupoResumoDTO(
-                        "-", // idGrupo falso
-                        "",  // Sem tipo
-                        "",  // Sem tema
-                        "",  // Sem orientador
-                        "TURMA_ATIVA",
-                        // O aluno sozinho na lista
-                        List.of(new IntegranteDTO(aluno.idTexto(), aluno.nomeTexto()))
-                );
-                listaDtos.add(turmaAtiva);
-            }
-            return listaDtos;
+    private List<GrupoResumoDTO> buscaAlunosSemGrupos(List<TurmaId> idsDasTurmasAtivas){
+        List<Aluno> alunosSemGrupo = alunoRepositorio.buscarSemGrupoPorTurmasIds(idsDasTurmasAtivas);
+        List<GrupoResumoDTO> listaDtos = new ArrayList<>();
+        for (Aluno aluno : alunosSemGrupo) {
+            listaDtos.add(new GrupoResumoDTO(
+                    "", "", "", "TURMA_ATIVA",
+                    List.of(new IntegranteDTO(aluno.idTexto(), aluno.nomeTexto()))
+            ));
         }
+        return listaDtos;
+    }
 
     }

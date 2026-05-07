@@ -34,7 +34,10 @@ public class GrupoTgControlador {
      */
     @GetMapping("/visao-gruposTg")
     public ResponseEntity<BuscarVisaoGruposProfessorCaso.Resposta> buscarGruposPorTurmas(
-            @RequestHeader("Authorization") String headerAutorizacao
+            @RequestHeader("Authorization") String headerAutorizacao,
+            @RequestParam("pagina") Integer pagina,
+            @RequestParam("tamanho") Integer tamanho,
+            @RequestParam("somenteSemGrupo") Boolean somenteSemGrupo
     ) {
         // Limpa o token
         String token = headerAutorizacao.replace("Bearer ", "");
@@ -43,7 +46,8 @@ public class GrupoTgControlador {
         String emailUsuarioLogado = geradorToken.extrairTopico(token);
 
         // Monta o comando e executa o caso de uso
-        var comando = new BuscarVisaoGruposProfessorCaso.Comando(emailUsuarioLogado);
+        var comando = new BuscarVisaoGruposProfessorCaso.
+                Comando(emailUsuarioLogado, somenteSemGrupo, pagina, tamanho);
         var resposta = buscarVisaoGruposProfessorCaso.executar(comando);
 
         // 4. Devolve o HTTP 200 OK com o JSON pronto
