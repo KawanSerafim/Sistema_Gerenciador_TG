@@ -68,6 +68,13 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                                 // Estilização para combinar com a NavBar
                                 menuVariant="dark"
                             >
+                                {/* AÇÕES DO ADMIN */}
+                                {cargos.includes("ROLE_ADMIN") && (
+                                    <>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/admin/cadastrar-professor")}>Cadastrar Professor</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/curso/cadastro")}>Cadastrar Curso</NavDropdown.Item>
+                                    </>
+                                )}
                                 {/* AÇÕES DO ALUNO */}
                                 {cargos.includes("ROLE_ALUNO") && (
                                     <>
