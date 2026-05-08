@@ -15,4 +15,5 @@ public interface GrupoTgRepositorio {
             CursoId cursoId
     );
     List<GrupoTg> buscarPorTurmasIds(List<TurmaId> turmasIds);
+    Optional<GrupoTg> buscarPorAlunoId(AlunoId alunoId);
 }

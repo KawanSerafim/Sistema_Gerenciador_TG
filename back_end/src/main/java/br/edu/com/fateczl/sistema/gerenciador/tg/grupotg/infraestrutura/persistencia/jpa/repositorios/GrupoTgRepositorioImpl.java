@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.repositorios;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.mapeador.AlunoMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
@@ -36,6 +37,7 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GrupoTg> buscarPorTurmasIds(List<TurmaId> turmasIds) {
         //Transforma cada id de TurmaId em string e gera lista
         List<String> idsStr = turmasIds.stream().map(TurmaId::texto).toList();
@@ -43,5 +45,11 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
         return repositorio.findGruposByTurmasIds(idsStr)
                 .stream().map(GrupoTgMapeador::paraDominio)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<GrupoTg> buscarPorAlunoId(AlunoId alunoId) {
+        return repositorio.findByAluno(alunoId).map(GrupoTgMapeador::paraDominio);
     }
 }
