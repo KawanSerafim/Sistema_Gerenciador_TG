@@ -103,7 +103,7 @@ const CadastroAluno = () => {
       });
       //Após 3 segs vai para confirmarEmail
       setTimeout(() => navigate("/confirmarEmail", {
-        state: { emailCadastro: dadosValidados.email }
+        state: { emailCapturado: dadosValidados.email }
       }), 3000);
       reset(); // Limpa o formulário após o sucesso
     } catch (erro) {
