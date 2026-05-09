@@ -108,7 +108,7 @@ createRoot(document.getElementById('root')).render(
           </RotaProtegida>
         } />
         <Route path="/professor/visaoSolicitacoesOrientacao" element={
-          <RotaProtegida roleNecessaria="ROLE_PROFESSOR_TG">
+          <RotaProtegida roleNecessaria="ROLE_ORIENTADOR">
             <VisaoSolicitacaoOrientacao />
           </RotaProtegida>
         } />

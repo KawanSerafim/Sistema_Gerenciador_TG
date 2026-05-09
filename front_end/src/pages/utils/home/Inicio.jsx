@@ -134,10 +134,6 @@ const Inicio = () => {
                                     onClick={() => handleClick('/professor/finalizarDisciplinas')}>
                                     Finalizar Disciplinas
                                 </Button>
-                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
-                                    onClick={() => handleClick('/professor/visaoSolicitacoesOrientacao')}>
-                                    Visão Solicitacoes de Orientação
-                                </Button>
 
                             </>
                         )}
@@ -175,6 +171,10 @@ const Inicio = () => {
                                 <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
                                     onClick={() => handleClick('/professor/certificados')}>
                                     Certificados de Bancas
+                                </Button>
+                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/professor/visaoSolicitacoesOrientacao')}>
+                                    Visão Solicitacoes de Orientação
                                 </Button>
                             </>
                         )}
