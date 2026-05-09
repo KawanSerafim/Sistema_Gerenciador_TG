@@ -50,6 +50,9 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
     @Override
     @Transactional(readOnly = true)
     public Optional<GrupoTg> buscarPorAlunoId(AlunoId alunoId) {
-        return repositorio.findByAluno(alunoId).map(GrupoTgMapeador::paraDominio);
+        //Extrai o valor de texto
+        String idTexto = alunoId.texto();
+        return repositorio.findByAluno(idTexto)
+                .map(GrupoTgMapeador::paraDominio);
     }
 }

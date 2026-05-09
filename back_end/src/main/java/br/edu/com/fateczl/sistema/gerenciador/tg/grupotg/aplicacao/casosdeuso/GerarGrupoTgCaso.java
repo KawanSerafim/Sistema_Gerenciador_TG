@@ -96,16 +96,28 @@ public class GerarGrupoTgCaso {
 
         TemaTg tema = new TemaTg(comando.tema(), comando.descricaoTema());
 
-        List<Aluno> alunos = buscarEValidarAlunos(comando.matriculasAlunos());
+        List<Aluno> alunosConvidados = buscarEValidarAlunos(comando.matriculasAlunos());
+
+        // Cria uma lista mutável para adicionar o autor
+        List<Aluno> todosOsIntegrantes = new java.util.ArrayList<>(alunosConvidados);
+
+        // Verifica se na requisição foi enviado a matrícula do autor na lista
+        boolean autorJaEstaNaLista = todosOsIntegrantes.stream()
+                .anyMatch(aluno -> aluno.id().equals(alunoAutor.id()));
+
+        // Se o autor não estava na lista do front, nós o adicionamos agora!
+        if (!autorJaEstaNaLista) {
+            todosOsIntegrantes.add(alunoAutor);
+        }
 
         validadorComposicao.validar(
                 curso,
                 comando.tipoTg(),
                 disciplinasAtuais,
-                alunos
+                todosOsIntegrantes
         );
 
-        List<AlunoId> alunoIds = alunos.stream().map(Aluno::id).toList();
+        List<AlunoId> alunoIds = todosOsIntegrantes.stream().map(Aluno::id).toList();
 
         GrupoTg novoGrupo = GrupoTg.novo(
                 new GrupoTgId(UUID.randomUUID()),

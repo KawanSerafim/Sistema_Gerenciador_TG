@@ -32,5 +32,5 @@ public interface GrupoTgJpaRepositorio
     List<GrupoTgModelo> findGruposByTurmasIds(@Param("turmasIds") List<String> turmasIds);
 
     @Query("SELECT g FROM GrupoTgModelo g JOIN g.alunosIds a WHERE a = :alunoId ")
-    Optional<GrupoTgModelo> findByAluno(@Param("alunoId") AlunoId alunoId);
+    Optional<GrupoTgModelo> findByAluno(@Param("alunoId") String alunoIdTexto);
 }
