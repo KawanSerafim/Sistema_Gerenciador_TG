@@ -19,4 +19,6 @@ public interface AlunoRepositorio {
     List<Aluno> buscarSemGrupoPorTurmasIds(List<TurmaId> turmaId);
 
     Optional<Aluno> buscarPorId(AlunoId alunoId);
+
+    List<Aluno> buscarTodosPorIds(List<AlunoId> alunoIds);
 }

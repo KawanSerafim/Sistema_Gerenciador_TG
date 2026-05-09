@@ -116,8 +116,23 @@ public class AlunoRepositorioImpl implements AlunoRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Aluno> buscarPorId(AlunoId alunoId) {
         return repositorio.findById(alunoId.texto())
                 .map(AlunoMapeador::paraDominio);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Aluno> buscarTodosPorIds(List<AlunoId> alunoIds) {
+        List<String> idsTexto = alunoIds.stream()
+                .map(AlunoId::texto)
+                .toList();
+        return repositorio.findAllById(idsTexto)
+                .stream()
+                .map(AlunoMapeador::paraDominio)
+                .toList();
+    }
+
+
 }

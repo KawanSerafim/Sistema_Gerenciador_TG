@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.Alun
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.mapeador.AlunoMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.mapeador.GrupoTgMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
@@ -53,6 +54,14 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
         //Extrai o valor de texto
         String idTexto = alunoId.texto();
         return repositorio.findByAluno(idTexto)
+                .map(GrupoTgMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<GrupoTg> buscarPorIdGrupo(GrupoTgId grupoTgId) {
+        String idTexto = grupoTgId.texto();
+        return  repositorio.findById(idTexto)
                 .map(GrupoTgMapeador::paraDominio);
     }
 }

@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.infraestrutura.persistencia.jpa.repositorio;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.dominio.entidade.SolicitacaoOrientacao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.dominio.objetosvalor.SolicitacaoOrientacaoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.dominio.objetosvalor.StatusSolicitacao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.dominio.repositorio.SolicitacaoOrientacaoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.infraestrutura.persistencia.jpa.mapeador.SolicitacaoOrientacaoMapeador;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -43,5 +45,13 @@ public class SolicitacaoOrientacaoRepositorioImpl implements SolicitacaoOrientac
         return modelos.stream()
                 .map(SolicitacaoOrientacaoMapeador::paraDominio)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<SolicitacaoOrientacao> buscarPorId(SolicitacaoOrientacaoId solicitacaoOrientacaoId) {
+        String idTexto = solicitacaoOrientacaoId.texto();
+        return repositorio.findById(idTexto).
+                map(SolicitacaoOrientacaoMapeador::paraDominio);
     }
 }
