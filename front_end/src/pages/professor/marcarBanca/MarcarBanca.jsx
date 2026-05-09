@@ -150,8 +150,6 @@ const MarcarBanca = () => {
     const enviarParaBackend = (dadosValidados) => {
         console.log(`Enviando payload ao backend: ${dadosValidados}`)
         setExibirResultado(true)
-        //Esconde depois de alguns segundos
-        setTimeout(() => setExibirResultado(false), 5000);
     }
 
     return (

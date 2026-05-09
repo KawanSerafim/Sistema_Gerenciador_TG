@@ -86,10 +86,8 @@ const CadastroAluno = () => {
         redesSociais: redesMap
       };
 
-      navigate("/confirmarEmail", {
-        state: { emailCadastro: dadosValidados.email }
-      });
-      console.debug("Enviando payload para a API Java:", payloadJava);
+
+      console.info("Enviando payload para a API Java:", payloadJava);
 
       // Aguarda o service com o payload formatado
       await usuarioService.cadastrarUsuario(
@@ -103,6 +101,10 @@ const CadastroAluno = () => {
         variante: "success",
         mensagem: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
       });
+      //Após 3 segs vai para confirmarEmail
+      setTimeout(() => navigate("/confirmarEmail", {
+        state: { emailCadastro: dadosValidados.email }
+      }), 3000);
       reset(); // Limpa o formulário após o sucesso
     } catch (erro) {
       console.error("Falha no cadastro: ", erro);

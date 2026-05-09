@@ -155,8 +155,6 @@ const CadastrarTurma = () => {
                 profUnico: ""
             });
 
-            setTimeout(() => setResultado({ exibir: false, variante: "", mensagem: "" }), 5000);
-
         } catch (erro) {
             // Se QUALQUER uma das requisições der erro, ele cai aqui
             setResultado({

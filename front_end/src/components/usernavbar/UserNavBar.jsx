@@ -89,6 +89,7 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                                         {cargos.includes("ROLE_ALUNO") && <NavDropdown.Divider />}
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/visaoGrupos")}>Visão Grupos TG</NavDropdown.Item>
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/enviarTurma")}>Enviar Arquivos da Turma</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/visaoAlunosEnviados")}>Visão alunos enviados</NavDropdown.Item>
                                     </>
                                 )}
 

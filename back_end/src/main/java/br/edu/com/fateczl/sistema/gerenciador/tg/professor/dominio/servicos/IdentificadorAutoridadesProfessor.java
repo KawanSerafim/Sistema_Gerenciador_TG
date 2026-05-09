@@ -10,7 +10,7 @@ public class IdentificadorAutoridadesProfessor {
         return switch(cargo) {
             case COORDENADOR_CURSO -> Set.of(
                     Autoridade.ROLE_COORDENADOR_CURSO,
-                    Autoridade.ROLE_PROFESSOR_TG,
+                    // TODO: Verificar se coordenador tbm vai ter acesso a role de prof tg Autoridade.ROLE_PROFESSOR_TG,
                     Autoridade.ROLE_ORIENTADOR
             );
             case PROFESSOR_TG -> Set.of(

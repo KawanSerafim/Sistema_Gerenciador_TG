@@ -37,6 +37,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/confirmarEmail" element={<ConfirmarEmail />} />
         <Route path="/aluno/cadastro" element={<CadastroAluno />} />
         <Route path="/" element={<Login />} />
+        <Route path="/professor/cadastro" element={<CadastroProfessor />} />
 
 
         {/* ========================================= */}

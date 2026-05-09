@@ -122,6 +122,11 @@ const Inicio = () => {
                                     Visão dos Grupos TG
                                 </Button>
                                 <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/professor/visaoAlunosEnviados')}>
+                                    Visão dos Alunos do arquivo da turma
+                                </Button>
+
+                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
                                     onClick={() => handleClick('/professor/enviarTurma')}>
                                     Enviar Arquivo da Turma
                                 </Button>

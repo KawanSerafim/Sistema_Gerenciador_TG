@@ -214,8 +214,6 @@ const FormarGrupo = () => {
             // Limpa o autocomplete
             setBuscaAluno("");
             setAlunoSelecionado(null);
-            // Esconde a mensagem verde após 5 segundos
-            setTimeout(() => setResultado((prev) => ({ ...prev, exibir: false, })), 5000);
 
         } catch (erro) {
             console.error("Erro ao gerar grupo:", erro);

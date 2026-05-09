@@ -45,12 +45,15 @@ export const apiClient = async (endpoint, options = {}) => {
 
         //Se backend dizer que o token é invalido/expirado (401 ou 403)
         if (resposta.status === 401 || resposta.status === 403) {
-            // Verifica se a requisição atual é para a rota de login 
-            // (Ajuste a string "/autenticacao/login" para a rota exata que você chama no realizarLogin)
-            const isRotaDeLogin = endpoint.includes("/login") || endpoint.includes("/autenticacao");
+            // AJUSTE AQUI: Transformamos isRotaDeLogin em isRotaPublica
+            // e adicionamos "/usuarios" (ou o endpoint exato de cadastro) e o confirmar email
+            const isRotaPublica = endpoint.includes("/login") ||
+                endpoint.includes("/autenticacao") ||
+                endpoint.includes("/alunos") ||
+                endpoint.includes("/confirmarEmail");
 
-            // Só desloga e redireciona se der 401/403 E NÃO FOR a rota de login
-            if ((resposta.status === 401 || resposta.status === 403) && !isRotaDeLogin) {
+            // Só desloga e redireciona se der 401/403 E NÃO FOR uma rota pública
+            if ((resposta.status === 401 || resposta.status === 403) && !isRotaPublica) {
                 console.error("Sessão expirada. Deslogando usuário...");
 
                 // Limpa a sessão do sistema
@@ -59,9 +62,7 @@ export const apiClient = async (endpoint, options = {}) => {
 
                 //Força o usuário de volta para a tela de login
                 window.location.href = "/";
-                // Isso "congela" a execução aqui. O componente React que chamou o service
-                // não vai continuar o 'try' e nem vai cair no 'catch', morrendo em silêncio
-                // enquanto o navegador faz o redirecionamento de página.
+
                 return new Promise(() => { });
             }
         }

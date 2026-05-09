@@ -95,8 +95,6 @@ const CadastroProfessor = () => {
           mensagem: "Professor cadastrado com sucesso!"
         });
         reset(); // Limpa o formulário para o Admin poder cadastrar outro
-        // Opcional: faz a mensagem sumir depois de 3 segundos
-        setTimeout(() => setResultado({ exibir: false, variante: "", mensagem: "" }), 3000);
       }
       // Se for o próprio professor se cadastrando solto na internet
       else {
@@ -124,7 +122,7 @@ const CadastroProfessor = () => {
   return (
     <>
       {/* Se for Admin, mostra a NavBar para ele não ficar "preso" na tela */}
-      {isAdmin() && <UserNavBar userName="Administrador" opcoes={["inicio", "sair"]} />}
+      {isAdmin() && <UserNavBar userName="Administrador" maxWidth="800" />}
 
       <Container className="mt-5 mb-5" style={{ maxWidth: "800px" }}>
         <h2 className="bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0">
@@ -161,7 +159,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="text"
-              placeholder="Digite sua matrícula (11 dígitos)"
+              placeholder="Digite sua matrícula (13 dígitos)"
               className="bg-white text-black fw-normal fs-5"
               {...register("matricula")}
               isInvalid={!!errors.matricula}
