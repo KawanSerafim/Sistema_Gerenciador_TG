@@ -19,6 +19,7 @@ public class RemetenteEmailImpl implements RemetenteEmail {
             RemetenteEmailImpl.class
     );
 
+
     @Value("${spring.mail.username}")
     private String remetenteOficial;
 

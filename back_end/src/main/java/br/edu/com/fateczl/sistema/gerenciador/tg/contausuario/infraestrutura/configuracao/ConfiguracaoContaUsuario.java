@@ -1,9 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.configuracao;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.AutenticarUsuarioCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.EnviarEmailConfirmacaoCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.ValidarCodigoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.servicos.VerificadorUnicidadeEmail;
@@ -59,5 +57,25 @@ public class ConfiguracaoContaUsuario {
                 cacheCodigo,
                 publicadorEventos
         );
+    }
+
+
+    @Bean
+    public RedefinirSenhaCaso redefinirSenhaCaso(
+            ContaUsuarioRepositorio contaRepositorio,
+            GerenciadorCacheCodigo cacheCodigo,
+            CriptografoSenhas criptografoSenhas
+    ){
+        return new RedefinirSenhaCaso(contaRepositorio,cacheCodigo,criptografoSenhas);
+    }
+
+    @Bean
+    public SolicitarRecuperacaoSenhaCaso recuperarSenhaCaso(
+            ContaUsuarioRepositorio repositorio,
+            GerenciadorCacheCodigo cache,
+            RemetenteEmail remetente,
+            GeradorCodigoOTP geradorCodigo
+    ){
+        return new SolicitarRecuperacaoSenhaCaso(repositorio, cache, remetente, geradorCodigo);
     }
 }

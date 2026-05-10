@@ -34,7 +34,9 @@ public class ConfiguracaoSeguranca {
             "/api/alunos/finalizar-cadastro",
             "/api/autenticacao/validar-codigo",
             "/api/autenticacao/login",
-            "/api/autenticacao/reenviar-codigo"
+            "/api/autenticacao/reenviar-codigo",
+            "/api/conta-usuario/senha/solicitar-recuperacao",
+            "/api/conta-usuario/senha/redefinir"
     };
 
     private static final String[] ROTAS_PUBLICAS_GET = {
@@ -43,15 +45,6 @@ public class ConfiguracaoSeguranca {
             "/api/cursos/tipos-tg",
             "/api/compartilhado/turnos",
             "/api/compartilhado/disciplinas"
-//            "/professores/api",
-//            "/professores/api/cargos",
-//            "/turmas/api",
-//            "/alunos/api",
-//            "/alunos/api/sem-grupo",
-//            "/alunos/api/importar",
-//            "/gruposTg/api",
-//            "/cursos/api"
-
     };
 
     private final FiltroAutenticacaoJwt filtroJwt;

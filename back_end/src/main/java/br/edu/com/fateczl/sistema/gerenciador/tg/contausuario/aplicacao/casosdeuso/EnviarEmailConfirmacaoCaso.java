@@ -53,7 +53,7 @@ public class EnviarEmailConfirmacaoCaso {
                 + "Você está a um passo de concluir seu cadastro. Insira o "
                 + "código abaixo:\n\n"
                 + "Código: " + codigo + "\n\n"
-                + "Atenção: Este código expira em 15 minutos.";
+                + "Atenção: Este código expira em 5 minutos.";
         remetente.enviarEmailTexto(emailAlvo, assunto, mensagem);
     }
 }

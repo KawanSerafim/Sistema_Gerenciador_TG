@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GerenciadorCacheCodigoImpl implements GerenciadorCacheCodigo {
     private final Map<String, EntradaCache> cache = new ConcurrentHashMap<>();
 
-    @Value("${app.otp.ttl-minutos:5}")
-    private long ttlMinutos;
+        @Value("${app.otp.ttl-minutos:15}")
+        private long ttlMinutos;
 
     private record EntradaCache(String codigo, Instant expiracao) {}
 
