@@ -77,6 +77,9 @@ class GerarGrupoTgCasoTest {
     void deveGerarGrupoComSucessoQuandoTodosOsDadosForemValidos() {
         // Arrange (Preparação)
         Aluno alunoAutor = mock(Aluno.class);
+        AlunoId autorId = new AlunoId(UUID.randomUUID());
+        when(alunoAutor.id()).thenReturn(autorId);
+
         List<TurmaId> turmasIds = List.of(new TurmaId(UUID.randomUUID()));
         when(alunoAutor.turmasIds()).thenReturn(turmasIds);
 
@@ -91,6 +94,7 @@ class GerarGrupoTgCasoTest {
         when(turmaAtual.cursoId()).thenReturn(new CursoId(UUID.randomUUID()));
         when(turmaAtual.disciplina()).thenReturn(Disciplina.TG1);
         when(turmaRepositorio.buscarTodasPorIds(turmasIds.stream().collect(Collectors.toUnmodifiableSet()))).thenReturn(List.of(turmaAtual));
+
         // Simula o Curso
         Curso curso = mock(Curso.class);
         when(curso.id()).thenReturn(new CursoId(UUID.randomUUID()));
@@ -112,17 +116,19 @@ class GerarGrupoTgCasoTest {
         casoDeUso.executar(comandoValido);
 
         // Assert (Verificação)
-        // 1. Verifica se a validação de domínio foi chamada
+        // Verifica se a validação de domínio foi chamada
         verify(validadorComposicao, times(1)).validar(eq(curso), eq(TipoTg.DESENVOLVIMENTO_SOFTWARE), anySet(), anyList());
 
-        // 2. Verifica se o método salvar do repositório foi chamado e captura o Grupo criado para validar
+        // Verifica se o método salvar do repositório foi chamado e captura o Grupo criado para validar
         ArgumentCaptor<GrupoTg> captor = ArgumentCaptor.forClass(GrupoTg.class);
         verify(grupoTgRepositorio, times(1)).salvar(captor.capture());
 
         GrupoTg grupoSalvo = captor.getValue();
         assertNotNull(grupoSalvo);
         assertEquals("Sistema de TCC", grupoSalvo.temaTg().nome());
-        assertEquals(2, grupoSalvo.alunosIds().size());
+
+        //Verifica a quantidade de alunos do grupo, integrantes + autor
+        assertEquals(3, grupoSalvo.alunosIds().size());
     }
 
     @Test
