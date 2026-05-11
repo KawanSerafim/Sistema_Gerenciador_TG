@@ -48,12 +48,28 @@ public class EnviarEmailConfirmacaoCaso {
     }
 
     private void publicarEmail(String codigo, Email emailAlvo) {
-        String assunto = "Confirme seu Email - SISTEMA DE TG";
-        String mensagem = "Olá e seja-vindo!\n\n"
-                + "Você está a um passo de concluir seu cadastro. Insira o "
-                + "código abaixo:\n\n"
-                + "Código: " + codigo + "\n\n"
-                + "Atenção: Este código expira em 5 minutos.";
-        remetente.enviarEmailTexto(emailAlvo, assunto, mensagem);
+        String assunto = "Confirmação de Cadastro - TG Manager FATEC";
+
+        String mensagemHtml = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                    <h2 style="color: #b30000; text-align: center;">Bem-vindo(a) ao TG Manager!</h2>
+                    <p style="font-size: 16px; color: #333;">Olá 😄</p>
+                    <p style="font-size: 16px; color: #333;">Você está a apenas um passo de concluir o seu cadastro na plataforma de gerenciamento de Trabalhos de Graduação.</p>
+                    <p style="font-size: 16px; color: #333;">Por favor, insira o código de verificação abaixo na tela do sistema para confirmar o seu e-mail:</p>
+                   \s
+                    <div style="text-align: center; margin: 30px 0;">
+                        <span style="font-size: 32px; font-weight: bold; background-color: #f0f4f8; padding: 10px 20px; border-radius: 5px; letter-spacing: 5px; color: #000; border: 1px dashed #0056b3;">
+                            %s
+                        </span>
+                    </div>
+                   \s
+                    <p style="font-size: 14px; color: #666; text-align: center;">Atenção: Este código expira em <strong>5 minutos</strong>.</p>
+                   \s
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                    <p style="font-size: 12px; color: #999; text-align: center;">Se você não se cadastrou no nosso sistema, por favor, desconsidere este e-mail.</p>
+                </div>
+               \s""".formatted(codigo);
+
+        remetente.enviarEmailTexto(emailAlvo, assunto, mensagemHtml);
     }
 }
