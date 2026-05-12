@@ -44,7 +44,7 @@ class ListarBancasOrientadorCasoTest {
     @BeforeEach
     void setUp() {
         professorId = new ProfessorId(UUID.randomUUID());
-        emailContaLogada = "teste@fatec.sp.gov.br";
+        emailContaLogada = "teste@cps.sp.gov.br";
     }
 
     /**

@@ -46,7 +46,7 @@ class MarcarBancaCasoTest {
 
     @BeforeEach
     void setUp(){
-        emailContaLogado = "teste@fatec.sp.gov.br";
+        emailContaLogado = "teste@cps.sp.gov.br";
         orientadorId = new ProfessorId(UUID.randomUUID());
         grupoTgId = new GrupoTgId(UUID.randomUUID());
 

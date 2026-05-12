@@ -9,9 +9,9 @@ public record Email(String valor) {
             throw new ValidacaoExcecao(CodigoErro.VD_001_CAMPO_OBRIGATORIO,
                     "email");
         }
-        if(!valor.contains("@fatec.sp.gov.br")) {
+        if(!valor.contains("cps.sp.gov.br")) {
             throw new ValidacaoExcecao(CodigoErro.VD_002_FORMATO_INVALIDO,
-                    "email", "@fatec.sp.gov.br");
+                    "email", "cps.sp.gov.br");
         }
     }
 }

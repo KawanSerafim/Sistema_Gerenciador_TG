@@ -35,7 +35,7 @@ class SolicitarRecuperacaoSenhaCasoTest {
     @Test
     void deveEnviarEmailComCodigo(){
         // Arange - prepara email valido
-        String emailValido = "teste.valido@fatec.sp.gov.br";
+        String emailValido = "teste.valido@cps.sp.gov.br";
         var comando = new SolicitarRecuperacaoSenhaCaso.Comando(emailValido);
 
         //Conta mock
@@ -62,7 +62,7 @@ class SolicitarRecuperacaoSenhaCasoTest {
     @Test
     void naoDeveEnviarEmailSeContaNaoExistir() {
         // ARRANJE (Preparação)
-        String emailInvalido = "teste.email@fatec.sp.gov.br";
+        String emailInvalido = "teste.email@cps.sp.gov.br";
         var comando = new SolicitarRecuperacaoSenhaCaso.Comando(emailInvalido);
 
         // Ensina o mock do repositório a retornar VAZIO quando buscarem esse e-mail

@@ -46,7 +46,7 @@ class AtribuirNotasBancaCasoTest {
     @BeforeEach
     void setUp() {
         orientadorOficialId = new ProfessorId(UUID.randomUUID());
-        orientadorEmail = "teste@fatec.sp.gov.br";
+        orientadorEmail = "teste@cps.sp.gov.br";
         grupoId = new GrupoTgId(UUID.randomUUID());
         bancaId = new BancaId(UUID.randomUUID());
 

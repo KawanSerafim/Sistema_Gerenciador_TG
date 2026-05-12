@@ -34,7 +34,7 @@ class RedefinirSenhaCasoTest {
     @Test
     void deveRedefinirSenhaComSucessoQuandoCodigoForValido(){
         //Arange
-        String emailValido = "teste.sucesso@fatec.sp.gov.br";
+        String emailValido = "teste.sucesso@cps.sp.gov.br";
         String codigoValido = "12345X";
         String novaSenha = "14723";
         String senhaCriptografada = "$2a$10$hashfake...";
@@ -70,7 +70,7 @@ class RedefinirSenhaCasoTest {
     @Test
     void deveLancarExcecaoQuandoCodigoForIncorreto(){
         //Arange
-        String emailValido = "teste.sucesso@fatec.sp.gov.br";
+        String emailValido = "teste.sucesso@cps.sp.gov.br";
         String codigoIncorreto = "111111";
         String codigoCache = "999999";
         String novaSenha = "14723";
@@ -94,7 +94,7 @@ class RedefinirSenhaCasoTest {
     void deveLancarExcecaoQuandoCodigoEstiverExpiradoOuInexistente() {
         // Arrange
         var comando = new RedefinirSenhaCaso
-                .Comando("teste@fatec.sp.gov.br", "123456", "14723");
+                .Comando("teste@cps.sp.gov.br", "123456", "14723");
 
         // Simula que o tempo expirou e o cache devolveu NULL
         Mockito.when(cacheCodigo.buscarCodigo(any())).thenReturn(null);
