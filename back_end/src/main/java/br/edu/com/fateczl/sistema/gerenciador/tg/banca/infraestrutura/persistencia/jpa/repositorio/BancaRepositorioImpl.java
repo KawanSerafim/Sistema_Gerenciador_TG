@@ -38,4 +38,12 @@ public class BancaRepositorioImpl implements BancaRepositorio {
         // Usa a String primitiva limpa para o Spring Data JPA fazer o Select
         return jpaRepositorio.existsByGrupoId(grupoId.texto());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Banca> buscarPorGrupoId(GrupoTgId id) {
+        String idTexto = id.texto();
+        return jpaRepositorio.findByGrupoId(idTexto)
+                .map(BancaMapeador::paraDominio);
+    }
 }

@@ -1,12 +1,12 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.repositorios;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.persistencia.jpa.mapeador.AlunoMapeador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.mapeador.GrupoTgMapeador;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -63,5 +63,14 @@ public class GrupoTgRepositorioImpl implements GrupoTgRepositorio {
         String idTexto = grupoTgId.texto();
         return  repositorio.findById(idTexto)
                 .map(GrupoTgMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GrupoTg> buscarPorOrientadorId(ProfessorId id) {
+        String idTexto = id.texto();
+        return repositorio.findByOrientadorId(idTexto).stream()
+                .map(GrupoTgMapeador::paraDominio)
+                .toList();
     }
 }

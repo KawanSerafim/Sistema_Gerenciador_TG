@@ -12,4 +12,6 @@ public interface BancaRepositorio {
 
     // Importante para garantir que um grupo não tenha duas bancas ativas ao mesmo tempo
     boolean existeBancaParaGrupo(GrupoTgId grupoId);
+
+    Optional<Banca> buscarPorGrupoId(GrupoTgId id);
 }

@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.Alun
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface GrupoTgRepositorio {
     Optional<GrupoTg> buscarPorAlunoId(AlunoId alunoId);
 
     Optional<GrupoTg> buscarPorIdGrupo(GrupoTgId grupoTgId);
+
+    List<GrupoTg> buscarPorOrientadorId(ProfessorId id);
 }

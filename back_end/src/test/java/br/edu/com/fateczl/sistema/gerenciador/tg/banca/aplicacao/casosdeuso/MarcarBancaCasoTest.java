@@ -1,5 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.StatusBanca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
@@ -13,6 +15,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.P
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -24,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,8 +86,22 @@ class MarcarBancaCasoTest {
         casoDeUso.executar(comandoValido);
 
         // Assert
+        // Prepara o capturador para a classe Banca
+        ArgumentCaptor<Banca> bancaCaptor = ArgumentCaptor.forClass(Banca.class);
+
         Mockito.verify(bancaRepositorio,
-                Mockito.times(1)).salvar(any());
+                Mockito.times(1)).salvar(bancaCaptor.capture());
+
+        // Extrai a banca capturada
+        Banca bancaSalva = bancaCaptor.getValue();
+
+        // Valida que não é nulo
+        assertNotNull(bancaSalva);
+        //Valida que status agora é MARCADA
+        assertEquals(StatusBanca.MARCADA, bancaSalva.status(), "O status inicial da banca deve ser MARCADA");
+
+        // Valida se os dados do comando foram parar na entidade
+        assertEquals(grupoTgId, bancaSalva.grupoId());
     }
 
     // ========================================================================

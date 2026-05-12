@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.BancaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.MembroExterno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.StatusBanca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
@@ -9,9 +10,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.Gr
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Banca {
     private final BancaId id;
@@ -20,6 +19,11 @@ public class Banca {
     private String local;
     private List<ProfessorId> avaliadoresInternos;
     private List<MembroExterno> avaliadoresExternos;
+    private StatusBanca status;
+
+    // Mapa guardando a nota de cada avaliador (A chave pode ser o ID do professor ou o email do membro externo)
+    private Map<String, Double> notasMembros;
+    private Double notaFinal;
 
     private Banca(
             BancaId id,
@@ -27,7 +31,10 @@ public class Banca {
             LocalDateTime dataHora,
             String local,
             List<ProfessorId> avaliadoresInternos,
-            List<MembroExterno> avaliadoresExternos
+            List<MembroExterno> avaliadoresExternos,
+            StatusBanca status,
+            Map<String, Double> notasMembros,
+            Double notaFinal
     ) {
         this.id = assegurarPresenca(id, "ID da banca");
         this.grupoId = assegurarPresenca(grupoId, "ID do grupo");
@@ -39,6 +46,9 @@ public class Banca {
 
         this.avaliadoresInternos = new ArrayList<>(avaliadoresInternos != null ? avaliadoresInternos : List.of());
         this.avaliadoresExternos = new ArrayList<>(avaliadoresExternos != null ? avaliadoresExternos : List.of());
+        this.status = StatusBanca.MARCADA;
+        this.notasMembros = new HashMap<>();
+        this.notaFinal = null;
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
@@ -51,7 +61,10 @@ public class Banca {
             List<ProfessorId> avaliadoresInternos,
             List<MembroExterno> avaliadoresExternos
     ) {
-        return new Banca(id, grupoId, dataHora, local, avaliadoresInternos, avaliadoresExternos);
+        return new Banca(
+                id, grupoId, dataHora, local, avaliadoresInternos,
+                avaliadoresExternos, StatusBanca.MARCADA,
+                new HashMap<>(), null);
     }
 
     public static Banca carregar(
@@ -60,9 +73,12 @@ public class Banca {
             LocalDateTime dataHora,
             String local,
             List<ProfessorId> avaliadoresInternos,
-            List<MembroExterno> avaliadoresExternos
+            List<MembroExterno> avaliadoresExternos,
+            StatusBanca status,
+            Map<String, Double> notasMembros,
+            Double notaFinal
     ) {
-        return new Banca(id, grupoId, dataHora, local, avaliadoresInternos, avaliadoresExternos);
+        return new Banca(id, grupoId, dataHora, local, avaliadoresInternos, avaliadoresExternos,status, notasMembros, notaFinal);
     }
 
     // MÉTODOS PARA GARANTIR PRESENÇA E VALIDAÇÃO ------------------------------
@@ -88,6 +104,25 @@ public class Banca {
     }
 
     // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
+    public void atribuirNotas(Map<String, Double> notas) {
+        if (this.status == StatusBanca.CANCELADA) {
+            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "banca", "MARCADA");
+        }
+        //Banca marcada que ainda não foi realizada
+        if (this.dataHora.isAfter(LocalDateTime.now())) {
+            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "data e hora de agendamento da banca", "posterior a data e hora atual");
+        }
+
+        this.notasMembros = new HashMap<>(notas);
+
+        // Calcula a média das notas
+        double soma = 0.0;
+        for (Double nota : notas.values()) {
+            soma += nota;
+        }
+        this.notaFinal = notas.isEmpty() ? 0.0 : (soma / notas.size());
+        this.status = StatusBanca.AVALIADA;
+    }
 
     public void alterarAgendamento(LocalDateTime novaDataHora, String novoLocal) {
         this.dataHora = assegurarPresenca(novaDataHora, "nova data e hora");
@@ -119,4 +154,7 @@ public class Banca {
     public List<MembroExterno> avaliadoresExternos() {
         return Collections.unmodifiableList(avaliadoresExternos);
     }
+    public StatusBanca status() { return status; }
+    public Double notaFinal() { return notaFinal; }
+    public Map<String, Double> notasMembros() { return Collections.unmodifiableMap(notasMembros); }
 }

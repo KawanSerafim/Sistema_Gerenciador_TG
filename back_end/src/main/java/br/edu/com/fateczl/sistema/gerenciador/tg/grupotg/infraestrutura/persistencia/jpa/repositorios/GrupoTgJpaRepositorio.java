@@ -1,6 +1,5 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.repositorios;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.persistencia.jpa.modelo.GrupoTgModelo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,5 +32,7 @@ public interface GrupoTgJpaRepositorio
 
     @Query("SELECT g FROM GrupoTgModelo g JOIN g.alunosIds a WHERE a = :alunoId ")
     Optional<GrupoTgModelo> findByAluno(@Param("alunoId") String alunoIdTexto);
+
+    List<GrupoTgModelo> findByOrientadorId(String orientadorId);
 
 }
