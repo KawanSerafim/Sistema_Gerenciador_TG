@@ -35,16 +35,21 @@ public enum CodigoErro {
     ),
     RN_006_TOKEN_INVALIDO_EXPIRADO("RN", "O token está inválido ou expirado."),
 
+
+
     // AUTORIZAÇÃO -------------------------------------------------------------
 
     AU_001_CREDENCIAIS_INVALIDAS("AU", "E-mail ou senha inválidos."),
     AU_002_ACAO_NAO_PERMITIDA("AU", "A ação '%s' não foi permitida."),
+    AU_003_ACAO_NAO_PERMITIDA_MOTIVO("AU", "A ação '%s' não foi permitda devido a '%s'."),
 
     // GENÉRICO ----------------------------------------------------------------
 
     GN_001_REGISTRO_NAO_ENCONTRADO(
             "GN", "O registro do campo '%s' não foi encontrado."
-    );
+    ),
+
+    GN_002_QUANTIDADE_INFERIOR("GN", "A quantidade de '%s' é inferior ao minimo '%d'");
 
     // CONSTRUTOR E COMPORTAMENTOS ---------------------------------------------
 
