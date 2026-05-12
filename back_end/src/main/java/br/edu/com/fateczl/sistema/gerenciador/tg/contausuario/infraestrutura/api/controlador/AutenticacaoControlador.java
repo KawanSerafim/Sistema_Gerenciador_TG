@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.AutenticarUsuarioCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.EnviarEmailConfirmacaoCaso;

@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.CadastrarProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso.ListarProfessoresPorCargoCaso;

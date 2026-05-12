@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasPorProfessorTgIdCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasProfessorLogadoCaso;

@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.solicitacaoorientacao.aplicacao.casosdeuso.BuscarSolicitacoesPendentesProfessorCaso;

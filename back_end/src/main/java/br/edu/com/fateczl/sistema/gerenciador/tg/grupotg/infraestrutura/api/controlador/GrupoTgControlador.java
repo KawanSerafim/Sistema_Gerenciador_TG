@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;

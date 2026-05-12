@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.curso.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.GerarCursoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.aplicacao.casosdeuso.ListarCursosCaso;
@@ -51,7 +51,7 @@ public class CursoControlador {
 
     /**
      * Get para listar todas as opções de tiposTg
-     * @returns List lista string com tipos
+     * @return List lista string com tipos
      */
     @GetMapping("/tipos-tg")
     public ResponseEntity<ListarTiposTgCaso.Resposta> listarTiposTg() {

@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.casosdeuso.ListarDisciplinasCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.casosdeuso.ListarTurnosCaso;

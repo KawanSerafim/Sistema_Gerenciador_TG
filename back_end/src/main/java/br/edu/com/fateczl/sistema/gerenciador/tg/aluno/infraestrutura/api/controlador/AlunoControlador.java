@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.controlador;
+package br.edu.com.fateczl.sistema.gerenciador.tg.aluno.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.aplicacao.casosdeuso.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/alunos")
