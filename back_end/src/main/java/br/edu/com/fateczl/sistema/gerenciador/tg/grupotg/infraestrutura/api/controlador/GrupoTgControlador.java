@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.G
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.VincularCoorientadorExternoCaso;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +18,18 @@ public class GrupoTgControlador {
     private final BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso;
     private final GerarGrupoTgCaso gerarGrupoTgCaso;
     private final GeradorToken geradorToken;
+    private final VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso;
 
     public GrupoTgControlador(
             BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso,
-            GerarGrupoTgCaso gerarGrupoTgCaso, GeradorToken geradorToken
+            GerarGrupoTgCaso gerarGrupoTgCaso,
+            GeradorToken geradorToken,
+            VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso
     ) {
         this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
         this.geradorToken = geradorToken;
+        this.vincularCoorientadorExternoCaso = vincularCoorientadorExternoCaso;
     }
 
     /**
@@ -86,6 +91,33 @@ public class GrupoTgControlador {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    // ROTA: VINCULAR COORIENTADOR EXTERNO
+    // ========================================================================
+    @PatchMapping("/{idGrupo}/coorientadores-externos")
+    public ResponseEntity<Void> vincularCoorientadorExterno(
+            @PathVariable String idGrupo,
+            @RequestBody VincularCoorientadorRequisicao requisicao,
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) {
+        // Extrai quem é o aluno logado
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String idContaAlunoLogado = geradorToken.extrairId(token);
+
+        // Monta o Comando
+        var comando = new VincularCoorientadorExternoCaso.Comando(
+                idContaAlunoLogado,
+                idGrupo,
+                requisicao.nome(),
+                requisicao.origem()
+        );
+
+        // Executa a regra de negócio
+        vincularCoorientadorExternoCaso.executar(comando);
+
+        // Retorna 204 No Content
+        return ResponseEntity.noContent().build();
+    }
+
     // ========= DTOs =====
     public record GerarGrupoRequisicao(
             String tema,
@@ -93,5 +125,10 @@ public class GrupoTgControlador {
             TipoTg tipoTg,
             List<String> matriculasAlunos
     ){}
+
+    public record VincularCoorientadorRequisicao(
+            String nome,
+            String origem
+    ) {}
 
 }

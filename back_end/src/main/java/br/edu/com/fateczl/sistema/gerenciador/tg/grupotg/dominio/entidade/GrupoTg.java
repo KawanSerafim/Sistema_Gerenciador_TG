@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.CursoId;
@@ -131,13 +132,36 @@ public class GrupoTg {
     }
 
     public void vincularCoorientador(
-            String coorientadorIdTexto,
+            String novoCoorientadorIdTexto,
             TipoCoorientador tipo
     ) {
-        this.coorientadorIdTexto = assegurarPresenca(
-                coorientadorIdTexto,
+
+        // Não pode ter coorientador se não tiver orientador principal
+        if (this.orientadorId == null) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "grupo", "precisa ter um orientador principal antes do coorientador"
+            );
+        }
+
+        // Não pode sobrescrever um coorientador que já existe
+        // Verificamos ANTES de atribuir qualquer coisa nova
+        if (this.coorientadorIdTexto != null && !this.coorientadorIdTexto.trim().isEmpty()) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "grupo", "já possui um coorientador vinculado"
+            );
+        }
+            this.coorientadorIdTexto = assegurarPresenca(
+                    novoCoorientadorIdTexto,
+                    "ID do coorientador"
+            );
+
+            this.coorientadorIdTexto = assegurarPresenca(
+                novoCoorientadorIdTexto,
                 "ID do coorientador"
         );
+
         this.tipoCoorientador = assegurarPresenca(tipo, "tipo de coorientador");
     }
 
