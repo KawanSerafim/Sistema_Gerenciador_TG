@@ -122,14 +122,23 @@ const Login = () => {
                         </Button>
                     </FormGroup>
 
-                    <FormGroup className="text-center">
+                    <FormGroup className="d-flex  gap-5 text-center">
+                        {/* Btn do fluxo de recuperação de senha */}
+                        <Button
+                            variant="primary"
+                            onClick={() => handleClick('/recuperar-senha')}
+                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-50'
+                        >
+                            Esqueceu sua senha?
+                        </Button>
                         <Button
                             variant="primary"
                             onClick={() => handleClick('/aluno/cadastro')}
-                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
+                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-50'
                         >
                             Cadastrar-se como aluno
                         </Button>
+
                     </FormGroup>
                 </Form>
                 {erro && (

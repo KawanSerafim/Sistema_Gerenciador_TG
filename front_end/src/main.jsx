@@ -25,6 +25,7 @@ import Login from './pages/utils/login/Login.jsx';
 
 import Inicio from './pages/utils/home/Inicio.jsx'
 import AcessoNegado from './components/erros/AcessoNegado.jsx';
+import RecuperacaoSenha from './pages/utils/RecuperacaoSenha.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -37,7 +38,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/confirmarEmail" element={<ConfirmarEmail />} />
         <Route path="/aluno/cadastro" element={<CadastroAluno />} />
         <Route path="/" element={<Login />} />
-        <Route path="/professor/cadastro" element={<CadastroProfessor />} />
+        <Route path="/recuperar-senha" element={<RecuperacaoSenha />} />
 
 
         {/* ========================================= */}

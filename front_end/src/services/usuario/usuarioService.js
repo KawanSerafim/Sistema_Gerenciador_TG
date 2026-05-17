@@ -52,5 +52,32 @@ export const usuarioService = {
     });
   },
 
+  // ========================================================================
+  // Funções do fluxo de recuperação de senha
+  // ========================================================================
+
+  /**
+   * Solicita a recuperação de senha enviando um código de verificação para o e-mail
+   * @param {string} email - Email cadastrado na conta
+   * @return {Promise<void>} Sem retorno (204 No Content) em caso de sucesso
+   */
+  solicitarRecuperacaoSenha: async (email = obrigatorio("email")) => {
+    return await apiClient(`/conta-usuario/senha/solicitar-recuperacao`, {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  /**
+   * Redefine a senha utilizando o código OTP enviado por e-mail
+   * @param {Object} payload - Objeto contendo {email, codigo, novaSenha}
+   * @return {Promise<void>} Sem retorno (204 No Content) em caso de sucesso
+   */
+  redefinirSenha: async (payload = obrigatorio("payload")) => {
+    return await apiClient(`/conta-usuario/senha/redefinir`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
 
 };
