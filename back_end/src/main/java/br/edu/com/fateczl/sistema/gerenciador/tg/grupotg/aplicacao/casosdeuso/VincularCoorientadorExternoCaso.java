@@ -58,22 +58,19 @@ public class VincularCoorientadorExternoCaso {
         Nome nome = new Nome(comando.nomeCoorientador());
         Origem origem = new Origem(comando.origemCoorientador());
 
-        // Busca ou cria o Coorientador Externo
-        CoorientadorExterno coorientadorExterno = coorientadorRepositorio.buscarPorNomeEOrigem(nome, origem)
-                .orElseGet(() -> {
-                    // Se não existir no banco, cria um novo e salva
-                    CoorientadorExterno novo = CoorientadorExterno.novo(
-                            new CoorientadorExternoId(UUID.randomUUID()),
-                            nome,
-                            origem
-                    );
-                    coorientadorRepositorio.salvar(novo);
-                    return novo;
-                });
+      //Busca ou cria co-orientador entidade
+      CoorientadorExterno coorientadorExterno = coorientadorRepositorio.buscarPorNomeEOrigem(nome, origem)
+                .orElseGet(() -> CoorientadorExterno.novo(
+                        new CoorientadorExternoId(UUID.randomUUID()),
+                        nome,
+                        origem
+                ));
 
-        // Vincula o Coorientador ao Grupo
+        // Tenta vincular o Coorientador ao Grupo antes de salvar
         grupo.vincularCoorientador(coorientadorExterno.idTexto(), TipoCoorientador.EXTERNO);
-
+        
+        // Se passou na linha acima sem estourar exceção salva no banco de dados
+        coorientadorRepositorio.salvar(coorientadorExterno);
         // Salva o Grupo atualizado
         grupoTgRepositorio.salvar(grupo);
     }

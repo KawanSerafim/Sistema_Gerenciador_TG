@@ -26,6 +26,7 @@ import RecuperacaoSenha from './pages/utils/RecuperacaoSenha.jsx';
 // Importação de Componentes Globais
 import UserNavBar from './components/usernavbar/UserNavBar';
 import './App.css';
+import VincularCoorientadorExterno from './pages/aluno/vincularCoOrientadorExterno/VincularCoOrientadorExterno.jsx';
 
 function App() {
   return (
@@ -134,6 +135,11 @@ function App() {
         <Route path="/aluno/solicitarOrientacao" element={
           <RotaProtegida roleNecessaria="ROLE_ALUNO">
             <SolicitarOrientacao />
+          </RotaProtegida>
+        } />
+        <Route path="/aluno/vincularCoOrientadorExterno" element={
+          <RotaProtegida roleNecessaria="ROLE_ALUNO">
+            <VincularCoorientadorExterno />
           </RotaProtegida>
         } />
         <Route path="/aluno/enviarTG" element={

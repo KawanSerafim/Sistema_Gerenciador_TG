@@ -108,6 +108,10 @@ const Inicio = () => {
                                     onClick={() => handleClick('/aluno/solicitarOrientacao')}>
                                     Solicitar Orientação
                                 </Button>
+                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/aluno/vincularCoOrientadorExterno')}>
+                                    Vincular Co Orientador Externo
+                                </Button>
                                 {/* ... MANTENHA O RESTO DOS SEUS BOTÕES AQUI ... */}
                             </>
                         )}

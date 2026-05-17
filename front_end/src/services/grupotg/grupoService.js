@@ -1,3 +1,4 @@
+import { obrigatorio } from "../../utils/utils";
 import { apiClient } from "../apiClient";
 
 export const grupoService = {
@@ -25,4 +26,10 @@ export const grupoService = {
       throw erro;
     }
   },
+  vincularCoorientadorExterno: async (payload = obrigatorio("payload")) => {
+    return await apiClient(`/gruposTg/coorientadores-externos`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  }
 };
