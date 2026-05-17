@@ -4,75 +4,84 @@ import { Alert, Button, Container, Form, FormGroup } from "react-bootstrap";
 
 import { usuarioService } from "../../services/usuario/usuarioService";
 
+//zod schemas e RHF para validações
+import { solicitarRecuperacaoSchema } from "../../schemas/utils/usuarios/usuariosZodSchema";
+import { redefinirSenhaSchema } from "../../schemas/utils/usuarios/usuariosZodSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+
 const RecuperacaoSenha = () => {
     const navigate = useNavigate();
 
     // Estados de controle do fluxo
     const [etapa, setEtapa] = useState(1);
-    const [email, setEmail] = useState("");
-    const [codigo, setCodigo] = useState("");
-    const [novaSenha, setNovaSenha] = useState("");
+    //Email validado da etapa 1, será usado na 2
+    const [emailConfirmado, setEmailConfirmado] = useState("");
 
     // Estados de feedback
-    const [loading, setLoading] = useState(false);
+    const [carregando, setCarregando] = useState(false);
     const [erro, setErro] = useState("");
     const [segundos, setSegundos] = useState(5);
 
     // ========================================================================
+    // CONFIGURAÇÃO DOS FORMULÁRIOS (ZOD)
+    // ========================================================================
+
+    // Form da Etapa 1
+    const formEtapa1 = useForm({
+        resolver: zodResolver(solicitarRecuperacaoSchema),
+        defaultValues: { email: "" }
+    });
+
+    // Form da Etapa 2
+    const formEtapa2 = useForm({
+        resolver: zodResolver(redefinirSenhaSchema),
+        defaultValues: { codigo: "", novaSenha: "" }
+    });
+
+    // ========================================================================
     // SOLICITAR CÓDIGO
     // ========================================================================
-    const handleSolicitarCodigo = async (e) => {
-        e.preventDefault();
-
-        if (!email) {
-            setErro("Por favor, preencha o e-mail.");
-            return;
-        }
-
-        setLoading(true);
+    const handleSolicitarCodigo = async (dadosValidados) => {
+        setCarregando(true);
         setErro("");
 
         try {
-            await usuarioService.solicitarRecuperacaoSenha(email);
+            await usuarioService.solicitarRecuperacaoSenha(dadosValidados.email);
+            setEmailConfirmado(dadosValidados.email);
             setEtapa(2);
-
         } catch (err) {
             setErro(err.message || "Erro ao solicitar recuperação.");
         } finally {
-            setLoading(false);
+            setCarregando(false);
         }
     };
 
     // ========================================================================
     // REDEFINIR SENHA
     // ========================================================================
-    const handleRedefinirSenha = async (e) => {
-        e.preventDefault();
-
-        if (!codigo || !novaSenha) {
-            setErro("Por favor, preencha o código e a nova senha.");
-            return;
-        }
-
-        setLoading(true);
+    const handleRedefinirSenha = async (dadosValidados) => {
+        setCarregando(true);
         setErro("");
 
         try {
             await usuarioService.redefinirSenha({
-                email: email,
-                codigo: codigo,
-                novaSenha: novaSenha
+                email: emailConfirmado,
+                codigo: dadosValidados.codigo,
+                novaSenha: dadosValidados.novaSenha
             });
             setEtapa(3);
         } catch (err) {
             setErro(err.message || "Erro ao redefinir a senha.");
         } finally {
-            setLoading(false);
+            setCarregando(false);
         }
     };
 
     // ========================================================================
-    // EFEITO TIMER PARA REDIRECIONAMENTO (Etapa 3)
+    // EFEITO TIMER PARA REDIRECIONAMENTO (Etapa 3), 
+    // acionado sempre que etapa e navigate mudarem
     // ========================================================================
     useEffect(() => {
         if (etapa === 3) {
@@ -87,7 +96,6 @@ const RecuperacaoSenha = () => {
                     return prev - 1;
                 });
             }, 1000);
-
             // Cleanup do intervalo caso o componente desmonte
             return () => clearInterval(intervalo);
         }
@@ -105,7 +113,7 @@ const RecuperacaoSenha = () => {
                 {/* ETAPA 1: INFORMAR E-MAIL                                  */}
                 {/* ========================================================= */}
                 {etapa === 1 && (
-                    <Form noValidate onSubmit={handleSolicitarCodigo}>
+                    <Form noValidate onSubmit={formEtapa1.handleSubmit(handleSolicitarCodigo)}>
                         <p className="text-center text-secondary fs-5 mb-4">
                             Digite o e-mail cadastrado. Enviaremos um código de 6 dígitos para você.
                         </p>
@@ -115,21 +123,23 @@ const RecuperacaoSenha = () => {
                             <Form.Control
                                 type="email"
                                 placeholder="Digite seu email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                {...formEtapa1.register("email")}
+                                isInvalid={!!formEtapa1.formState.errors.email}
                                 className='bg-white text-black fw-normal fs-5'
-                                required
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {formEtapa1.formState.errors.email?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <FormGroup className="text-center">
                             <Button
                                 variant="primary"
                                 type="submit"
-                                disabled={loading}
+                                disabled={carregando}
                                 className='mb-2 fs-5 fw-medium w-100'
                             >
-                                {loading ? "Enviando..." : "Continuar"}
+                                {carregando ? "Enviando..." : "Continuar"}
                             </Button>
 
                             <Button
@@ -147,9 +157,9 @@ const RecuperacaoSenha = () => {
                 {/* ETAPA 2: INFORMAR CÓDIGO E NOVA SENHA                     */}
                 {/* ========================================================= */}
                 {etapa === 2 && (
-                    <Form noValidate onSubmit={handleRedefinirSenha}>
+                    <Form noValidate onSubmit={formEtapa2.handleSubmit(handleRedefinirSenha)}>
                         <p className="text-center text-secondary fs-5 mb-4">
-                            Enviamos um código para <strong>{email}</strong>.<br />
+                            Enviamos um código para <strong>{emailConfirmado}</strong>.<br />
                             Ele expira em 5 minutos.
                         </p>
 
@@ -159,12 +169,14 @@ const RecuperacaoSenha = () => {
                                 type="text"
                                 placeholder="XXXXXX"
                                 maxLength={6}
-                                value={codigo}
-                                onChange={(e) => setCodigo(e.target.value)}
+                                {...formEtapa2.register("codigo")}
+                                isInvalid={!!formEtapa2.formState.errors.codigo}
                                 className='bg-white text-black fw-bold fs-4 text-center tracking-widest'
                                 style={{ letterSpacing: '0.5em' }}
-                                required
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {formEtapa2.formState.errors.codigo?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className="mb-4" controlId="formNovaSenha">
@@ -172,27 +184,29 @@ const RecuperacaoSenha = () => {
                             <Form.Control
                                 type="password"
                                 placeholder="Digite a nova senha"
-                                value={novaSenha}
-                                onChange={(e) => setNovaSenha(e.target.value)}
+                                {...formEtapa2.register("novaSenha")}
+                                isInvalid={!!formEtapa2.formState.errors.novaSenha}
                                 className='bg-white text-black fw-normal fs-5'
-                                required
                             />
+                            <Form.Control.Feedback type="invalid">
+                                {formEtapa2.formState.errors.novaSenha?.message}
+                            </Form.Control.Feedback>
                         </Form.Group>
 
                         <FormGroup className="text-center">
                             <Button
                                 variant="primary"
                                 type="submit"
-                                disabled={loading}
+                                disabled={carregando}
                                 className='mb-2 fs-5 fw-medium w-100'
                             >
-                                {loading ? "Validando..." : "Confirmar Nova Senha"}
+                                {carregando ? "Validando..." : "Confirmar Nova Senha"}
                             </Button>
 
                             <Button
-                                variant="link"
+                                variant="outline-secondary"
                                 onClick={() => setEtapa(1)}
-                                className='mt-2 text-decoration-none text-secondary'
+                                className='mt-2 fs-5 fw-medium w-100'
                             >
                                 Voltar e alterar e-mail
                             </Button>
