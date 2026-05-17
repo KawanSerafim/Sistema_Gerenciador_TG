@@ -3,6 +3,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
@@ -58,7 +59,6 @@ class VincularCoorientadorExternoCasoTest {
 
         comandoBase = new VincularCoorientadorExternoCaso.Comando(
                 UUID.randomUUID().toString(),
-                grupoId.texto(),
                 "Jill Valentina",
                 "TestesSoftware"
         );
@@ -101,7 +101,7 @@ class VincularCoorientadorExternoCasoTest {
 
         // Cria grupo COM orientador e SEM coorientador
         GrupoTg grupoReal = criarGrupoReal(orientadorId, null, null);
-        Mockito.when(grupoTgRepositorio.buscarPorIdGrupo(grupoId)).thenReturn(Optional.of(grupoReal));
+        Mockito.when(grupoTgRepositorio.buscarPorAlunoId(alunoId)).thenReturn(Optional.of(grupoReal));
 
         // Cria o CoorientadorExterno que será retornado (ou salvo)
         CoorientadorExterno coorientadorMock = Mockito.mock(CoorientadorExterno.class);
@@ -134,7 +134,7 @@ class VincularCoorientadorExternoCasoTest {
 
         // Cria grupo SEM orientador (null)
         GrupoTg grupoSemOrientador = criarGrupoReal(null, null, null);
-        Mockito.when(grupoTgRepositorio.buscarPorIdGrupo(grupoId)).thenReturn(Optional.of(grupoSemOrientador));
+        Mockito.when(grupoTgRepositorio.buscarPorAlunoId(alunoId)).thenReturn(Optional.of(grupoSemOrientador));
 
         // Act & Assert
         RegraNegocioExcecao excecao = assertThrows(RegraNegocioExcecao.class,
@@ -155,7 +155,7 @@ class VincularCoorientadorExternoCasoTest {
 
         // Cria grupo COM orientador e COM coorientador já preenchido
         GrupoTg grupoLotado = criarGrupoReal(orientadorId, "coorientador-antigo", TipoCoorientador.EXTERNO);
-        Mockito.when(grupoTgRepositorio.buscarPorIdGrupo(grupoId)).thenReturn(Optional.of(grupoLotado));
+        Mockito.when(grupoTgRepositorio.buscarPorAlunoId(alunoId)).thenReturn(Optional.of(grupoLotado));
 
         // Act & Assert
         RegraNegocioExcecao excecao = assertThrows(RegraNegocioExcecao.class,
@@ -167,24 +167,23 @@ class VincularCoorientadorExternoCasoTest {
         Mockito.verify(grupoTgRepositorio, Mockito.never()).salvar(any());
     }
 
-    // Teste Bônus de Segurança!
+
     @Test
-    void deveLancarExcecaoQuandoAlunoNaoPertencerAoGrupo() {
+    void deveLancarExcecaoQuandoNaoEncontrarGrupoDoAluno() {
         // Arrange
         Aluno alunoIntruso = Mockito.mock(Aluno.class);
         // ID Diferente do ID que está no GrupoTg
         Mockito.when(alunoIntruso.id()).thenReturn(new AlunoId(UUID.randomUUID()));
         Mockito.when(alunoRepositorio.buscarPorContaId(any())).thenReturn(Optional.of(alunoIntruso));
-
-        GrupoTg grupoReal = criarGrupoReal(orientadorId, null, null);
-        Mockito.when(grupoTgRepositorio.buscarPorIdGrupo(grupoId)).thenReturn(Optional.of(grupoReal));
+        //Quando buscar pelo grupo usando o id do aluno retorna um optinal vazio
+        Mockito.when(grupoTgRepositorio.buscarPorAlunoId(alunoIntruso.id())).thenReturn(Optional.empty());
 
         // Act & Assert
-        RegraNegocioExcecao excecao = assertThrows(RegraNegocioExcecao.class,
+        GenericaExcecao excecao = assertThrows(GenericaExcecao.class,
                 () -> casoDeUso.executar(comandoBase));
 
         // Erro estourado pelo Caso de Uso
-        assertTrue(excecao.getMessage().contains("pertence ao aluno logado"));
+        assertTrue(excecao.getMessage().contains("grupo do aluno"));
         Mockito.verify(grupoTgRepositorio, Mockito.never()).salvar(any());
     }
 }

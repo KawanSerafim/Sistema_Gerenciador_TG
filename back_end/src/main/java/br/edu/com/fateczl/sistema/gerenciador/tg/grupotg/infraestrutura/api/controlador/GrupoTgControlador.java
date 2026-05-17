@@ -93,9 +93,8 @@ public class GrupoTgControlador {
 
     // ROTA: VINCULAR COORIENTADOR EXTERNO
     // ========================================================================
-    @PatchMapping("/{idGrupo}/coorientadores-externos")
+    @PatchMapping("/coorientadores-externos")
     public ResponseEntity<Void> vincularCoorientadorExterno(
-            @PathVariable String idGrupo,
             @RequestBody VincularCoorientadorRequisicao requisicao,
             @RequestHeader("Authorization") String headerAutorizacao
     ) {
@@ -106,7 +105,6 @@ public class GrupoTgControlador {
         // Monta o Comando
         var comando = new VincularCoorientadorExternoCaso.Comando(
                 idContaAlunoLogado,
-                idGrupo,
                 requisicao.nome(),
                 requisicao.origem()
         );

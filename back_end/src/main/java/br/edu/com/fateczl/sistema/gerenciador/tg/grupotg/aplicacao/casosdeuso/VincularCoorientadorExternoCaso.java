@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
@@ -12,7 +13,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.ob
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.Origem;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.repositorio.CoorientadorExternoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TipoCoorientador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 
@@ -35,7 +35,6 @@ public class VincularCoorientadorExternoCaso {
 
     public record Comando(
             String idContaAlunoLogado,
-            String idGrupo,
             String nomeCoorientador,
             String origemCoorientador
     ) {}
@@ -47,15 +46,7 @@ public class VincularCoorientadorExternoCaso {
                 .orElseThrow(() -> new GenericaExcecao(CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO, "aluno"));
 
         // Buscar o Grupo
-        GrupoTgId grupoId = new GrupoTgId(UUID.fromString(comando.idGrupo()));
-        GrupoTg grupo = grupoTgRepositorio.buscarPorIdGrupo(grupoId)
-                .orElseThrow(() -> new GenericaExcecao(CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO, "grupo"));
-
-        // validação: O aluno pertence a este grupo?
-        if (!grupo.alunosIds().contains(aluno.id())) {
-            throw new RegraNegocioExcecao
-                    (CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "grupo", "pertence ao aluno logado");
-        }
+        GrupoTg grupo = buscarGrupoAluno(aluno.id());
 
         // validação: O grupo já possui orientador principal?
         if (grupo.orientadorId() == null) {
@@ -85,5 +76,12 @@ public class VincularCoorientadorExternoCaso {
 
         // Salva o Grupo atualizado
         grupoTgRepositorio.salvar(grupo);
+    }
+
+    //Metodos auxiliares
+    public GrupoTg buscarGrupoAluno(AlunoId alunoId){
+        return grupoTgRepositorio.buscarPorAlunoId(alunoId)
+                .orElseThrow(() -> new GenericaExcecao(
+                        CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO, "grupo do aluno"));
     }
 }

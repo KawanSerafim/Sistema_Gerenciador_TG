@@ -145,7 +145,6 @@ public class GrupoTg {
         }
 
         // Não pode sobrescrever um coorientador que já existe
-        // Verificamos ANTES de atribuir qualquer coisa nova
         if (this.coorientadorIdTexto != null && !this.coorientadorIdTexto.trim().isEmpty()) {
             throw new RegraNegocioExcecao(
                     CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
