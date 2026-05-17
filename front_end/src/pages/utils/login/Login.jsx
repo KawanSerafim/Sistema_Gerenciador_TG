@@ -13,6 +13,10 @@ const Login = () => {
 
     const navigate = useNavigate();
 
+    const handleClick = (rota) => {
+        navigate(rota);
+    };
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: { email: "", senha: "" }
@@ -115,6 +119,16 @@ const Login = () => {
                             id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
                         >
                             Entrar
+                        </Button>
+                    </FormGroup>
+
+                    <FormGroup className="text-center">
+                        <Button
+                            variant="primary"
+                            onClick={() => handleClick('/aluno/cadastro')}
+                            id='btn-cadastro' className='mb-2 fs-5 fw-medium w-100'
+                        >
+                            Cadastrar-se como aluno
                         </Button>
                     </FormGroup>
                 </Form>

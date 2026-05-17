@@ -141,7 +141,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="text"
-              placeholder="Digite seu nome completo"
+              placeholder={isAdmin() ? "Digite o nome completo do professor" : "Digite seu nome completo"}
               className="bg-white text-black fw-normal fs-5"
               {...register("nome")}
               onKeyDown={bloquearCaracteresInputNome}
@@ -159,7 +159,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="text"
-              placeholder="Digite sua matrícula (13 dígitos)"
+              placeholder={isAdmin() ? "Digite a matrícula do professor (13 dígitos)" : "Digite sua matrícula (13 dígitos)"}
               className="bg-white text-black fw-normal fs-5"
               {...register("matricula")}
               isInvalid={!!errors.matricula}
@@ -176,7 +176,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="email"
-              placeholder="Digite seu email"
+              placeholder={isAdmin() ? "Digite o email do professor" : "Digite seu email"}
               className="bg-white text-black fw-normal fs-5"
               {...register("email")}
               isInvalid={!!errors.email}
@@ -193,7 +193,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="password"
-              placeholder="Digite sua senha"
+              placeholder={isAdmin() ? "Digite a senha temporária do professor, ele poderá trocar depois" : "Digite sua senha"}
               className="bg-white text-black fw-normal fs-5"
               {...register("senha")}
               isInvalid={!!errors.senha}
@@ -210,7 +210,7 @@ const CadastroProfessor = () => {
             </Form.Label>
             <Form.Control
               type="password"
-              placeholder="Confirme sua senha"
+              placeholder={isAdmin() ? "Confirme a senha" : "Confirme sua senha"}
               className="bg-white text-black fw-normal fs-5"
               {...register("confirmarSenha")}
               isInvalid={!!errors.confirmarSenha}
@@ -230,7 +230,7 @@ const CadastroProfessor = () => {
               {...register("cargo")}
               isInvalid={!!errors.cargo}
             >
-              <option value="">Selecione seu cargo</option>
+              <option value="">{isAdmin() ? "Selecione o cargo do professor" : "Selecione seu cargo"}</option>
               {cargos && (
                 cargos.map((cargo, index) => (
                   <option

@@ -15,27 +15,29 @@ const VisaoSolicitacaoOrientacao = () => {
     const data = useMemo(() => [
         {
             id: 1,
-            aluno: "Joe",
-            contato: { email: "joe@fatec.sp.gov.br", linkedin: "http://linkedin/in/joe" },
+            aluno: "Leonardo Silva Kennedy",
+            contato: { email: "leon.kennedy@cps.sp.gov.br", linkedin: "http://linkedin/in/leon-silva-kennedy" },
             tema: "Ética no desenvolvimento de IA",
+            descricaoTema: "Artigo sobre ética no desenvolvimento de Inteligências Artificiais",
             tipoTg: "Artigo",
-            grupo: ["Joe", "Miranda", "Nat"]
+            grupo: ["Leonardo Kennedy", "Ashley Graça", "Clara Ruivo"]
         },
         {
             id: 2,
             aluno: "Ana Maria",
             contato: { email: "ana.maria@fatec.sp.gov.br", linkedin: "" },
             tema: "A importância da Cibersegurança",
+            descricaoTema: "Monografia sobre a importância da cibersegurança",
             tipoTg: "Monografia",
-            grupo: ["Ana Maria", "Ashlhey", "James"]
+            grupo: ["Ana Maria", "Natalia", "James"]
         },
         {
             id: 3,
-            aluno: "Mariana Silva",
-            contato: { email: "mariana.silva@fatec.sp.gov.br", linkedin: "http://linkedin/in/mariana-silva" },
+            aluno: "Mariana Campos",
+            contato: { email: "mariana.campos@cps.sp.gov.br", linkedin: "http://linkedin/in/mariana-campos" },
             tema: "Os perigos do Vibe Coding",
             tipoTg: "Monografia",
-            grupo: ["Mariana Silva", "Samuel", "Geraldo"]
+            grupo: ["Mariana Campos", "Samuel Smith", "Geraldo de Rivia"]
         }
     ], [])
 

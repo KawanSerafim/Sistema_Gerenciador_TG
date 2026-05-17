@@ -84,7 +84,7 @@ const Inicio = () => {
                                 </Button>
                                 <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
                                     onClick={() => handleClick('/curso/cadastro')}>
-                                    Cadastrar Professor
+                                    Cadastrar Curso
                                 </Button>
                                 {/* Outras telas de admin... */}
                             </>
