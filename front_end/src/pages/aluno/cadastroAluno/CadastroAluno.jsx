@@ -2,17 +2,16 @@ import { Container, InputGroup, Alert } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { FormGroup } from "react-bootstrap";
-
-import { bloquearCaracteresInputNome } from "../../../utils/utils";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Zod e RHF (react hook form)
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { alunoSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
-import { useState } from "react";
+import { bloquearCaracteresInputNome } from "../../../utils/utils";
+
 import { usuarioService } from "../../../services/usuario/usuarioService";
-import { useNavigate } from "react-router-dom";
 
 const CadastroAluno = () => {
   // Inicializa o navegador do React
@@ -311,6 +310,14 @@ const CadastroAluno = () => {
               className="mb-2 fs-4 fw-medium w-100"
             >
               Cadastrar
+            </Button>
+
+            <Button
+              variant="outline-secondary"
+              onClick={() => navigate('/')}
+              className='mt-2 fs-5 fw-medium w-100'
+            >
+              Voltar para o Login
             </Button>
           </FormGroup>
         </Form>
