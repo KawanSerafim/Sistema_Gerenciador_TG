@@ -1,7 +1,10 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.configuracao;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.ValidadorCoordenadorCurso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGruposOrientadosCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasPorProfessorTgIdCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasProfessorLogadoCaso;
@@ -57,5 +60,18 @@ public class ConfiguracaoTurma {
             ProfessorRepositorio professorRepositorio
     ) {
         return new BuscarTurmasProfessorLogadoCaso(buscarTurmasPorProfessorTgIdCaso, professorRepositorio);
+    }
+
+    @Bean
+    public BuscarGruposOrientadosCaso buscarGruposOrientadosCaso(
+            ProfessorRepositorio professorRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            AlunoRepositorio alunoRepositorio,
+            TurmaRepositorio turmaRepositorio
+    ){
+        return new BuscarGruposOrientadosCaso(
+                professorRepositorio,grupoTgRepositorio,
+                alunoRepositorio,turmaRepositorio
+        );
     }
 }

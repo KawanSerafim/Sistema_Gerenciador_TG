@@ -89,8 +89,8 @@ public class BuscarVisaoGruposProfessorCaso {
                 List<GrupoTg> grupos = grupoTgRepositorio.buscarPorTurmasIds(idsDasTurmasAtivas);
                 List<GrupoResumoDTO> dtosGrupos = grupos.stream().map(grupo -> {
                     String nomeOrientador = grupo.orientadorId() != null ?
-                            professorRepositorio.buscarPorId(grupo.orientadorId()).map(Professor::nomeTexto).orElse("Orientador não encontrado")
-                            : "Sem orientador";
+                            professorRepositorio.buscarPorId(grupo.orientadorId()).map(Professor::nomeTexto)
+                                    .orElse("Orientador não encontrado") : "Sem orientador";
 
                     List<IntegranteDTO> integrantes = grupo.alunosIds().stream()
                             .map(alunoRepositorio::buscarPorId)
