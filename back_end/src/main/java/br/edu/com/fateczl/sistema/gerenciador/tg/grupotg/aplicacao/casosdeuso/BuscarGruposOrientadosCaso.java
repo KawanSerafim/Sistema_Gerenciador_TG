@@ -81,9 +81,8 @@ public class BuscarGruposOrientadosCaso {
     }
 
     /**
-     * Descobre o período do TG olhando apenas para a turma do PRIMEIRO integrante.
-     * Como todos os integrantes de um grupo compartilham o mesmo calendário,
-     * isso otimiza drasticamente as idas ao banco de dados.
+     * Descobre o período do TG olhando apenas para a turma do primeiro integrante.
+     * Como todos os integrantes de um grupo compartilham o mesmo calendário
      */
     private Periodo descobrirPeriodoDoGrupo(GrupoTg grupo) {
         // Prevenção de erro caso o grupo venha sem alunos (anomalia de banco)
@@ -91,8 +90,8 @@ public class BuscarGruposOrientadosCaso {
             return new Periodo(null, null);
         }
 
-        // A SUA SACADA: Pega apenas o primeiro aluno!
-        AlunoId primeiroAlunoId = grupo.alunosIds().get(0);
+        // Pega apenas o primeiro aluno
+        AlunoId primeiroAlunoId = grupo.alunosIds().getFirst();
 
         var alunoOpt = alunoRepositorio.buscarPorId(primeiroAlunoId);
         if (alunoOpt.isPresent()) {
@@ -104,8 +103,8 @@ public class BuscarGruposOrientadosCaso {
 
                 if (turmaOpt.isPresent()) {
                     Turma turma = turmaOpt.get();
-                    // Achou a primeira turma válida do aluno, já devolve o período!
-                    // Como ele só tem um grupo ativo, asume que esta turma representa o período atual dele
+                    // Achou a primeira turma válida do aluno, já devolve o período
+                    // Como ele só tem um grupo ativo, assume que esta turma representa o período atual dele
                     return new Periodo(turma.anoLetivoValor(), turma.semestreLetivoValor());
                 }
             }
