@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.api.con
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGruposOrientadosCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.VincularCoorientadorExternoCaso;
@@ -19,17 +20,21 @@ public class GrupoTgControlador {
     private final GerarGrupoTgCaso gerarGrupoTgCaso;
     private final GeradorToken geradorToken;
     private final VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso;
+    private final BuscarGruposOrientadosCaso buscarGruposOrientadosCaso;
+    
 
     public GrupoTgControlador(
             BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso,
             GerarGrupoTgCaso gerarGrupoTgCaso,
             GeradorToken geradorToken,
-            VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso
+            VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso,
+            BuscarGruposOrientadosCaso buscarGruposOrientadosCaso
     ) {
         this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
         this.geradorToken = geradorToken;
         this.vincularCoorientadorExternoCaso = vincularCoorientadorExternoCaso;
+        this.buscarGruposOrientadosCaso = buscarGruposOrientadosCaso;
     }
 
     /**
@@ -114,6 +119,22 @@ public class GrupoTgControlador {
 
         // Retorna 204 No Content
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/grupos-orientados")
+    public ResponseEntity<List<BuscarGruposOrientadosCaso.GrupoOrientadoDTO>> listarMeusGrupos(
+            @RequestParam(required = false) Integer ano,
+            @RequestParam(required = false) Integer semestre,
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) {
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String emailLogado = geradorToken.extrairTopico(token);
+
+        // Monta o comando repassando os parâmetros de filtro
+        var comando = new BuscarGruposOrientadosCaso.Comando(emailLogado, ano, semestre);
+        var resposta = buscarGruposOrientadosCaso.executar(comando);
+
+        return ResponseEntity.ok(resposta);
     }
 
     // ========= DTOs =====

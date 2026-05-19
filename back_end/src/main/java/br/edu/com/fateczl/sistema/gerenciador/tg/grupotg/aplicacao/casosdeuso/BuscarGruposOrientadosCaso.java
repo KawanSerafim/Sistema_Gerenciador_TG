@@ -64,13 +64,16 @@ public class BuscarGruposOrientadosCaso {
                     // Método auxiliar para navegar no grafo (Grupo -> Aluno -> Turma)
                     Periodo periodo = descobrirPeriodoDoGrupo(grupo);
 
+                    List<String> nomes = alunoRepositorio.buscarTodosPorIds(grupo.alunosIds())
+                            .stream().map(Aluno::nomeTexto).toList();
+
                     return new GrupoOrientadoDTO(
                             grupo.idTexto(),
                             grupo.nomeTemaTg(),
                             grupo.tipoTg().name(),
                             periodo.ano(),
                             periodo.semestre(),
-                            grupo.alunosIds().stream().map(AlunoId::texto).toList()
+                            nomes
                     );
                 })
                 // 4. Filtra pelos parâmetros opcionais que vieram do Frontend
