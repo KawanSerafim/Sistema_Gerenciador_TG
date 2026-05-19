@@ -27,6 +27,7 @@ import VisaoGruposOrientados from './pages/professor/visaoGruposOrientados/Visao
 
 // Importação de Componentes Globais
 import './App.css';
+import VisaoGrupoAluno from './pages/aluno/visaoGrupoAluno/VisaoGrupoAluno.jsx';
 
 function App() {
   return (
@@ -132,6 +133,11 @@ function App() {
         {/* ========================================= */}
         {/* ROTAS DO ALUNO LOGADO                     */}
         {/* ========================================= */}
+        <Route path="/aluno/meuGrupo" element={
+          <RotaProtegida roleNecessaria="ROLE_ALUNO">
+            <VisaoGrupoAluno />
+          </RotaProtegida>
+        } />
         <Route path="/aluno/formarGrupo" element={
           <RotaProtegida roleNecessaria="ROLE_ALUNO">
             <FormarGrupo />

@@ -39,5 +39,15 @@ export const alunoService = {
     });
     console.log(resposta)
     return resposta?.alunoDtos || [];
+  },
+
+  /**
+   * Busca informações do grupo tg do aluno logado, se ele tiver grupo
+   * 
+   */
+  buscarGrupoAluno: async () => {
+    return await apiClient("/gruposTg/aluno", {
+      method: "GET",
+    });
   }
 };
