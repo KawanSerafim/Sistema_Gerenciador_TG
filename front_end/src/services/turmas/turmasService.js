@@ -29,9 +29,11 @@ export const turmasService = {
             body: JSON.stringify(payload)
         });
     },
-
+    /**
+     * Busca as turmas do professor tg
+     */
     buscarMinhasTurmas: async () => {
-        const resposta = await apiClient(`/turmas/me`, {
+        const resposta = await apiClient(`/turmas/professor-tg`, {
             method: "GET"
         });
 

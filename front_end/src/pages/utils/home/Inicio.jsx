@@ -161,7 +161,7 @@ const Inicio = () => {
                         {roles.includes("ROLE_ORIENTADOR") && (
                             <>
                                 <Button variant="info" className='fs-4 fw-medium text-white flex-grow-1' style={{ minWidth: '300px' }}
-                                    onClick={() => handleClick('/orientador/meusGrupos')}>
+                                    onClick={() => handleClick('/professor/meusGrupos')}>
                                     Meus Grupos Orientados
                                 </Button>
                                 <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}

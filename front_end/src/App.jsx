@@ -7,7 +7,7 @@ import ConfirmarEmail from './pages/utils/ConfirmarEmail.jsx';
 import CadastrarCurso from './pages/curso/CadastrarCurso.jsx';
 import VisaoSolicitacaoOrientacao from './pages/professor/visaoSolicitacaoOrientacao/VisaoSolicitacaoOrientacao.jsx';
 import EnviarTurma from "./pages/professor/enviarTurma/EnviarTurma.jsx"
-import VisaoGrupos from './pages/professor/visaoGrupos/VisaoGrupos.jsx';
+import VisaoGrupos from './pages/professor/visaoGruposTurma/VisaoGrupos.jsx';
 import VisaoAlunosEnviados from './pages/professor/visaoAlunosEnviados/VisaoAlunosEnviados.jsx';
 import CadastrarTurma from './pages/professor/coordenador/cadastrarTurma/CadastrarTurma.jsx';
 import CarregarTG from './pages/aluno/carregarTG/CarregarTG.jsx';
@@ -22,11 +22,11 @@ import Login from './pages/utils/login/Login.jsx';
 import Inicio from './pages/utils/home/Inicio.jsx'
 import AcessoNegado from './components/erros/AcessoNegado.jsx';
 import RecuperacaoSenha from './pages/utils/RecuperacaoSenha.jsx';
+import VincularCoorientadorExterno from './pages/aluno/vincularCoOrientadorExterno/VincularCoOrientadorExterno.jsx';
+import VisaoGruposOrientados from './pages/professor/visaoGruposOrientados/VisaoGruposOrientados.jsx';
 
 // Importação de Componentes Globais
-import UserNavBar from './components/usernavbar/UserNavBar';
 import './App.css';
-import VincularCoorientadorExterno from './pages/aluno/vincularCoOrientadorExterno/VincularCoOrientadorExterno.jsx';
 
 function App() {
   return (
@@ -103,6 +103,11 @@ function App() {
         {/* ========================================= */}
         {/* ROTAS DO ORIENTADOR                       */}
         {/* ========================================= */}
+        <Route path="/professor/meusGrupos" element={
+          <RotaProtegida roleNecessaria="ROLE_ORIENTADOR">
+            <VisaoGruposOrientados />
+          </RotaProtegida>
+        } />
         <Route path="/professor/marcarBanca" element={
           <RotaProtegida roleNecessaria="ROLE_ORIENTADOR">
             <MarcarBanca />
