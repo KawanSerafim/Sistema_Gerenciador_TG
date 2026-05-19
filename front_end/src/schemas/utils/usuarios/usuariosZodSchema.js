@@ -45,6 +45,10 @@ export const alunoSchema = usuarioSchema
         ),
       }),
     ),
+    termosAceitos: z.boolean()
+      .refine((valor) => valor === true, {
+        message: "Você deve concordar com os termos de uso para se cadastrar.",
+      }),
   }) //Tratamento senha e confirmar senha
   .refine((data) => data.senha === data.confirmarSenha, {
     message: "Senha e Confirmar Senha devem ser iguais",

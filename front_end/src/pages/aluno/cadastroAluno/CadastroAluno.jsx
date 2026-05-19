@@ -301,6 +301,28 @@ const CadastroAluno = () => {
             </Form.Control.Feedback>
           </FormGroup>
 
+          {/* CHECKBOX DE TERMOS E CONDIÇÕES */}
+          <Form.Group className="mb-4 text-start" controlId="formTermosAceitos">
+            <Form.Check
+              type="checkbox"
+              id="termos-aceitos-checkbox"
+            >
+              <Form.Check.Input
+                type="checkbox"
+                {...register("termosAceitos")}
+                isInvalid={!!errors.termosAceitos}
+                className="cursor-pointer border-secondary"
+              />
+              <Form.Check.Label className="text-secondary ms-2 cursor-pointer">
+                Concordo que meus dados serão utilizados exclusivamente para fins acadêmicos e de gerenciamento do Trabalho de Graduação.
+              </Form.Check.Label>
+
+              <Form.Control.Feedback type="invalid" className="d-block mt-1 fw-bold">
+                {errors.termosAceitos?.message}
+              </Form.Control.Feedback>
+            </Form.Check>
+          </Form.Group>
+
           {/* Botão de Cadastrar */}
           <FormGroup className="text-center">
             <Button
