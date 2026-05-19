@@ -2,10 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.api.con
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGruposOrientadosCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.VincularCoorientadorExternoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +18,7 @@ public class GrupoTgControlador {
     private final GeradorToken geradorToken;
     private final VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso;
     private final BuscarGruposOrientadosCaso buscarGruposOrientadosCaso;
+    private final BuscarGrupoAlunoCaso buscarGrupoAlunoCaso;
     
 
     public GrupoTgControlador(
@@ -28,13 +26,15 @@ public class GrupoTgControlador {
             GerarGrupoTgCaso gerarGrupoTgCaso,
             GeradorToken geradorToken,
             VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso,
-            BuscarGruposOrientadosCaso buscarGruposOrientadosCaso
+            BuscarGruposOrientadosCaso buscarGruposOrientadosCaso,
+            BuscarGrupoAlunoCaso buscarGrupoAlunoCaso
     ) {
         this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
         this.geradorToken = geradorToken;
         this.vincularCoorientadorExternoCaso = vincularCoorientadorExternoCaso;
         this.buscarGruposOrientadosCaso = buscarGruposOrientadosCaso;
+        this.buscarGrupoAlunoCaso = buscarGrupoAlunoCaso;
     }
 
     /**
@@ -150,4 +150,21 @@ public class GrupoTgControlador {
             String origem
     ) {}
 
+    /**
+     * Busca informações do grupo do aluno logado
+     * @param headerAutorizacao
+     * @return
+     */
+    @GetMapping("/aluno")
+    public ResponseEntity<BuscarGrupoAlunoCaso.MeuGrupoDetalhadoDTO> consultarMeuGrupo(
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) {
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String idAlunoLogado = geradorToken.extrairId(token);
+
+        var comando = new BuscarGrupoAlunoCaso.Comando(idAlunoLogado);
+        var resposta = buscarGrupoAlunoCaso.executar(comando);
+
+        return ResponseEntity.ok(resposta);
+    }
 }
