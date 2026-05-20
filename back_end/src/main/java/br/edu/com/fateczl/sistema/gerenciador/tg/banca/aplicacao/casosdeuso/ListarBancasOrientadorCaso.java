@@ -42,6 +42,7 @@ public class ListarBancasOrientadorCaso {
     public record BancaVisaoDto(
             String idBanca,
             String tema,
+            String disciplina,
             String tipoTg,
             String idGrupo,
             LocalDateTime dataHora,
@@ -76,15 +77,25 @@ public class ListarBancasOrientadorCaso {
                 boolean naoAvaliada = banca.status().name().equals("MARCADA");
                 boolean podeAtribuir = dataJaPassou && naoAvaliada;
 
-                String situacaoVisual = banca.status().name();
-                if (podeAtribuir) situacaoVisual = "Pré Banca realizada";
+                String situacaoVisual;
+
+                if (banca.status().name().equals("AVALIADA")){
+                    situacaoVisual = "Avaliada";
+                    podeAtribuir = false;
+                } else if(banca.status().name().equals("CANCELADA")) {
+                    situacaoVisual = "Cancelada";
+                }
+                else if(podeAtribuir){
+                    situacaoVisual = "Realizada";
+                } else {
+                    situacaoVisual = "Marcada";
+                }
 
                 // --- Resolução dos Alunos do Grupo ---
                 List<Aluno> alunosDoGrupo = alunoRepositorio.buscarTodosPorIds(grupo.alunosIds());
                 List<String> nomesAlunos = alunosDoGrupo.stream()
                         .map(Aluno::nomeTexto)
                         .toList();
-
 
                 // --- Resolução dos Membros da Banca ---
                 List<MembroBancaDto> membrosDaBanca = new ArrayList<>();
@@ -114,6 +125,7 @@ public class ListarBancasOrientadorCaso {
                 bancasVisao.add(new BancaVisaoDto(
                         banca.idTexto(),
                         grupo.nomeTemaTg(), // Adapte o getter do tema
+                        grupo.disciplinas().toString(),
                         grupo.tipoTg().name(),
                         grupo.idTexto(),
                         banca.dataHora(),
