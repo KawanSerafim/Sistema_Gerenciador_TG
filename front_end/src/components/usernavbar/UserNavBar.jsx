@@ -83,6 +83,16 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                                     </>
                                 )}
 
+                                {/* AÇÕES DO ORIENTADOR */}
+                                {cargos.includes("ROLE_ORIENTADOR") && (
+                                    <>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/meusGrupos")}>Meus Grupos Orientados</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/visaoBancas")}>Visão Bancas</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/marcarBanca")}>Marcar Banca</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/professor/visaoSolicitacoesOrientacao")}>Ver Solicitacoes de Orientação</NavDropdown.Item>
+                                    </>
+                                )}
+
                                 {/* AÇÕES DO PROFESSOR */}
                                 {cargos.includes("ROLE_PROFESSOR_TG") && (
                                     <>
