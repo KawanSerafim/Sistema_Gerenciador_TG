@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { camposSchema } from "../../../schemas/professor/marcarBanca/marcarBancaSchema";
 
 // Importa a service com as chamadas da API
-import { professorService } from "../../../services/professor/professorService";
+import { bancaService } from "../../../services/banca/bancaService";
 
 const MarcarBanca = () => {
 
@@ -65,8 +65,8 @@ const MarcarBanca = () => {
 
                 // Dispara as duas requisições em paralelo para maior performance
                 const [gruposData, professoresData] = await Promise.all([
-                    professorService.buscarGruposOrientados(),
-                    professorService.buscaProfessoresPorCargo("ORIENTADOR")
+                    bancaService.buscarGruposOrientados(),
+                    bancaService.buscaProfessoresPorCargo("ORIENTADOR")
                 ]);
 
                 setGrupos(gruposData);
@@ -212,7 +212,7 @@ const MarcarBanca = () => {
             };
 
             // Certifique-se de ter este método na sua professorService
-            await professorService.marcarBanca(payload);
+            await bancaService.marcarBanca(payload);
 
             setResultadoPedido({
                 exibir: true,
