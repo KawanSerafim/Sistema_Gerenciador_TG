@@ -16,4 +16,6 @@ public interface ProfessorRepositorio {
     Optional<Professor> buscarPorEmail(Email email);
     List<Professor> listarPorAutoridadeProfessor(Autoridade autoridade);
     Optional<Professor> buscarPorId(ProfessorId professorId);
+
+    List<Professor> buscarTodosPorIds(List<ProfessorId> professorIds);
 }

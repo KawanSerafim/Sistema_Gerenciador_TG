@@ -1,5 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.infraestrutura.configuracao;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.AtribuirNotasBancaCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.ListarBancasOrientadorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.MarcarBancaCaso;
@@ -24,12 +25,14 @@ public class ConfiguracaoBanca {
     public ListarBancasOrientadorCaso listarBancasOrientadorCaso(
             GrupoTgRepositorio grupoTgRepositorio,
             BancaRepositorio bancaRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            AlunoRepositorio alunoRepositorio
     ){
         return new ListarBancasOrientadorCaso(
                 grupoTgRepositorio,
                 bancaRepositorio,
-                professorRepositorio
+                professorRepositorio,
+                alunoRepositorio
         );
     }
 

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Arrays.stream;
+
 @Component
 @RequiredArgsConstructor
 public class ProfessorRepositorioImpl implements ProfessorRepositorio {
@@ -63,6 +65,14 @@ public class ProfessorRepositorioImpl implements ProfessorRepositorio {
     public Optional<Professor> buscarPorId(ProfessorId professorId) {
         return repositorio.findById(professorId.texto())
                 .map(ProfessorMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Professor> buscarTodosPorIds(List<ProfessorId> professorIds) {
+        List<String> idsStr = professorIds.stream().map(ProfessorId::texto).toList();
+        return repositorio.findAllById(idsStr)
+                .stream().map(ProfessorMapeador::paraDominio).toList();
     }
 
 }
