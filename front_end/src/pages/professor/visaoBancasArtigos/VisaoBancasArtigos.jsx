@@ -85,7 +85,6 @@ const VisaoBancasArtigos = () => {
                 <Button variant='primary'
                     size='lm'
                     className="px-2"
-                    // Supondo que a API também mande a lista de alunos (adapte se necessário)
                     onClick={() => handleOpen({ type: "INTEGRANTES", row })}
                 >
                     Visualizar Integrantes
@@ -120,29 +119,44 @@ const VisaoBancasArtigos = () => {
             header: "Situação",
             accessor: "situacao",
             filtravel: true,
-            tipoFiltro: "select"
+            tipoFiltro: "select",
+            render: (row) => {
+                console.log(`situacao: ${row.situacao}`)
+                // Trata o estado quando a data passou mas ainda não possui nota
+                if (row.situacao === "Realizada") {
+                    const prefixoBanca = row.disciplina?.includes("TG1") ? "Pré-banca" : "Banca";
+                    return <span className="fw-medium text-primary">{prefixoBanca} realizada</span>;
+                }
+                // Trata o estado de banca avaliada com sucesso
+                if (row.situacao === "Avaliada") {
+                    return <span className="fw-bold text-success">Avaliada</span>;
+                }
+                // Trata o estado de banca cancelada
+                if (row.situacao === "Cancelada") {
+                    return <span className="fw-bold text-danger">Cancelada</span>;
+                }
+                // Retorna o estado padrão vindo do banco de dados (Marcada)
+                return <span>{row.situacao}</span>;
+            }
         },
         {
             header: "Ações",
             render: (row) => {
-                // A flag do back-end já nos diz se podemos habilitar o botão
-                const isBancaRealizada = row.podeAtribuirNota;
+                // A flag do back-end já nos diz se podemos habilitar o botão, se foi marcada e se não foi avaliada
+                const podeSerAvaliada = row.podeAtribuirNota;
 
                 return (
                     <Stack direction="horizontal" gap={5} className="justify-content-center">
-                        <Button variant={isBancaRealizada ? "success" : "light"}
+                        <Button variant={podeSerAvaliada ? "success" : "light"}
                             size="lm"
-                            disabled={!isBancaRealizada}
-                            className={isBancaRealizada ? "fw-bold text-black" : "text-muted border"}
+                            disabled={!podeSerAvaliada}
+                            className={podeSerAvaliada ? "fw-bold text-black" : "text-muted border"}
                             onClick={() => {
                                 handleOpen({ type: "NOTA", row })
                                 setTemaSelecionado(row.tema)
 
                                 setValue("idBanca", row.idBanca);
 
-                                // Adapte essa lista conforme os dados que vierem da API 
-                                // (O DTO atual não descreve a lista de membros que dão nota, 
-                                // então estamos assumindo que `row.membros` existe e tem {id, nome})
                                 const arrayNotasIniciais = (row.membros || []).map((membro) => ({
                                     idMembro: membro.id, // ID real para montar o map depois
                                     nomeMembroBanca: membro.nome,
@@ -154,10 +168,10 @@ const VisaoBancasArtigos = () => {
                             Atribuir Nota
                         </Button>
                         <Button
-                            variant={isBancaRealizada ? "light" : "danger"}
+                            variant={podeSerAvaliada ? "light" : "danger"}
                             size="lm"
-                            disabled={isBancaRealizada}
-                            className={isBancaRealizada ? "text-muted border" : "text-black"}
+                            disabled={podeSerAvaliada}
+                            className={podeSerAvaliada ? "text-muted border" : "text-black"}
                             onClick={() => {
                                 setTemaSelecionado(row.tema)
                                 setExibirResultado({ exibir: true, mensagem: `Avaliação do grupo de tema: ${row.tema} foi cancelada`, variante: "danger" })
@@ -225,7 +239,7 @@ const VisaoBancasArtigos = () => {
                     onSubmit={handleSubmit(enviarParaBackend)}>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <span className="fw-bold fs-5">{`${data.tema} - ${data.tipoTg.toUpperCase()}`}</span>
+                            <span className="fw-bold fs-5">{`${data.tema} - ${data.tipoTg.toUpperCase()} - ${data.disciplina.toUpperCase()}`}</span>
                         </div>
                     </Modal.Header>
 
