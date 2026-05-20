@@ -46,9 +46,9 @@ public class Banca {
 
         this.avaliadoresInternos = new ArrayList<>(avaliadoresInternos != null ? avaliadoresInternos : List.of());
         this.avaliadoresExternos = new ArrayList<>(avaliadoresExternos != null ? avaliadoresExternos : List.of());
-        this.status = StatusBanca.MARCADA;
-        this.notasMembros = new HashMap<>();
-        this.notaFinal = null;
+        this.status = status;
+        this.notasMembros = notasMembros != null ? new HashMap<>(notasMembros) : new HashMap<>();;
+        this.notaFinal = notaFinal;
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
