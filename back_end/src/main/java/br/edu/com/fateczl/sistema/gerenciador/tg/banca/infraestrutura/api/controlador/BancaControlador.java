@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.infraestrutura.api.controlador;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.AtribuirNotasBancaCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.CancelarAvaliacaoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.ListarBancasOrientadorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.MarcarBancaCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
@@ -21,16 +22,19 @@ public class BancaControlador {
     private final GeradorToken geradorToken;
     private final ListarBancasOrientadorCaso listarBancasOrientadorCaso;
     private final AtribuirNotasBancaCaso atribuirNotasBancaCaso;
+    private final CancelarAvaliacaoCaso cancelarAvaliacaoCaso;
 
     public BancaControlador(
             MarcarBancaCaso marcarBancaCaso,
             GeradorToken geradorToken,
             ListarBancasOrientadorCaso listarBancasOrientadorCaso,
-            AtribuirNotasBancaCaso atribuirNotasBancaCaso) {
+            AtribuirNotasBancaCaso atribuirNotasBancaCaso,
+            CancelarAvaliacaoCaso cancelarAvaliacaoCaso) {
         this.marcarBancaCaso = marcarBancaCaso;
         this.geradorToken = geradorToken;
         this.listarBancasOrientadorCaso = listarBancasOrientadorCaso;
         this.atribuirNotasBancaCaso = atribuirNotasBancaCaso;
+        this.cancelarAvaliacaoCaso = cancelarAvaliacaoCaso;
     }
 
     /**
@@ -117,6 +121,30 @@ public class BancaControlador {
         atribuirNotasBancaCaso.executar(comando);
 
         // Retorna 204 No Content (padrão REST para atualizações bem-sucedidas sem retorno de corpo)
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Cancela a avaliação da banca, apenas se tiver status 'MARCADA'
+     * @param idBanca Id da banca
+     * @param headerAutorizacao cabeçalho com o jwt
+     * @return
+     */
+    @PutMapping("/{idBanca}/cancelar")
+    public ResponseEntity<Void> cancelarAvaliação(
+            @PathVariable String idBanca,
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) {
+        String emailOrientador = extrairEmailDoToken(headerAutorizacao);
+
+        var comando = new CancelarAvaliacaoCaso.Comando(
+                emailOrientador,
+                idBanca
+        );
+
+        cancelarAvaliacaoCaso.executar(comando);
+
+        // Retorna 204 No Content
         return ResponseEntity.noContent().build();
     }
 

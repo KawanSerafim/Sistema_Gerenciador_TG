@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.banca.infraestrutura.configura
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.AtribuirNotasBancaCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.CancelarAvaliacaoCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.ListarBancasOrientadorCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.MarcarBancaCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
@@ -43,6 +44,19 @@ public class ConfiguracaoBanca {
             ProfessorRepositorio professorRepositorio
     ){
         return new AtribuirNotasBancaCaso(
+                bancaRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio
+        );
+    }
+
+    @Bean
+    public CancelarAvaliacaoCaso cancelarAvaliacaoCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            ProfessorRepositorio professorRepositorio
+    ){
+        return new CancelarAvaliacaoCaso(
                 bancaRepositorio,
                 grupoTgRepositorio,
                 professorRepositorio

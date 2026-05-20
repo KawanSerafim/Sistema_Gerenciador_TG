@@ -47,7 +47,7 @@ public class Banca {
         this.avaliadoresInternos = new ArrayList<>(avaliadoresInternos != null ? avaliadoresInternos : List.of());
         this.avaliadoresExternos = new ArrayList<>(avaliadoresExternos != null ? avaliadoresExternos : List.of());
         this.status = status;
-        this.notasMembros = notasMembros != null ? new HashMap<>(notasMembros) : new HashMap<>();;
+        this.notasMembros = notasMembros != null ? new HashMap<>(notasMembros) : new HashMap<>();
         this.notaFinal = notaFinal;
     }
 
@@ -122,6 +122,14 @@ public class Banca {
         }
         this.notaFinal = notas.isEmpty() ? 0.0 : (soma / notas.size());
         this.status = StatusBanca.AVALIADA;
+    }
+
+    public void cancelarAvaliacao(){
+        //Só pode cancelar quando status == MARCADA
+        if (this.status != StatusBanca.MARCADA) {
+            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "banca", "MARCADA");
+        }
+        this.status = StatusBanca.CANCELADA;
     }
 
     public void alterarAgendamento(LocalDateTime novaDataHora, String novoLocal) {
