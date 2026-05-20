@@ -49,5 +49,11 @@ export const alunoService = {
     return await apiClient("/gruposTg/aluno", {
       method: "GET",
     });
+  },
+  solicitarOrientacao: async (payload) => {
+    return await apiClient(`/solicitacoes-orientacao`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   }
 };

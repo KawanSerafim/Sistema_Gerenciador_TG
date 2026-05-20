@@ -1,15 +1,18 @@
 
-import { Container, FormControl, ListGroup, Col, Row, Alert } from 'react-bootstrap';
+import { Container, FormControl, ListGroup, Col, Row, Alert, Spinner } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Zod e RHF
 import { solicitarOrientacaoZodSchema } from '../../../schemas/aluno/solicitarOrientacao/solicitarOrientacaoZodSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
+//Services
+import { professorService } from "../../../services/professor/professorService"
+import { alunoService } from '../../../services/aluno/alunoService';
 
 const SolicitarOrientacao = () => {
 
@@ -32,77 +35,115 @@ const SolicitarOrientacao = () => {
         name: "orientadorId"
     });
 
-    /* === Estados visuais da interaçao com usuario ===*/
-    const [exibirSucesso, setExibirSucesso] = useState(false)
-    // Estado do que esta escrito no input de orientador
-    const [buscaOrientador, setBuscaOrientador] = useState("")
-    //Lista filtrada de opções com base no input
+    /* === Estados da API e UI === */
+    const [professores, setProfessores] = useState([]);
+    const [carregandoProfessores, setCarregandoProfessores] = useState(true);
+    const [enviando, setEnviando] = useState(false);
+
+    // Novo estado unificado para feedbacks (Substitui o erroAPI e o antigo exibirSucesso)
+    const [exibirSucesso, setExibirSucesso] = useState({ exibir: false, variante: "", mensagem: "" });
+
+    /* === Estados do Input Auto-complete === */
+    const [buscaOrientador, setBuscaOrientador] = useState("");
     const [sugestoes, setSugestoes] = useState([]);
 
-    //Mock de orientador, TODO buscar do backend
-    const [listaOrientadorDB] = useState([
-        { id: 1, nome: "Cristina", },
-        { id: 2, nome: "Luciano", },
-        { id: 3, nome: "Satoshi", },
-        { id: 4, nome: "Colevati", },
-    ])
+    useEffect(() => {
+        const carregarOrientadores = async () => {
+            try {
+                setCarregandoProfessores(true);
+                const dados = await professorService.buscaProfessoresPorCargo("ORIENTADOR");
+
+                const professoresFormatados = dados.map(prof => ({
+                    id: prof.idProfessor || prof.id,
+                    nome: prof.nome
+                }));
+
+                setProfessores(professoresFormatados);
+            } catch (error) {
+                console.error("Erro ao buscar orientadores:", error);
+                // Usando o novo estado para mostrar erro de carregamento
+                setExibirSucesso({
+                    exibir: true,
+                    variante: "danger",
+                    mensagem: "Não foi possível carregar a lista de orientadores disponíveis."
+                });
+            } finally {
+                setCarregandoProfessores(false);
+            }
+        };
+
+        carregarOrientadores();
+    }, []);
 
     const handleSugestoesFocus = () => {
         if (buscaOrientador.length === 0) {
-            const opcoesDisponiveis = listaOrientadorDB
-                //Pega os 3 primeiros
-                .slice(0, 3)
-            setSugestoes(opcoesDisponiveis);
+            setSugestoes(professores.slice(0, 3));
         }
     }
 
     const handleSugestoesBlur = () => {
         setTimeout(() => {
-            setSugestoes([])
-        }, 200)
+            setSugestoes([]);
+        }, 200);
     }
 
     const handleBuscaOrientador = (e) => {
         const termo = e.target.value;
         setBuscaOrientador(termo);
-        // Reseta a seleção se o usuário voltar a digitar
-        setValue("orientadorId", "", { shouldValidate: true })
+        setValue("orientadorId", "", { shouldValidate: true });
 
-        const opcoesDisponiveis = listaOrientadorDB
-            //Pega os 3 primeiros
-            .slice(0, 3)
-
-        if (termo.length > 1) { // Só filtra após digitar 2 letras
-            const filtrados = listaOrientadorDB.filter(orientador =>
+        if (termo.length > 1) {
+            const filtrados = professores.filter(orientador =>
                 orientador.nome.toLowerCase().includes(termo.toLowerCase())
             );
             setSugestoes(filtrados);
         } else {
-            setSugestoes(opcoesDisponiveis);
+            setSugestoes(professores.slice(0, 3));
         }
     };
 
     const selecionarSugestao = (orientador) => {
-        //Exibe o nome
         setBuscaOrientador(orientador.nome);
-        // Injeta o id no RHF
         setValue("orientadorId", String(orientador.id), { shouldValidate: true });
-        //Reseta suguestões
         setSugestoes([]);
     };
 
-    // A função mock que realmente envia os dados caso passe na validação do frontend
-    const enviarParaBackend = (dadosValidados) => {
-        // Aqui vai o seu fetch/axios enviando o JSON para a API em Java
-        console.log("Enviando payload para a API:", dadosValidados);
-        //Ativa alerta de sucesso
-        setExibirSucesso(true);
-        //Limpa o input visual
-        setBuscaOrientador("");
-        //Limpa RHF
-        reset();
-        //Esconde depois de alguns segundos
-        setTimeout(() => setExibirSucesso(false), 5000);
+    const enviarParaBackend = async (dadosValidados) => {
+        try {
+            setEnviando(true);
+            // Reseta o alerta antes de tentar de novo
+            setExibirSucesso({ exibir: false, variante: "", mensagem: "" });
+
+            const payload = {
+                idProfessor: dadosValidados.orientadorId
+            };
+
+            await alunoService.solicitarOrientacao(payload);
+
+            // Fluxo de Sucesso usando o novo objeto
+            setExibirSucesso({
+                exibir: true,
+                variante: "success",
+                mensagem: "Solicitação de orientação enviada com sucesso!"
+            });
+
+            setBuscaOrientador("");
+            reset();
+
+            // Esconde automaticamente após 5 segundos
+            setTimeout(() => setExibirSucesso({ exibir: false, variante: "", mensagem: "" }), 5000);
+
+        } catch (error) {
+            console.error("Erro ao solicitar orientação:", error);
+            // Fluxo de Erro usando o mesmo objeto, mudando apenas a variante
+            setExibirSucesso({
+                exibir: true,
+                variante: "danger",
+                mensagem: error.message || "Ocorreu um erro ao enviar a solicitação. Verifique se você já possui um orientador."
+            });
+        } finally {
+            setEnviando(false);
+        }
     };
 
     return (
@@ -118,6 +159,10 @@ const SolicitarOrientacao = () => {
                     className='form-bg border border-dark border-top-0 p-3 p-md-5 rounded-bottom-4 shadow-sm'
                     onSubmit={handleSubmit(enviarParaBackend)}
                 >
+                    <p className="text-secondary fs-5 mb-4">
+                        Pesquise e selecione o professor que você deseja como orientador do seu grupo.
+                    </p>
+
                     <Row className="mb-4 justify-content-center">
                         {/* xs=12 (100% no celular), md=8 (maior no tablet), lg=6 (metade na tela grande) */}
                         <Col xs={12} md={8} lg={6} style={{ position: 'relative' }}> {/* Importante: relative para o dropdown */}
@@ -127,9 +172,10 @@ const SolicitarOrientacao = () => {
                                 onFocus={handleSugestoesFocus}
                                 onBlur={handleSugestoesBlur}
                                 autoComplete="off"
-                                placeholder="Digite ou selecione o nome do orientador"
+                                placeholder={carregandoProfessores ? "Carregando professores..." : "Digite ou selecione o nome do orientador"}
                                 className='bg-white text-black fw-bold fs-5'
                                 isInvalid={!!errors.orientadorId}
+                                disabled={carregandoProfessores || enviando}
                             />
 
                             {/* Lista de Sugestões */}
@@ -159,6 +205,7 @@ const SolicitarOrientacao = () => {
                             </Col>
                         </Row>
                     )}
+
                     <Row className="justify-content-center mt-2">
                         <Col xs={12} md={6} lg={4}>
                             <Button
@@ -166,24 +213,35 @@ const SolicitarOrientacao = () => {
                                 type="submit" id='btn-select'
                                 className='mb-2 p-2 fs-5 fs-md-4 fw-medium w-100'
                                 //Usa variavel do RHF para controlar comportamento do botão
-                                disabled={!orientadorSelecionado}
+                                disabled={!orientadorSelecionado || enviando || carregandoProfessores}
                                 style={{
-                                    cursor: orientadorSelecionado ? 'pointer' : 'not-allowed',
-                                    opacity: orientadorSelecionado ? 1 : 0.4
+                                    cursor: orientadorSelecionado && !enviando ? 'pointer' : 'not-allowed',
+                                    opacity: orientadorSelecionado && !enviando ? 1 : 0.6
                                 }}
                                 title="Enviar Solicitação"
                             >
-                                Enviar solicitação
+                                {enviando ? (
+                                    <>
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                        Enviando...
+                                    </>
+                                ) : "Enviar solicitação"}
                             </Button>
                         </Col>
                     </Row>
                 </Form>
-                {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirSucesso && (
+
+                {/* Renderiza o alerta dinamico de erro ou sucesso após passar nas validações */}
+                {exibirSucesso.exibir && (
                     <Row className="justify-content-center mt-3">
                         <Col xs={12} md={8} lg={6}>
-                            <Alert variant="success" onClose={() => setExibirSucesso(false)} dismissible className="mt-3" >
-                                Solicitação de orientação enviada com sucesso!
+                            <Alert
+                                variant={exibirSucesso.variante}
+                                onClose={() => setExibirSucesso({ exibir: false, variante: "", mensagem: "" })}
+                                dismissible
+                                className="fw-bold"
+                            >
+                                {exibirSucesso.mensagem}
                             </Alert>
                         </Col>
                     </Row>
