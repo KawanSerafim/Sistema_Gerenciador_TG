@@ -31,7 +31,7 @@ public class BancaMapeador {
 
         modelo.setAvaliadoresExternos(
                 banca.avaliadoresExternos().stream()
-                        .map(ext -> new MembroExternoModelo(ext.nome(), ext.email().valor(), ext.telefone()))
+                        .map(ext -> new MembroExternoModelo(ext.nome(), ext.email(), ext.telefone()))
                         .toList()
         );
         modelo.setStatusBanca(banca.status());
@@ -56,7 +56,7 @@ public class BancaMapeador {
                 modelo.getAvaliadoresExternos().stream()
                         .map(membro -> new MembroExterno(
                                 membro.getNome(),
-                                new Email(membro.getEmail()),
+                                membro.getEmail(),
                                 membro.getTelefone()))
                         .toList(),
                 modelo.getStatusBanca(),

@@ -76,7 +76,7 @@ public class MarcarBancaCaso {
 
         // Mapeia os convidados externos para o Value Object
         List<MembroExterno> avaliadoresExternos = comando.convidadosExternos().stream()
-                .map(dto -> new MembroExterno(dto.nome(), new Email(dto.email()), dto.telefone()))
+                .map(dto -> new MembroExterno(dto.nome(), dto.email(), dto.telefone()))
                 .toList();
 
         // Junta data e hora

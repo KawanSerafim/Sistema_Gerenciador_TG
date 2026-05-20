@@ -1,10 +1,9 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 
 public record MembroExterno(
         String nome,
-        Email email,
+        String email,
         String telefone
 ) {
     public MembroExterno {
