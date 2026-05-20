@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const camposSchema = z.object({
-    idGrupo: z.coerce.string().min(1,),
+    idBanca: z.coerce.string().min(1,),
     notas: z.array(
         z.object({
             nomeMembroBanca: z.string(),

@@ -1,7 +1,7 @@
-import { Alert, Button, Col, Container, Form, Modal, Row, Stack } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Modal, Row, Stack, Spinner } from "react-bootstrap";
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 import TableComponent from "../../../components/table/TableComponent";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useModal } from "../../../hooks/useModal/useModal";
 import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
@@ -9,14 +9,21 @@ import { camposSchema } from "../../../schemas/professor/visaoBancasArtigos/visa
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 
+// Importa a service
+import { professorService } from "../../../services/professor/professorService";
+
 const VisaoBancasArtigos = () => {
+    // Estados da API
+    const [data, setData] = useState([]);
+    const [carregando, setCarregando] = useState(true);
 
     const [exibirResultado, setExibirResultado] = useState({
         exibir: false, mensagem: "", variante: ""
-    })
-    const [temaSelecionado, setTemaSelecionado] = useState(null)
+    });
 
-    const { show, selectedData, handleOpen, handleClose } = useModal(null)
+    const [_temaSelecionado, setTemaSelecionado] = useState(null);
+
+    const { show, selectedData, handleOpen, handleClose } = useModal(null);
 
     const {
         register,
@@ -28,57 +35,81 @@ const VisaoBancasArtigos = () => {
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
-            idGrupo: "",
-            notas: [{
-                nomeMembroBanca: "",
-                nota: 0
-            }]
+            idBanca: "", // Trocado idGrupo por idBanca para o envio correto
+            notas: []
         }
-    })
+    });
 
-    //Mocks temporarios
-    const columns = [
+    // Busca os dados da API ao carregar
+    const carregarBancas = async () => {
+        try {
+            setCarregando(true);
+            // setExibirResultado({ exibir: false, mensagem: "", variante: "" });
+
+            const response = await professorService.listarBancas();
+            setData(response);
+        } catch (error) {
+            console.error(error);
+            setExibirResultado({
+                exibir: true,
+                variante: "danger",
+                mensagem: "Não foi possível carregar as bancas. Tente novamente."
+            });
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    useEffect(() => {
+        carregarBancas();
+    }, []);
+
+    // Formata a data ISO do backend para string amigável no BR
+    const formatarData = (dataIso) => {
+        if (!dataIso) return "Não definida";
+        const dataObj = new Date(dataIso);
+        return dataObj.toLocaleString('pt-BR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    };
+
+    const columns = useMemo(() => [
         { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
-        { header: "Tipo de TG", accessor: "tipoTG", filtravel: true, tipoFiltro: "select" },
+        { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
         {
             header: "Grupo",
-            accessor: "grupo",
-            filtravel: true,
-            tipoFiltro: "autocomplete",
-            // Render customizado para o botão vermelho
+            accessor: "idGrupo", // Usado apenas como identificador interno
+            filtravel: false,
             render: (row) => (
                 <Button variant='primary'
                     size='lm'
                     className="px-2"
-                    //Passa um objeto com o tipo do modal que será renderizado ao abrir
+                    // Supondo que a API também mande a lista de alunos (adapte se necessário)
                     onClick={() => handleOpen({ type: "INTEGRANTES", row })}
                 >
                     Visualizar Integrantes
                 </Button>
             ),
-
         },
         {
             header: "Data",
-            accessor: "data",
+            accessor: "dataHora",
             filtravel: true,
-            tipoFiltro: "select"
+            tipoFiltro: "select",
+            render: (row) => <span>{formatarData(row.dataHora)}</span>
         },
         {
             header: "Membros da Banca",
             accessor: "membros",
-            filtravel: true,
-            tipoFiltro: "autocomplete",
-            // Render customizado para o botão vermelho
+            filtravel: false,
             render: (row) => (
                 <Button variant='primary'
                     size='lm'
                     className="px-2"
+                    // Adapte caso o DTO traga os membros de fato. Se não trouxer, remova este botão
                     disabled={!row.membros || row.membros.length === 0}
-                    //Passa um objeto com o tipo do modal que será aberto
-                    onClick={() =>
-                        handleOpen({ type: "MEMBROS", row })
-                    }
+                    onClick={() => handleOpen({ type: "MEMBROS", row })}
                 >
                     Visualizar Membros
                 </Button>
@@ -93,10 +124,9 @@ const VisaoBancasArtigos = () => {
         },
         {
             header: "Ações",
-            // Render customizado para os botões de Aceitar/Recusar
             render: (row) => {
-                //Verifica se já foi realizado a banca, se sim habilita btn de nota e desabilita btn de cancelar avaliação
-                const isBancaRealizada = row.situacao === "Pré Banca realizada" || row.situacao === "Banca realizada";
+                // A flag do back-end já nos diz se podemos habilitar o botão
+                const isBancaRealizada = row.podeAtribuirNota;
 
                 return (
                     <Stack direction="horizontal" gap={5} className="justify-content-center">
@@ -104,15 +134,18 @@ const VisaoBancasArtigos = () => {
                             size="lm"
                             disabled={!isBancaRealizada}
                             className={isBancaRealizada ? "fw-bold text-black" : "text-muted border"}
-                            //Passa um objeto com o tipo do modal que será aberto
                             onClick={() => {
                                 handleOpen({ type: "NOTA", row })
                                 setTemaSelecionado(row.tema)
-                                //Injeta id grupo e zera a nota no RHF
-                                setValue("idGrupo", String(row.id));
-                                const arrayNotasIniciais = row.membros.map((nomeMembro) => ({
-                                    nomeMembroBanca: nomeMembro,
-                                    //Inicia todas as notas em 0
+
+                                setValue("idBanca", row.idBanca);
+
+                                // Adapte essa lista conforme os dados que vierem da API 
+                                // (O DTO atual não descreve a lista de membros que dão nota, 
+                                // então estamos assumindo que `row.membros` existe e tem {id, nome})
+                                const arrayNotasIniciais = (row.membros || []).map((membro) => ({
+                                    idMembro: membro.id, // ID real para montar o map depois
+                                    nomeMembroBanca: membro.nome,
                                     nota: 0
                                 }));
 
@@ -127,7 +160,7 @@ const VisaoBancasArtigos = () => {
                             className={isBancaRealizada ? "text-muted border" : "text-black"}
                             onClick={() => {
                                 setTemaSelecionado(row.tema)
-                                setExibirResultado({ exibir: true, mensagem: `Avaliação do grupo de tema: ${temaSelecionado} foi cancelada`, variante: "danger" })
+                                setExibirResultado({ exibir: true, mensagem: `Avaliação do grupo de tema: ${row.tema} foi cancelada`, variante: "danger" })
                             }}>
                             Cancelar Avaliação
                         </Button>
@@ -135,56 +168,19 @@ const VisaoBancasArtigos = () => {
                 )
             }
         }
-    ]
+    ], [handleOpen, setValue]);
 
-    const data = useMemo(() => [
-        {
-            id: 1,
-            tema: "Ética no desenvolvimento de IA",
-            disciplina: "TG2",
-            tipoTG: "Artigo",
-            grupo: ["Joe", "Miranda", "Nat"],
-            data: "[Data de publicação]",
-            membros: ["Professor 1", "Professor 2"],
-            situacao: "Artigo a ser publicado"
-        },
-        {
-            id: 2,
-            tema: "A importância da Cibersegurança",
-            disciplina: "TG1",
-            tipoTG: "Monografia",
-            grupo: ["Ana Maria", "Ashlhey", "James"],
-            data: "25/07/2026 18:30",
-            membros: ["Membro 1 - Professor", "Membro 2 - Membro externo", "Membro 3 - Professor"],
-            situacao: "Pré Banca realizada"
-
-        },
-        {
-            id: 3,
-            tema: "Os perigos do Vibe Coding",
-            disciplina: "TG2",
-            tipoTG: "Desenvolvimento de Software",
-            grupo: ["Mariana Silva", "Samuel", "Geraldo"],
-            data: "26/07/2026 19:00",
-            membros: ["Professor Orientador", "Professor Convidado"],
-            situacao: "Banca marcada"
-        }
-    ], [])
-
-    //Lida com as notas dos membros da banca
     const { fields } = useFieldArray({
         control,
         name: "notas"
     })
 
-    //Observa mudanças no array de notas, para o calculo da média
     const notasEmTempoReal = useWatch({
         control,
         name: "notas",
         defaultValue: []
     });
 
-    //Calcula média das notas
     const calcularMedia = () => {
         if (notasEmTempoReal.length === 0) return 0;
 
@@ -192,20 +188,16 @@ const VisaoBancasArtigos = () => {
             (acc, membro) => acc + Number(membro.nota || 0)
             , 0);
         const media = soma / notasEmTempoReal.length;
-
-        //Caso seja decimal returna apenas 1 casa pós virgula
         return media.toFixed(1)
     }
 
-    // Função auxiliar para renderizar o conteúdo interno do Modal correto
     const renderModalContent = () => {
         if (!selectedData || !selectedData.type) return null;
 
-        // Desestruturamos o objeto que enviamos no handleOpen
         const { type, row: data } = selectedData;
 
         if (type === 'INTEGRANTES' || type === 'MEMBROS') {
-            const listData = type === 'INTEGRANTES' ? data.grupo : data.membros;
+            const listData = type === 'INTEGRANTES' ? (data.alunos || []) : (data.membros || []);
             const title = type === 'INTEGRANTES' ? 'Integrantes do Grupo' : 'Membros da banca';
 
             return (
@@ -218,7 +210,8 @@ const VisaoBancasArtigos = () => {
                     <ul className="list-group list-group-flush text-center">
                         {listData.map((item, index) => (
                             <li key={index} className="list-group-item fs-6 fw-bold" style={{ backgroundColor: '#ffecd9' }}>
-                                {item}
+                                {/* Adaptado caso seja um objeto ou string */}
+                                {item.nome || item}
                             </li>
                         ))}
                     </ul>
@@ -232,7 +225,7 @@ const VisaoBancasArtigos = () => {
                     onSubmit={handleSubmit(enviarParaBackend)}>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <span className="fw-bold fs-5">{`${data.tema} - ${data.disciplina.toUpperCase()}`}</span>
+                            <span className="fw-bold fs-5">{`${data.tema} - ${data.tipoTg.toUpperCase()}`}</span>
                         </div>
                     </Modal.Header>
 
@@ -245,11 +238,9 @@ const VisaoBancasArtigos = () => {
                                 {fields.
                                     map((field, idx) => (
                                         <div key={idx} className="p-4 d-flex flex-column align-items-center gap-2">
-                                            {/* Nome integrante */}
                                             <li className="list-group-item fw-bold" style={{ backgroundColor: '#ffecd9' }}>
                                                 {field.nomeMembroBanca}
                                             </li>
-                                            {/* Nota do integrante */}
                                             <Form.Control
                                                 type="number"
                                                 defaultValue={0}
@@ -289,46 +280,64 @@ const VisaoBancasArtigos = () => {
 
     const enviarParaBackend = async (dadosValidados) => {
         try {
-            // Usa formData para enviar para o backend, o grupo e a nota deles
-            const formData = new FormData();
-            formData.append("idGrupo", dadosValidados.idGrupo);
-            formData.append("notas", dadosValidados.notas); // Pega o arquivo real
+            // Utilizamos o índice (idx) para buscar o idMembro diretamente da variável 'fields'
+            // que mantém os dados originais injetados quando o modal foi aberto, driblando o Zod.
+            const notasMap = dadosValidados.notas.reduce((acc, current, idx) => {
+                const idCorreto = fields[idx].idMembro;
+                acc[idCorreto] = Number(current.nota);
+                return acc;
+            }, {});
 
-            console.log("Enviando para o backend...");
+            const payload = {
+                notasMembros: notasMap
+            };
 
-            // Simula o delay da rede e a resposta do backend lendo o CSV/XLSX
-            setTimeout(() => {
-                const respostaBackend = "200";
-                if (respostaBackend.includes("200")) {
-                    setExibirResultado({ exibir: true, variante: "success", mensagem: `Nota do grupo ${dadosValidados.idGrupo} enviada com sucesso` });
-                } else {
-                    setExibirResultado({ exibir: true, variante: "danger", mensagem: `Erro ao enviar nota: ${dadosValidados.nota} do grupo ${dadosValidados.idGrupo}.` });
-                }
-                reset(); // Limpa o formulário
-            }, 1500);
+            await professorService.atribuirNotasBanca(dadosValidados.idBanca, payload);
+
+            setExibirResultado({
+                exibir: true,
+                variante: "success",
+                mensagem: `Notas da banca atribuídas com sucesso.`
+            });
+
+            // Atualiza a tabela buscando os dados novamente do banco
+            carregarBancas();
 
         } catch (e) {
-            console.log(e)
-            setExibirResultado({ exibir: true, variante: "danger", mensagem: "Erro ao enviar nota, tente novamente" });
+            console.error(e);
+            setExibirResultado({
+                exibir: true,
+                variante: "danger",
+                mensagem: "Erro ao enviar notas. Verifique os dados e tente novamente."
+            });
         } finally {
             handleClose();
             reset();
         }
     };
+
     return (
         <>
             <UserNavBar
-                /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
                 userName='Orientador'
                 maxWidth="1500px"
             />
 
             <Container className="mt-5" style={{ maxWidth: '1500px' }}>
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Visão das Bancas</h2>
-                <TableComponent
-                    colunas={columns}
-                    dados={data}
-                />
+
+                {carregando ? (
+                    <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                        <Spinner animation="border" variant="primary" style={{ width: '4rem', height: '4rem' }} />
+                        <h4 className="mt-3 text-secondary">Carregando bancas...</h4>
+                    </div>
+                ) : (
+                    <TableComponent
+                        colunas={columns}
+                        dados={data}
+                    />
+                )}
+
                 <Modal
                     show={show}
                     onHide={handleClose}
@@ -337,7 +346,7 @@ const VisaoBancasArtigos = () => {
                 >
                     {renderModalContent()}
                 </Modal>
-                {/* Renderiza o alerta de sucesso após passar nas validações */}
+
                 {exibirResultado.exibir && (
                     <Alert variant={exibirResultado.variante} onClose={() => setExibirResultado({ ...exibirResultado, exibir: false })} dismissible className="mt-3" >
                         {exibirResultado.mensagem}
@@ -347,4 +356,4 @@ const VisaoBancasArtigos = () => {
         </>
     )
 }
-export default VisaoBancasArtigos
+export default VisaoBancasArtigos;

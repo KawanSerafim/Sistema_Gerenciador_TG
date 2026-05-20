@@ -84,5 +84,20 @@ export const professorService = {
             method: "POST",
             body: JSON.stringify(payload),
         });
+    },
+
+    // Busca a lista de bancas do orientador
+    listarBancas: async () => {
+        return await apiClient(`/bancas`, {
+            method: "GET",
+        });
+    },
+
+    // Atribui as notas da banca
+    atribuirNotasBanca: async (idBanca, payload) => {
+        return await apiClient(`/bancas/${idBanca}/notas`, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+        });
     }
 }
