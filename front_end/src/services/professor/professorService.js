@@ -70,5 +70,19 @@ export const professorService = {
             method: "POST",
             body: JSON.stringify({ aceita }),
         });
+    },
+
+    /**
+      * Envia os dados para marcar a banca de um grupo.
+      * @param {Object} payload Objeto contendo os dados da requisição
+      * @returns {Promise<void>}
+      */
+    marcarBanca: async (payload) => {
+        // Ajuste a rota base ("/bancas" ou "/professores/bancas") de acordo com 
+        // o @RequestMapping que está na classe do seu Controlador
+        return await apiClient(`/bancas`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
     }
 }
