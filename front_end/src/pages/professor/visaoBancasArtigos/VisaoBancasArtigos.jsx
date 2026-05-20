@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 
 // Importa a service
-import { professorService } from "../../../services/professor/professorService";
+import { bancaService } from "../../../services/banca/bancaService";
 
 const VisaoBancasArtigos = () => {
     // Estados da API
@@ -46,7 +46,7 @@ const VisaoBancasArtigos = () => {
             setCarregando(true);
             // setExibirResultado({ exibir: false, mensagem: "", variante: "" });
 
-            const response = await professorService.listarBancas();
+            const response = await bancaService.listarBancas();
             setData(response);
         } catch (error) {
             console.error(error);
@@ -172,13 +172,36 @@ const VisaoBancasArtigos = () => {
                             size="lm"
                             disabled={podeSerAvaliada}
                             className={podeSerAvaliada ? "text-muted border" : "text-black"}
-                            onClick={() => {
-                                setTemaSelecionado(row.tema)
-                                setExibirResultado({ exibir: true, mensagem: `Avaliação do grupo de tema: ${row.tema} foi cancelada`, variante: "danger" })
+                            onClick={async () => {
+                                // Confirmação simples para evitar cliques acidentais
+                                const confirmar = window.confirm(`Tem certeza que deseja cancelar a avaliação do tema: ${row.tema}?`);
+                                if (!confirmar) return;
+
+                                try {
+                                    // 2. Chama a service
+                                    await bancaService.cancelarBanca(row.idBanca);
+
+                                    // 3. Exibe o sucesso
+                                    setExibirResultado({
+                                        exibir: true,
+                                        mensagem: `Avaliação do grupo "${row.tema}" foi cancelada com sucesso.`,
+                                        variante: "success" // Opcional: pode manter "danger" se preferir a cor vermelha para cancelamentos
+                                    });
+
+                                    // 4. Atualiza a tabela!
+                                    carregarBancas();
+                                } catch (error) {
+                                    console.error(error);
+                                    setExibirResultado({
+                                        exibir: true,
+                                        mensagem: "Erro ao tentar cancelar a avaliação.",
+                                        variante: "danger"
+                                    });
+                                }
                             }}>
                             Cancelar Avaliação
                         </Button>
-                    </Stack>
+                    </Stack >
                 )
             }
         }
@@ -306,7 +329,7 @@ const VisaoBancasArtigos = () => {
                 notasMembros: notasMap
             };
 
-            await professorService.atribuirNotasBanca(dadosValidados.idBanca, payload);
+            await bancaService.atribuirNotasBanca(dadosValidados.idBanca, payload);
 
             setExibirResultado({
                 exibir: true,
