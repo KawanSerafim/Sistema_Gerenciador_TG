@@ -47,5 +47,28 @@ export const professorService = {
         return await apiClient(url, {
             method: "GET",
         });
+    },
+
+    /**
+     * Listar solicitações orientação pendentes
+     * 
+     */
+    listarSolicitacoesPendentes: async () => {
+        return await apiClient(`/solicitacoes-orientacao/pendentes`, {
+            method: "GET",
+        });
+    },
+
+    /**
+     * Responder solicitação de orientação
+     * @param {String} idSolicitacao 
+     * @param {Boolean} aceita 
+     * @returns 
+     */
+    responderSolicitacao: async (idSolicitacao, aceita) => {
+        return await apiClient(`/solicitacoes-orientacao/${idSolicitacao}/responder`, {
+            method: "POST",
+            body: JSON.stringify({ aceita }),
+        });
     }
 }

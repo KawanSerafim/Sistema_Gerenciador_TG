@@ -1,57 +1,27 @@
-import { Alert, Button, Col, Container, Modal, Row, Stack } from 'react-bootstrap';
+import { Alert, Button, Col, Container, Modal, Row, Spinner, Stack } from 'react-bootstrap';
 import TableComponent from '../../../components/table/TableComponent'
 import UserNavBar from '../../../components/usernavbar/UserNavBar';
 import "../../../styles/ModalIntegrantes.css"
 import { useModal } from '../../../hooks/useModal/useModal';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { professorService } from '../../../services/professor/professorService';
 
 const VisaoSolicitacaoOrientacao = () => {
 
-    const [exibirAprovacao, setExibirAprovacao] = useState(false)
-    const [grupoSelecionado, setGrupoSelecionado] = useState(null)
-    const [resultadoPedido, setResultadoPedido] = useState(false)
+    // Estados da API
+    const [data, setData] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [processandoAcaoId, setProcessandoAcaoId] = useState(null);
 
-    //Dados vem antes das funções que o usam
-    const data = useMemo(() => [
-        {
-            id: 1,
-            aluno: "Leonardo Silva Kennedy",
-            contato: { email: "leon.kennedy@cps.sp.gov.br", linkedin: "http://linkedin/in/leon-silva-kennedy" },
-            tema: "Ética no desenvolvimento de IA",
-            descricaoTema: "Artigo sobre ética no desenvolvimento de Inteligências Artificiais",
-            tipoTg: "Artigo",
-            grupo: ["Leonardo Kennedy", "Ashley Graça", "Clara Ruivo"]
-        },
-        {
-            id: 2,
-            aluno: "Ana Maria",
-            contato: { email: "ana.maria@fatec.sp.gov.br", linkedin: "" },
-            tema: "A importância da Cibersegurança",
-            descricaoTema: "Monografia sobre a importância da cibersegurança",
-            tipoTg: "Monografia",
-            grupo: ["Ana Maria", "Natalia", "James"]
-        },
-        {
-            id: 3,
-            aluno: "Mariana Campos",
-            contato: { email: "mariana.campos@cps.sp.gov.br", linkedin: "http://linkedin/in/mariana-campos" },
-            tema: "Os perigos do Vibe Coding",
-            tipoTg: "Monografia",
-            grupo: ["Mariana Campos", "Samuel Smith", "Geraldo de Rivia"]
-        }
-    ], [])
+    // Estado unificado para controle de alertas de sucesso e erro
+    const [resultadoPedido, setResultadoPedido] = useState({
+        exibir: false,
+        variante: "",
+        mensagem: ""
+    });
 
-
-    const handlePedidoOrientacao = (aluno, resultado) => {
-        const dadosGrupo = data.filter(i => i.aluno == aluno).at(0)
-        setGrupoSelecionado(dadosGrupo)
-        setResultadoPedido(resultado)
-        setExibirAprovacao(true)
-    }
-
-    //TODO: //columns = buscara do backend  //data = buscara do backend   
-    //Modal integrantes
-    //Usando hook do modal
+    // Hook customizado do modal
     const {
         show,
         selectedData,
@@ -59,25 +29,81 @@ const VisaoSolicitacaoOrientacao = () => {
         handleClose
     } = useModal(null);
 
-    //Mocks temporarios
+    // Busca os dados das solicitações pendentes no backend
+    const carregarSolicitacoes = async () => {
+        try {
+            setCarregando(true);
+            setResultadoPedido({ exibir: false, variante: "", mensagem: "" });
+
+            const response = await professorService.listarSolicitacoesPendentes();
+            setData(response);
+        } catch (error) {
+            console.error("Erro ao listar pendentes:", error);
+            setResultadoPedido({
+                exibir: true,
+                variante: "danger",
+                mensagem: "Não foi possível carregar a lista de solicitações. Tente novamente."
+            });
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    // Executa a busca assim que a tela é montada
+    useEffect(() => {
+        carregarSolicitacoes();
+    }, []);
+
+    // Envia a resposta (aceitar/recusar) para o backend
+    const handlePedidoOrientacao = async (row, resultado) => {
+        try {
+            setProcessandoAcaoId(row.idSolicitacao);
+            setResultadoPedido({ exibir: false, variante: "", mensagem: "" });
+
+            // Chama a rota de resposta passando o id e a decisão
+            await professorService.responderSolicitacao(row.idSolicitacao, resultado);
+
+            // Remove a solicitação processada da tabela visual
+            setData(prevData => prevData.filter(item => item.idSolicitacao !== row.idSolicitacao));
+
+            setResultadoPedido({
+                exibir: true,
+                variante: "success",
+                mensagem: `Orientação do grupo do aluno: ${row.nomeAlunoRepresentante} foi ${resultado ? "aceita" : "recusada"} com sucesso`
+            });
+
+            // Oculta o alerta após alguns segundos
+            setTimeout(() => setResultadoPedido({ exibir: false, variante: "", mensagem: "" }), 5000);
+
+        } catch (error) {
+            console.error("Erro ao processar resposta:", error);
+            setResultadoPedido({
+                exibir: true,
+                variante: "danger",
+                mensagem: error.message || "Ocorreu um erro ao processar a solicitação."
+            });
+        } finally {
+            setProcessandoAcaoId(null);
+        }
+    };
+
+    // Define as colunas da tabela mapeando para o DTO do backend
     const columns = useMemo(() => [
         {
             header: "Aluno solicitante",
-            accessor: "aluno", filtravel: true, tipoFiltro: "autocomplete"
+            accessor: "nomeAlunoRepresentante", filtravel: true, tipoFiltro: "autocomplete"
         },
         { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
         { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
         {
             header: "Grupo",
-            accessor: "grupo",
+            accessor: "nomesIntegrantes",
             filtravel: true,
             tipoFiltro: "autocomplete",
-            // Render customizado para o botão vermelho
             render: (row) => (
                 <Button variant='primary'
                     size='lm'
                     className="px-2"
-                    //Passa a lista dos integrantes do grupo da linha selecionada
                     onClick={() => handleOpen({ type: "INTEGRANTES", row })}
                 >
                     Visualizar Integrantes
@@ -86,9 +112,8 @@ const VisaoSolicitacaoOrientacao = () => {
         },
         {
             header: "Contato do aluno",
-            accessor: "contato",
+            accessor: "emailContato",
             render: (row) => (
-                // O botão variant="link" parece texto normal, mas é clicável!
                 <Button
                     variant="primary"
                     size='lm'
@@ -101,38 +126,43 @@ const VisaoSolicitacaoOrientacao = () => {
         },
         {
             header: "Ações",
-            // Render customizado para os botões de Aceitar/Recusar
-            render: (row) => (
-                <Stack direction="horizontal" gap={5} className="justify-content-center">
-                    <Button variant="success" size="lm"
-                        className="fs-5"
-                        onClick={() => handlePedidoOrientacao(row.aluno, true)}>
-                        Aceitar
-                    </Button>
-                    <Button variant="danger" size="lm"
-                        className="fs-5 text-black"
-                        onClick={() => handlePedidoOrientacao(row.aluno, false)}>
-                        Recusar
-                    </Button>
-                </Stack>
-            )
+            render: (row) => {
+                const isProcessando = processandoAcaoId === row.idSolicitacao;
+                return (
+                    <Stack direction="horizontal" gap={5} className="justify-content-center">
+                        <Button variant="success" size="lm"
+                            className="fs-5"
+                            disabled={isProcessando}
+                            onClick={() => handlePedidoOrientacao(row, true)}>
+                            Aceitar
+                        </Button>
+                        <Button variant="danger" size="lm"
+                            className="fs-5 text-black"
+                            disabled={isProcessando}
+                            onClick={() => handlePedidoOrientacao(row, false)}>
+                            Recusar
+                        </Button>
+                    </Stack>
+                );
+            }
         }
-    ], [handleOpen]);
+    ], [handleOpen, processandoAcaoId]);
 
-
-    // Função auxiliar para renderizar o conteúdo interno do Modal correto
+    // Função auxiliar para renderizar o conteúdo interno do Modal com base nos dados do backend
     const renderModalContent = () => {
         if (!selectedData || !selectedData.type) return null;
 
-        // Desestruturamos o objeto que enviamos no handleOpen
         const { type, row: data } = selectedData;
 
         if (type === 'CONTATO') {
+            // Busca a URL do LinkedIn dentro do mapa de redes sociais de forma segura
+            const linkedinUrl = data.redesSociais && (data.redesSociais["LINKEDIN"] || Object.values(data.redesSociais)[0]);
+
             return (
                 <>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <h5>Contatos de {data.aluno}</h5>
+                            <h5>Contatos de {data.nomeAlunoRepresentante}</h5>
                         </div>
                     </Modal.Header>
 
@@ -143,7 +173,7 @@ const VisaoSolicitacaoOrientacao = () => {
                             </div>
                             <ul className="list-group list-group-flush ">
                                 <li className="list-group-item text-break fs-5" style={{ backgroundColor: '#ffecd9' }}>
-                                    <a className="" href={`mailto:${data.contato.email}`}>{data.contato.email}</a>
+                                    <a className="" href={`mailto:${data.emailContato}`}>{data.emailContato}</a>
                                 </li>
                             </ul>
                         </Col>
@@ -152,10 +182,10 @@ const VisaoSolicitacaoOrientacao = () => {
                                 LinkedIn
                             </div>
                             <ul className="list-group list-group-flush">
-                                {data.contato.linkedin ? (
+                                {linkedinUrl ? (
                                     <>
                                         <li className="list-group-item fs-5" style={{ backgroundColor: '#ffecd9' }}>
-                                            <a href={data.contato.linkedin} target='_blank' rel='noopener noreferrer'>
+                                            <a href={linkedinUrl} target='_blank' rel='noopener noreferrer'>
                                                 Acessar Perfil
                                             </a>
                                         </li>
@@ -182,7 +212,7 @@ const VisaoSolicitacaoOrientacao = () => {
                         </div>
                     </Modal.Header>
                     <ul className="list-group list-group-flush text-center">
-                        {data.grupo.map((item, index) => (
+                        {data.nomesIntegrantes?.map((item, index) => (
                             <li key={index} className="list-group-item fs-5" style={{ backgroundColor: '#ffecd9' }}>
                                 {item}
                             </li>
@@ -195,20 +225,27 @@ const VisaoSolicitacaoOrientacao = () => {
 
     return (
         <>
-
             <UserNavBar
-                /*Deve verificar qual o nome do usuario logado para ser passado ao componente*/
                 userName='Orientador'
                 maxWidth='1500px'
             />
 
             <Container className="mt-5" style={{ maxWidth: '1500px' }}>
                 <h2 className='text-black p-3 fs-1 rounded-top-4 text-center mb-5'>Solicitações de Orientações</h2>
-                <TableComponent
-                    colunas={columns}
-                    dados={data}
-                />
-                {/* MODAL DE INTEGRANTES */}
+
+                {carregando ? (
+                    <div className="d-flex flex-column align-items-center justify-content-center py-5">
+                        <Spinner animation="border" variant="primary" style={{ width: '4rem', height: '4rem' }} />
+                        <h4 className="mt-3 text-secondary">Carregando solicitações...</h4>
+                    </div>
+                ) : (
+                    <TableComponent
+                        colunas={columns}
+                        dados={data}
+                    />
+                )}
+
+                {/* MODAL DE INTEGRANTES E CONTATO */}
                 <Modal
                     show={show}
                     onHide={handleClose}
@@ -217,14 +254,21 @@ const VisaoSolicitacaoOrientacao = () => {
                 >
                     {renderModalContent()}
                 </Modal>
-                {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirAprovacao && (
-                    <Alert variant="success" onClose={() => setExibirAprovacao(false)} dismissible className="mt-3" >
-                        {`Orientação do grupo do aluno: ${grupoSelecionado.aluno} foi ${resultadoPedido ? "aceita" : "recusada"} com sucesso`}
+
+                {/* Renderiza o alerta de erro ou sucesso na base da página */}
+                {resultadoPedido.exibir && (
+                    <Alert
+                        variant={resultadoPedido.variante}
+                        onClose={() => setResultadoPedido({ exibir: false, variante: "", mensagem: "" })}
+                        dismissible
+                        className="mt-3 fs-5 fw-medium text-center shadow-sm"
+                    >
+                        {resultadoPedido.mensagem}
                     </Alert>
                 )}
             </Container>
         </>
     )
+
 }
 export default VisaoSolicitacaoOrientacao;
