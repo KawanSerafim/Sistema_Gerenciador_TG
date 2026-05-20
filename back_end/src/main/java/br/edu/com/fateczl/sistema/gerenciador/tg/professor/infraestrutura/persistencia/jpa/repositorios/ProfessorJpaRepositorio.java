@@ -1,6 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.persistencia.jpa.repositorios;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Autoridade;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.persistencia.jpa.modelo.ProfessorModelo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +22,9 @@ public interface ProfessorJpaRepositorio
     Optional<ProfessorModelo> findByEmailDaConta(
             @Param("email") String email
     );
-
-    List<ProfessorModelo> findByCargo(CargoProfessor cargoProfessor);
+    @Query("SELECT p FROM ProfessorModelo p " +
+            "JOIN ContaUsuarioModelo c ON p.contaUsuarioId = c.id " +
+            "JOIN c.autoridades a " +
+            "WHERE a = :autoridadeBuscada")
+    List<ProfessorModelo> buscarPorAutoridade(@Param("autoridadeBuscada") Autoridade autoridadeBuscada);
 }

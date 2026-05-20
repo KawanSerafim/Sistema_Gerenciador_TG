@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.persistencia.jpa.repositorios;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Autoridade;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
@@ -43,19 +44,18 @@ public class ProfessorRepositorioImpl implements ProfessorRepositorio {
 
     /**
      * Lista os professores por cargoProfessor
-     * @param cargoProfessor enum cargoProfessor
+     * @param autoridade enum Autoridade do professor ('ROLE_COORDENADOR_CURSO','ROLE_ORIENTADOR','ROLE_PROFESSOR_TG')
      * @return (List<Professor>) lista de professores ou lista vazia
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Professor> listarPorCargoProfessor(CargoProfessor cargoProfessor) {
+    public List<Professor> listarPorAutoridadeProfessor(Autoridade autoridade) {
+
         //Pega no BD como modelo
-        List<ProfessorModelo> professoresModelo = repositorio.findByCargo(cargoProfessor);
+        List<ProfessorModelo> professoresModelo = repositorio.buscarPorAutoridade(autoridade);
         //Para cada modelo chama o mapeador e transforma em entidade dominio, junto tudo em lista
         return professoresModelo.stream()
                     .map(ProfessorMapeador::paraDominio).toList();
-
-
     }
 
     @Override

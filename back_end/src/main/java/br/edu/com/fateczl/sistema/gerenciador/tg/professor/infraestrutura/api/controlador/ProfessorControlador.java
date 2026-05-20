@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/professores")
-//Cross origin super permissivo temporário
-@CrossOrigin("*")
 public class ProfessorControlador {
 
     private final ListarCargosProfessorCaso listarCargosProfessorCaso;

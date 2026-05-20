@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Autoridade;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.CargoProfessor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -34,9 +35,11 @@ public class ListarProfessoresPorCargoCaso {
      */
     public Resposta executar(Comando comando) {
         //Valida se o cargo da requisição é valido
-        CargoProfessor cargoEnum;
-        try{
-            cargoEnum = CargoProfessor.valueOf(comando.cargo().toUpperCase());
+        String stringAutoridade = "ROLE_" + comando.cargo().toUpperCase();
+
+        Autoridade autoridadeEnum;
+        try {
+            autoridadeEnum = Autoridade.valueOf(stringAutoridade);
         }
         catch (IllegalArgumentException e) {
             throw new ValidacaoExcecao(VD_005_PADRAO_INVALIDO,
@@ -45,7 +48,7 @@ public class ListarProfessoresPorCargoCaso {
         }
 
         //Busca entidades usando interface
-        List<Professor> professors = repositorio.listarPorCargoProfessor(cargoEnum);
+        List<Professor> professors = repositorio.listarPorAutoridadeProfessor(autoridadeEnum);
 
         List<ProfessorResumoDTO> dtos = professors.stream()
                 .map( professor -> new ProfessorResumoDTO(
