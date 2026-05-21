@@ -12,6 +12,9 @@ import { camposSchema } from "../../../schemas/professor/marcarBanca/marcarBanca
 
 // Importa a service com as chamadas da API
 import { bancaService } from "../../../services/banca/bancaService";
+import { grupoService } from "../../../services/grupotg/grupoService";
+import { professorService } from "../../../services/professor/professorService";
+
 
 const MarcarBanca = () => {
 
@@ -65,8 +68,8 @@ const MarcarBanca = () => {
 
                 // Dispara as duas requisições em paralelo para maior performance
                 const [gruposData, professoresData] = await Promise.all([
-                    bancaService.buscarGruposOrientados(),
-                    bancaService.buscaProfessoresPorCargo("ORIENTADOR")
+                    grupoService.buscarGruposOrientados(),
+                    professorService.buscaProfessoresPorCargo("ORIENTADOR")
                 ]);
 
                 setGrupos(gruposData);

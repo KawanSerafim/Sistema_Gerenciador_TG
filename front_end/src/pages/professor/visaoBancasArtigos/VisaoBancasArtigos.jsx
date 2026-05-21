@@ -1,7 +1,7 @@
 import { Alert, Button, Col, Container, Form, Modal, Row, Stack, Spinner } from "react-bootstrap";
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 import TableComponent from "../../../components/table/TableComponent";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useModal } from "../../../hooks/useModal/useModal";
 import { bloquearCaracteresInputNumber } from "../../../utils/utils";
 
@@ -20,9 +20,7 @@ const VisaoBancasArtigos = () => {
     const [exibirResultado, setExibirResultado] = useState({
         exibir: false, mensagem: "", variante: ""
     });
-
     const [_temaSelecionado, setTemaSelecionado] = useState(null);
-
     const { show, selectedData, handleOpen, handleClose } = useModal(null);
 
     const {
@@ -41,7 +39,8 @@ const VisaoBancasArtigos = () => {
     });
 
     // Busca os dados da API ao carregar
-    const carregarBancas = async () => {
+    // Função memorizada para não causar re-renderizações em cadeia
+    const carregarBancas = useCallback(async () => {
         try {
             setCarregando(true);
             // setExibirResultado({ exibir: false, mensagem: "", variante: "" });
@@ -58,11 +57,11 @@ const VisaoBancasArtigos = () => {
         } finally {
             setCarregando(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         carregarBancas();
-    }, []);
+    }, [carregarBancas]);
 
     // Formata a data ISO do backend para string amigável no BR
     const formatarData = (dataIso) => {
@@ -74,13 +73,41 @@ const VisaoBancasArtigos = () => {
         });
     };
 
+    // Função exclusiva para lidar com o cancelamento da banca
+    const handleCancelarAvaliacao = useCallback(async (idBanca, tema) => {
+        const confirmar = window.confirm(`Tem certeza que deseja cancelar a avaliação do tema: ${tema}?`);
+        if (!confirmar) return;
+
+        try {
+            // Chama a service que bate no endpoint PATCH /bancas/{idBanca}/cancelar
+            await bancaService.cancelarBanca(idBanca);
+
+            setExibirResultado({
+                exibir: true,
+                mensagem: `Avaliação do grupo "${tema}" foi cancelada com sucesso.`,
+                variante: "success"
+            });
+
+            // Atualiza a tabela para refletir o novo status "Cancelada"
+            carregarBancas();
+        } catch (error) {
+            console.error(error);
+            setExibirResultado({
+                exibir: true,
+                mensagem: "Erro ao tentar cancelar a avaliação. Tente novamente.",
+                variante: "danger"
+            });
+        }
+    }, [carregarBancas]);
+
     const columns = useMemo(() => [
         { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
         { header: "Tipo de TG", accessor: "tipoTg", filtravel: true, tipoFiltro: "select" },
         {
             header: "Grupo",
-            accessor: "idGrupo", // Usado apenas como identificador interno
-            filtravel: false,
+            accessor: "alunos",
+            filtravel: true,
+            tipoFiltro: "autocomplete",
             render: (row) => (
                 <Button variant='primary'
                     size='lm'
@@ -123,6 +150,11 @@ const VisaoBancasArtigos = () => {
             render: (row) => {
                 console.log(`situacao: ${row.situacao}`)
                 // Trata o estado quando a data passou mas ainda não possui nota
+                if (row.situacao === "Marcada") {
+                    const prefixoBanca = row.disciplina?.includes("TG1") ? "Pré-banca" : "Banca";
+                    return <span className="fw-medium text-primary">{prefixoBanca} marcada</span>;
+                }
+
                 if (row.situacao === "Realizada") {
                     const prefixoBanca = row.disciplina?.includes("TG1") ? "Pré-banca" : "Banca";
                     return <span className="fw-medium text-primary">{prefixoBanca} realizada</span>;
@@ -144,6 +176,8 @@ const VisaoBancasArtigos = () => {
             render: (row) => {
                 // A flag do back-end já nos diz se podemos habilitar o botão, se foi marcada e se não foi avaliada
                 const podeSerAvaliada = row.podeAtribuirNota;
+
+                const podeSerCancelada = row.situacao == "Marcada" ? true : false;
 
                 return (
                     <Stack direction="horizontal" gap={5} className="justify-content-center">
@@ -168,44 +202,18 @@ const VisaoBancasArtigos = () => {
                             Atribuir Nota
                         </Button>
                         <Button
-                            variant={podeSerAvaliada ? "light" : "danger"}
+                            variant={podeSerCancelada ? "danger" : "light"}
                             size="lm"
-                            disabled={podeSerAvaliada}
-                            className={podeSerAvaliada ? "text-muted border" : "text-black"}
-                            onClick={async () => {
-                                // Confirmação simples para evitar cliques acidentais
-                                const confirmar = window.confirm(`Tem certeza que deseja cancelar a avaliação do tema: ${row.tema}?`);
-                                if (!confirmar) return;
-
-                                try {
-                                    // 2. Chama a service
-                                    await bancaService.cancelarBanca(row.idBanca);
-
-                                    // 3. Exibe o sucesso
-                                    setExibirResultado({
-                                        exibir: true,
-                                        mensagem: `Avaliação do grupo "${row.tema}" foi cancelada com sucesso.`,
-                                        variante: "success" // Opcional: pode manter "danger" se preferir a cor vermelha para cancelamentos
-                                    });
-
-                                    // 4. Atualiza a tabela!
-                                    carregarBancas();
-                                } catch (error) {
-                                    console.error(error);
-                                    setExibirResultado({
-                                        exibir: true,
-                                        mensagem: "Erro ao tentar cancelar a avaliação.",
-                                        variante: "danger"
-                                    });
-                                }
-                            }}>
+                            disabled={!podeSerCancelada}
+                            className={podeSerCancelada ? "text-black" : "text-muted border"}
+                            onClick={() => handleCancelarAvaliacao(row.idBanca, row.tema)}>
                             Cancelar Avaliação
                         </Button>
                     </Stack >
                 )
             }
         }
-    ], [handleOpen, setValue]);
+    ], [handleOpen, handleCancelarAvaliacao, setValue]);
 
     const { fields } = useFieldArray({
         control,
