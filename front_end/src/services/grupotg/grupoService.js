@@ -31,5 +31,26 @@ export const grupoService = {
       method: "PATCH",
       body: JSON.stringify(payload),
     });
-  }
+  },
+  /**
+  * Busca os grupos orientados pelo professor logado.
+  * @param {string|number} ano (Opcional) Ano letivo
+  * @param {string|number} semestre (Opcional) Semestre letivo
+  * @returns {Promise<Array>} Lista de grupos
+  */
+  buscarGruposOrientados: async (ano, semestre) => {
+    let url = "/gruposTg/grupos-orientados"; // Ajuste o prefixo se o seu @RequestMapping for diferente
+    const params = [];
+
+    if (ano) params.push(`ano=${ano}`);
+    if (semestre) params.push(`semestre=${semestre}`);
+
+    if (params.length > 0) {
+      url += `?${params.join("&")}`;
+    }
+
+    return await apiClient(url, {
+      method: "GET",
+    });
+  },
 };
