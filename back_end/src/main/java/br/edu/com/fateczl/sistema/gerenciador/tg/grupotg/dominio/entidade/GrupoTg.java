@@ -24,6 +24,7 @@ public class GrupoTg {
     private TemaTg temaTg;
     private TipoTg tipoTg;
     private List<AlunoId> alunosIds;
+    private String caminhoArquivoTrabalho;
 
     private GrupoTg(
             GrupoTgId id,
@@ -34,7 +35,8 @@ public class GrupoTg {
             Set<Disciplina> disciplinas,
             TemaTg temaTg,
             TipoTg tipoTg,
-            List<AlunoId> alunosIds
+            List<AlunoId> alunosIds,
+            String caminhoArquivoTrabalho
     ) {
         this.id = assegurarPresenca(id, "ID");
         this.orientadorId = orientadorId;
@@ -45,6 +47,7 @@ public class GrupoTg {
         this.temaTg = assegurarPresenca(temaTg, "tema de TG");
         this.tipoTg = assegurarPresenca(tipoTg, "tipo de TG");
         this.alunosIds = new ArrayList<>((assegurarPresencaAlunos(alunosIds)));
+        this.caminhoArquivoTrabalho = caminhoArquivoTrabalho;
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
@@ -64,7 +67,10 @@ public class GrupoTg {
                 disciplinas,
                 temaTg,
                 tipoTg,
-                alunosIds);
+                alunosIds,
+                //Quando é novo, não tem arquivo trabalho tg
+                null
+        );
     }
 
     public static GrupoTg carregar(
@@ -76,7 +82,8 @@ public class GrupoTg {
             Set<Disciplina> disciplinas,
             TemaTg temaTg,
             TipoTg tipoTg,
-            List<AlunoId> alunosIds
+            List<AlunoId> alunosIds,
+            String caminhoArquivoTrabalho
     ) {
         return new GrupoTg(
                 id,
@@ -87,7 +94,8 @@ public class GrupoTg {
                 disciplinas,
                 temaTg,
                 tipoTg,
-                alunosIds
+                alunosIds,
+                caminhoArquivoTrabalho
         );
     }
 
@@ -164,6 +172,21 @@ public class GrupoTg {
         this.tipoCoorientador = assegurarPresenca(tipo, "tipo de coorientador");
     }
 
+    /**
+     * Lida com o caminho do arquivo de trabalho tg
+     * @param caminhoArquivoTrabalho String
+     */
+    public void vincularArquivoTrabalhoTg(String caminhoArquivoTrabalho){
+        //Precisa ter orientador
+        if (this.orientadorId == null) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "grupo", "precisa ter um orientador principal antes de enviar arquivo de trabalho tg"
+            );
+        }
+        this.caminhoArquivoTrabalho = caminhoArquivoTrabalho;
+    }
+
     // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     public void atualizarDisciplina(Set<Disciplina> novasDisciplinas) {
@@ -207,4 +230,10 @@ public class GrupoTg {
     public List<AlunoId> alunosIds() {
         return Collections.unmodifiableList(alunosIds);
     }
+    public String caminhoArquivoTrabalho(){
+        if (caminhoArquivoTrabalho != null){
+            return this.caminhoArquivoTrabalho;
+        }
+        return null;
+    };
 }

@@ -65,4 +65,7 @@ public class GrupoTgModelo {
     )
     @Column(length = 36, nullable = false)
     private List<String> alunosIds;
+
+    @Column(length = 150, nullable = true, name = "caminho_arquivo_tg")
+    private String caminhoArquivoTg = null;
 }

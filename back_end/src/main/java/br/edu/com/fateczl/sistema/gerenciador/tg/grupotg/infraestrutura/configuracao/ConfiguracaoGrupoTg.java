@@ -3,10 +3,8 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.configu
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.repositorio.CoorientadorExternoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGrupoAlunoCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarVisaoGruposProfessorCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.GerarGrupoTgCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.VincularCoorientadorExternoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.*;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.portas.ArmazenamentoArquivoPorta;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.servicos.ValidadorComposicaoGrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -75,5 +73,17 @@ public class ConfiguracaoGrupoTg {
             ProfessorRepositorio professorRepositorio
     ) {
         return new BuscarGrupoAlunoCaso(alunoRepositorio,grupoTgRepositorio,professorRepositorio);
+    }
+
+    @Bean
+    public EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso(
+            GrupoTgRepositorio grupoTgRepositorio,
+            AlunoRepositorio alunoRepositorio,
+            ArmazenamentoArquivoPorta armazenamentoPorta
+    ){
+        return new EnviarTrabalhoGraduacaoCaso(
+                grupoTgRepositorio,
+                alunoRepositorio,
+                armazenamentoPorta);
     }
 }

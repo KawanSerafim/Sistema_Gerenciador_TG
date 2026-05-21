@@ -4,9 +4,12 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.G
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,6 +22,7 @@ public class GrupoTgControlador {
     private final VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso;
     private final BuscarGruposOrientadosCaso buscarGruposOrientadosCaso;
     private final BuscarGrupoAlunoCaso buscarGrupoAlunoCaso;
+    private final EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso;
     
 
     public GrupoTgControlador(
@@ -27,7 +31,8 @@ public class GrupoTgControlador {
             GeradorToken geradorToken,
             VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso,
             BuscarGruposOrientadosCaso buscarGruposOrientadosCaso,
-            BuscarGrupoAlunoCaso buscarGrupoAlunoCaso
+            BuscarGrupoAlunoCaso buscarGrupoAlunoCaso,
+            EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso
     ) {
         this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
@@ -35,6 +40,7 @@ public class GrupoTgControlador {
         this.vincularCoorientadorExternoCaso = vincularCoorientadorExternoCaso;
         this.buscarGruposOrientadosCaso = buscarGruposOrientadosCaso;
         this.buscarGrupoAlunoCaso = buscarGrupoAlunoCaso;
+        this.enviarTrabalhoGraduacaoCaso = enviarTrabalhoGraduacaoCaso;
     }
 
     /**
@@ -137,19 +143,6 @@ public class GrupoTgControlador {
         return ResponseEntity.ok(resposta);
     }
 
-    // ========= DTOs =====
-    public record GerarGrupoRequisicao(
-            String tema,
-            String descricaoTema,
-            TipoTg tipoTg,
-            List<String> matriculasAlunos
-    ){}
-
-    public record VincularCoorientadorRequisicao(
-            String nome,
-            String origem
-    ) {}
-
     /**
      * Busca informações do grupo do aluno logado
      * @param headerAutorizacao
@@ -167,4 +160,37 @@ public class GrupoTgControlador {
 
         return ResponseEntity.ok(resposta);
     }
+    // =========== Envio de trabalho de graduacao =========//
+    @PostMapping(value = "/trabalho", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> enviarTrabalho(
+            @RequestParam("file") MultipartFile file,
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) throws IOException {
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String idAlunoLogado = geradorToken.extrairId(token);
+
+        // Pega os bytes da requisição
+        var comando = new EnviarTrabalhoGraduacaoCaso.Comando(
+                idAlunoLogado,
+                file.getOriginalFilename(),
+                file.getBytes()
+        );
+
+        enviarTrabalhoGraduacaoCaso.executar(comando);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // ========= DTOs =====
+    public record GerarGrupoRequisicao(
+            String tema,
+            String descricaoTema,
+            TipoTg tipoTg,
+            List<String> matriculasAlunos
+    ){}
+
+    public record VincularCoorientadorRequisicao(
+            String nome,
+            String origem
+    ) {}
 }

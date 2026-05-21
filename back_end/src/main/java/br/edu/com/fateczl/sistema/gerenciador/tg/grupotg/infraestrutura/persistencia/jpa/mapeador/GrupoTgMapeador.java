@@ -29,7 +29,8 @@ public class GrupoTgMapeador {
                 dominio.nomeTemaTg(),
                 dominio.descricaoTemaTg(),
                 dominio.tipoTg(),
-                alunosIdsTexto
+                alunosIdsTexto,
+                dominio.caminhoArquivoTrabalho()
         );
     }
 
@@ -52,11 +53,12 @@ public class GrupoTgMapeador {
                 orientadorId,
                 modelo.getCoorientadorId(),
                 modelo.getTipoCoorientador(),
-                new CursoId(UUID.fromString(modelo.getId())),
+                new CursoId(UUID.fromString(modelo.getCursoId())),
                 modelo.getDisciplinas(),
                 temaTg,
                 modelo.getTipoTg(),
-                alunosIds
+                alunosIds,
+                modelo.getCaminhoArquivoTg()
         );
     }
 }
