@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Container, Form, Alert, Button, Spinner, Row, Col, Modal } from "react-bootstrap";
-import { professorService } from "../../../services/professor/professorService"; // Ajuste o caminho
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 import { useModal } from "../../../hooks/useModal/useModal";
 import TableComponent from "../../../components/table/TableComponent";
+import { grupoService } from "../../../services/grupotg/grupoService";
 
 const VisaoGruposOrientados = () => {
     // Estados dos Filtros da API (Ano e Semestre)
@@ -58,7 +58,7 @@ const VisaoGruposOrientados = () => {
                 const anoParam = filtroAno || null;
                 const semestreParam = filtroSemestre || null;
 
-                const response = await professorService.buscarGruposOrientados(anoParam, semestreParam);
+                const response = await grupoService.buscarGruposOrientados(anoParam, semestreParam);
 
                 // Mapeia os dados do DTO do Java para o TableComponent
                 const dadosFormatados = response.map(item => ({

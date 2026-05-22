@@ -86,6 +86,11 @@ export const apiClient = async (endpoint, options = {}) => {
             throw erroCustomizado;
         }
 
+        // Se a chamada marcou que quer a resposta bruta (ex: downloads de arquivos)
+        if (options.skipJsonParse) {
+            return resposta;
+        }
+
         //Se deu tudo certo, tenta devolver o JSON (ou vazio dependendo do caso)
         if (resposta.status !== 204) {
             const text = await resposta.text();

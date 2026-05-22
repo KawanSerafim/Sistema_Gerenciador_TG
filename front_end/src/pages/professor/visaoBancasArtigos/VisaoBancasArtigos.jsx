@@ -11,6 +11,7 @@ import { useForm, useFieldArray, useWatch } from "react-hook-form";
 
 // Importa a service
 import { bancaService } from "../../../services/banca/bancaService";
+import { grupoService } from "../../../services/grupotg/grupoService";
 
 const VisaoBancasArtigos = () => {
     // Estados da API
@@ -99,6 +100,37 @@ const VisaoBancasArtigos = () => {
             });
         }
     }, [carregarBancas]);
+
+
+    const handleBaixarTrabalho = async (idBanca) => {
+        try {
+            setExibirResultado({ exibir: true, variante: "info", mensagem: "Iniciando download..." });
+
+            const { blob, filename } = await grupoService.baixarTrabalhoBanca(idBanca);
+
+            // Cria uma URL temporária na memória do navegador para o arquivo
+            const url = window.URL.createObjectURL(blob);
+
+            // Cria uma tag <a> invisível e clica nela automaticamente
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+
+            // Limpeza da memória
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            setExibirResultado({ exibir: false, variante: "", mensagem: "" });
+
+        } catch (error) {
+            console.error(error);
+            setExibirResultado({
+                exibir: true, variante: "danger", mensagem: "Não foi possível baixar o trabalho. Verifique se o aluno já realizou o envio."
+            });
+        }
+    };
 
     const columns = useMemo(() => [
         { header: "Tema", accessor: "tema", filtravel: true, tipoFiltro: "text" },
@@ -208,6 +240,11 @@ const VisaoBancasArtigos = () => {
                             className={podeSerCancelada ? "text-black" : "text-muted border"}
                             onClick={() => handleCancelarAvaliacao(row.idBanca, row.tema)}>
                             Cancelar Avaliação
+                        </Button>
+                        <Button variant="outline-primary"
+                            size="lm"
+                            onClick={() => handleBaixarTrabalho(row.idBanca)}>
+                            Baixar Trabalho
                         </Button>
                     </Stack >
                 )
