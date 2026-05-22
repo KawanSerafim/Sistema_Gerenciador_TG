@@ -79,7 +79,8 @@ class VincularCoorientadorExternoCasoTest {
                 new TemaTg("Desenvolvimento de SO",
                         "Desenvolvimento de um sistema operacional utilizando a linguagem Java"),
                 TipoTg.DESENVOLVIMENTO_SOFTWARE,
-                List.of(alunoId)
+                List.of(alunoId),
+                ""
         );
     }
 

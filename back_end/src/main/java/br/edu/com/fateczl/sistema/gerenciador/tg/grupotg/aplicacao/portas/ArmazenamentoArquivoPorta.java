@@ -7,4 +7,5 @@ public interface ArmazenamentoArquivoPorta {
      * @param conteudoArquivo array de bytes com conteudo
      */
     String salvarArquivo(String nomeOriginal, byte[] conteudoArquivo);
+    byte[] recuperarArquivo(String nomeSalvo);
 }

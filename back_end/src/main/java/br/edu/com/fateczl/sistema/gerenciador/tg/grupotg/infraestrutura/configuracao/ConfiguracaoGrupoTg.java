@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.configuracao;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.repositorio.CoorientadorExternoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.*;
@@ -84,6 +85,19 @@ public class ConfiguracaoGrupoTg {
         return new EnviarTrabalhoGraduacaoCaso(
                 grupoTgRepositorio,
                 alunoRepositorio,
+                armazenamentoPorta);
+    }
+
+    @Bean
+    public BaixarTrabalhoBancaCaso baixarTrabalhoBancaCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            ArmazenamentoArquivoPorta armazenamentoPorta
+    ){
+        return new BaixarTrabalhoBancaCaso(bancaRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio,
                 armazenamentoPorta);
     }
 }

@@ -3,6 +3,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.infraestrutura.api.con
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class GrupoTgControlador {
     private final BuscarGruposOrientadosCaso buscarGruposOrientadosCaso;
     private final BuscarGrupoAlunoCaso buscarGrupoAlunoCaso;
     private final EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso;
-    
+    private final BaixarTrabalhoBancaCaso baixarTrabalhoBancaCaso;
 
     public GrupoTgControlador(
             BuscarVisaoGruposProfessorCaso buscarVisaoGruposProfessorCaso,
@@ -32,7 +33,8 @@ public class GrupoTgControlador {
             VincularCoorientadorExternoCaso vincularCoorientadorExternoCaso,
             BuscarGruposOrientadosCaso buscarGruposOrientadosCaso,
             BuscarGrupoAlunoCaso buscarGrupoAlunoCaso,
-            EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso
+            EnviarTrabalhoGraduacaoCaso enviarTrabalhoGraduacaoCaso,
+            BaixarTrabalhoBancaCaso baixarTrabalhoBancaCaso
     ) {
         this.buscarVisaoGruposProfessorCaso = buscarVisaoGruposProfessorCaso;
         this.gerarGrupoTgCaso = gerarGrupoTgCaso;
@@ -41,6 +43,7 @@ public class GrupoTgControlador {
         this.buscarGruposOrientadosCaso = buscarGruposOrientadosCaso;
         this.buscarGrupoAlunoCaso = buscarGrupoAlunoCaso;
         this.enviarTrabalhoGraduacaoCaso = enviarTrabalhoGraduacaoCaso;
+        this.baixarTrabalhoBancaCaso = baixarTrabalhoBancaCaso;
     }
 
     /**
@@ -161,6 +164,7 @@ public class GrupoTgControlador {
         return ResponseEntity.ok(resposta);
     }
     // =========== Envio de trabalho de graduacao =========//
+    
     @PostMapping(value = "/trabalho", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> enviarTrabalho(
             @RequestParam("file") MultipartFile file,
@@ -179,6 +183,25 @@ public class GrupoTgControlador {
         enviarTrabalhoGraduacaoCaso.executar(comando);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{idBanca}/trabalho")
+    public ResponseEntity<byte[]> baixarTrabalhoDaBanca(
+            @PathVariable String idBanca,
+            @RequestHeader("Authorization") String headerAutorizacao
+    ) {
+        String token = headerAutorizacao.replace("Bearer ", "");
+        String emailProfessor = geradorToken.extrairTopico(token);
+
+        var comando = new BaixarTrabalhoBancaCaso.Comando(emailProfessor, idBanca);
+        var saida = baixarTrabalhoBancaCaso.executar(comando);
+
+        // Diz ao navegador: "Isto é um anexo, faça o download com este nome!"
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + saida.nomeArquivo() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(saida.conteudo());
     }
 
     // ========= DTOs =====

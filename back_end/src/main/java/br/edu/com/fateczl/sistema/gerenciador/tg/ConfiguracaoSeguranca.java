@@ -86,6 +86,7 @@ public class ConfiguracaoSeguranca {
         configuracao.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
         configuracao.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuracao.setAllowedHeaders(List.of("*"));
+        configuracao.addExposedHeader("Content-Disposition");
         configuracao.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
