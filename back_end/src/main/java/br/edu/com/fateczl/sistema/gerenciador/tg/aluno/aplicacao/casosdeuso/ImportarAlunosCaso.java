@@ -8,6 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.servicos.Validado
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.servicos.ValidadorCabecalhoArquivo;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
@@ -51,13 +52,33 @@ public class ImportarAlunosCaso {
 
     public record Comando(
             String idTurma,
-            InputStream arquivoBruto
+            InputStream arquivoBruto,
+            long tamanhoArquivoEmBytes,
+            String nomeArquivo
     ) {}
     public record Resposta(List<AlunoImportado> alunos) {}
 
     // FLUXO PRINCIPAL ---------------------------------------------------------
 
     public Resposta executar(Comando comando) {
+
+        // Validação de Regra de Aplicação (Tamanho e Extensão)
+        long limiteExcel = 2 * 1024 * 1024; // 2MB
+        if (comando.tamanhoArquivoEmBytes() > limiteExcel) {
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_008_ARQUIVO_INVALIDO,
+                    "O arquivo Excel é muito grande. O limite máximo é de 2MB."
+            );
+        }
+
+        if (comando.nomeArquivo() == null ||
+                (!comando.nomeArquivo().endsWith(".xlsx") && !comando.nomeArquivo().endsWith(".xls"))) {
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_008_ARQUIVO_INVALIDO,
+                    "Formato aceito apenas .xlsx ou .xls"
+            );
+        }
+
         // Descobre quem é o usuario do JWT
         String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         Professor autor = buscarProfessorPorEmail(
@@ -70,6 +91,7 @@ public class ImportarAlunosCaso {
         );
 
         validadorAutorizacao.validar(autor, turma);
+
         var arquivoLido = leitorArquivo.ler(comando.arquivoBruto());
         validadorCabecalho.validar(arquivoLido, turma);
 

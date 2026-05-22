@@ -44,7 +44,12 @@ public class AlunoControlador {
         try {
             var comando = new ImportarAlunosCaso.Comando(
                     idTurma,
-                    arquivo.getInputStream()
+                    //Stream de bytes
+                    arquivo.getInputStream(),
+                    //Tamanho
+                    arquivo.getSize(),
+                    //Nome
+                    arquivo.getOriginalFilename()
             );
             var resposta = importarAlunosCaso.executar(comando);
             return ResponseEntity.ok().body(resposta);
