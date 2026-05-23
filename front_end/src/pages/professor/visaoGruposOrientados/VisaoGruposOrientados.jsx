@@ -44,7 +44,8 @@ const VisaoGruposOrientados = () => {
                     </Button>
                 );
             }
-        }
+        },
+        { header: "Situação", accessor: "situacao", filtravel: true, tipoFiltro: "select" },
     ], [handleOpen]);
 
     // Dispara a busca toda vez que os filtros da API mudarem
@@ -68,7 +69,8 @@ const VisaoGruposOrientados = () => {
                     // Monta a string do período ou exibe um aviso se faltar
                     periodo: item.semestre && item.ano ? `${item.semestre}º/${item.ano}` : "Não definido",
                     // Guarda o array original para o botão repassar ao modal
-                    nomesAlunos: item.nomesAlunos || []
+                    nomesAlunos: item.nomesAlunos || [],
+                    situacao: item.situacao
                 }));
 
                 setData(dadosFormatados);

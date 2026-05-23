@@ -59,7 +59,8 @@ const VisaoGrupos = () => {
                 );
             }
         },
-        { header: "Orientador", accessor: "orientador", filtravel: true, tipoFiltro: "select" }
+        { header: "Orientador", accessor: "orientador", filtravel: true, tipoFiltro: "select" },
+        { header: "Situação", accessor: "situacao", filtravel: true, tipoFiltro: "select" },
         // Executa toda vez que handleOpen executar
     ], [handleOpen]);
 
@@ -84,7 +85,8 @@ const VisaoGrupos = () => {
                         tipoTG: isAlunoSemGrupo ? "Sem grupo" : item.tipoTg,
                         tema: isAlunoSemGrupo ? "Sem grupo" : item.tema,
                         orientador: isAlunoSemGrupo ? "Sem grupo" : (item.nomeOrientador || "Sem orientador"),
-                        grupo: item.integrantes ? item.integrantes.map(i => i.nome) : []
+                        grupo: item.integrantes ? item.integrantes.map(i => i.nome) : [],
+                        situacao: isAlunoSemGrupo ? "Sem grupo" : item.situacao
                     }
                 });
 
