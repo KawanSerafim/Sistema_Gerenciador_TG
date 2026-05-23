@@ -38,5 +38,11 @@ export const turmasService = {
         });
 
         return resposta.turmas || [];
+    },
+    finalizarTurmas: async (payload = obrigatorio("payload")) => {
+        return await apiClient(`/turmas/finalizar`, {
+            method: "PATCH",
+            body: JSON.stringify(payload)
+        })
     }
 }
