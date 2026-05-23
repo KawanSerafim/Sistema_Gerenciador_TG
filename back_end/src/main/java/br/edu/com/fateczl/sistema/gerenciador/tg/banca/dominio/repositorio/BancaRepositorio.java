@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.BancaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BancaRepositorio {
@@ -14,4 +15,7 @@ public interface BancaRepositorio {
     boolean existeBancaParaGrupo(GrupoTgId grupoId);
 
     Optional<Banca> buscarPorGrupoId(GrupoTgId id);
+
+    List<Banca> buscarPorGruposId(List<GrupoTgId> grupoTgIds);
 }
+

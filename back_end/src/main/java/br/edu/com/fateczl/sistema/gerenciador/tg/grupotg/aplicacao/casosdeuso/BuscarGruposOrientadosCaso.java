@@ -3,10 +3,13 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.entidade.Aluno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.objetosvalor.AlunoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -14,22 +17,26 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BuscarGruposOrientadosCaso {
     private final ProfessorRepositorio professorRepositorio;
     private final GrupoTgRepositorio grupoTgRepositorio;
     private final AlunoRepositorio alunoRepositorio;
     private final TurmaRepositorio turmaRepositorio;
+    private final BancaRepositorio bancaRepositorio;
 
     public BuscarGruposOrientadosCaso(
             ProfessorRepositorio professorRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
             AlunoRepositorio alunoRepositorio,
-            TurmaRepositorio turmaRepositorio) {
+            TurmaRepositorio turmaRepositorio,
+            BancaRepositorio bancaRepositorio) {
         this.professorRepositorio = professorRepositorio;
         this.grupoTgRepositorio = grupoTgRepositorio;
         this.alunoRepositorio = alunoRepositorio;
         this.turmaRepositorio = turmaRepositorio;
+        this.bancaRepositorio = bancaRepositorio;
     }
 
     public record Comando(
@@ -46,7 +53,8 @@ public class BuscarGruposOrientadosCaso {
             String tipoTg,
             Integer ano,
             Integer semestre,
-            List<String> nomesAlunos
+            List<String> nomesAlunos,
+            String situacao
     ) {}
     // Record auxiliar local para transporte temporário de dados
     private record Periodo(Integer ano, Integer semestre) {}
@@ -58,6 +66,9 @@ public class BuscarGruposOrientadosCaso {
 
         List<GrupoTg> grupos = grupoTgRepositorio.buscarPorOrientadorId(orientador.id());
 
+        //Resolve situação
+        List<Banca> bancasGrupos = buscaBancasGrupos(grupos);
+
         // Mapeia as entidades puras para o DTO de visualização
         return grupos.stream()
                 .map(grupo -> {
@@ -67,13 +78,20 @@ public class BuscarGruposOrientadosCaso {
                     List<String> nomes = alunoRepositorio.buscarTodosPorIds(grupo.alunosIds())
                             .stream().map(Aluno::nomeTexto).toList();
 
+                    //Verifica se o grupo tem banca
+                    Optional<Banca> bancaGrupo =  bancasGrupos.stream()
+                            .filter(banca -> banca.grupoId().equals(grupo.id()))
+                            .findFirst();
+                    String situacao = mapearSituacaoGrupo(bancaGrupo);
+
                     return new GrupoOrientadoDTO(
                             grupo.idTexto(),
                             grupo.nomeTemaTg(),
                             grupo.tipoTg().name(),
                             periodo.ano(),
                             periodo.semestre(),
-                            nomes
+                            nomes,
+                            situacao
                     );
                 })
                 // 4. Filtra pelos parâmetros opcionais que vieram do Frontend
@@ -81,6 +99,35 @@ public class BuscarGruposOrientadosCaso {
                 .filter(dto -> comando.semestre() == null ||
                         dto.semestre().equals(comando.semestre()))
                 .toList();
+    }
+
+    /**
+     * Busca as bancas de grupos que tenham
+     * @param grupos
+     * @return lista de bancas
+     */
+    private List<Banca> buscaBancasGrupos(List<GrupoTg> grupos) {
+        //Verifica se já tem banca com esses gruposId
+        List<GrupoTgId> grupoTgIds = grupos.stream().map(GrupoTg::id).toList();
+        return bancaRepositorio.buscarPorGruposId(grupoTgIds);
+    }
+
+    /**
+     * Faz o mapeamento da situação do grupo de acordo com status da banca ou se não tem banca
+     * @param bancaOpt Optional de banca
+     * @return String com a situação do grupo e,caso tenha, a nota final
+     */
+    private String mapearSituacaoGrupo(Optional<Banca> bancaOpt){
+        //Se não tem banca, informa na situação
+        if (bancaOpt.isEmpty()){
+            return "Grupo sem banca marcada";
+        }
+        Banca banca = bancaOpt.get();
+        //Se tiver banca extrai o status dela
+        if (banca.status().name().equals("AVALIADA")){
+            return "Avaliado com nota: " + banca.notaFinal();
+        }//Se não, retorna a situação da banca
+        return banca.status().name();
     }
 
     /**

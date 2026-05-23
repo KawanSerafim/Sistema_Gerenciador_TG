@@ -1,6 +1,7 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.configuracao;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.servicos.ValidadorCoordenadorCurso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.aplicacao.casosdeuso.BuscarGruposOrientadosCaso;
@@ -68,11 +69,15 @@ public class ConfiguracaoTurma {
             ProfessorRepositorio professorRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
             AlunoRepositorio alunoRepositorio,
-            TurmaRepositorio turmaRepositorio
+            TurmaRepositorio turmaRepositorio,
+            BancaRepositorio bancaRepositorio
     ){
         return new BuscarGruposOrientadosCaso(
-                professorRepositorio,grupoTgRepositorio,
-                alunoRepositorio,turmaRepositorio
+                professorRepositorio,
+                grupoTgRepositorio,
+                alunoRepositorio,
+                turmaRepositorio,
+                bancaRepositorio
         );
     }
 

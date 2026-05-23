@@ -10,25 +10,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class BancaRepositorioImpl implements BancaRepositorio {
 
-    private final BancaJpaRepositorio jpaRepositorio;
+    private final BancaJpaRepositorio repositorio;
 
     @Override
     @Transactional
     public void salvar(Banca banca) {
         BancaModelo modelo = BancaMapeador.paraModelo(banca);
-        jpaRepositorio.save(modelo);
+        repositorio.save(modelo);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Banca> buscarPorId(BancaId id) {
-        return jpaRepositorio.findById(id.texto())
+        return repositorio.findById(id.texto())
                 .map(BancaMapeador::paraDominio);
     }
 
@@ -36,14 +37,26 @@ public class BancaRepositorioImpl implements BancaRepositorio {
     @Transactional(readOnly = true)
     public boolean existeBancaParaGrupo(GrupoTgId grupoId) {
         // Usa a String primitiva limpa para o Spring Data JPA fazer o Select
-        return jpaRepositorio.existsByGrupoId(grupoId.texto());
+        return repositorio.existsByGrupoId(grupoId.texto());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Banca> buscarPorGrupoId(GrupoTgId id) {
         String idTexto = id.texto();
-        return jpaRepositorio.findByGrupoId(idTexto)
+        return repositorio.findByGrupoId(idTexto)
                 .map(BancaMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Banca> buscarPorGruposId(List<GrupoTgId> grupoTgIds) {
+        List<String> idsTexto = grupoTgIds.stream()
+                .map(GrupoTgId::texto)
+                .toList();
+        return repositorio.findAllByGrupoIdIn(idsTexto)
+                .stream().map(BancaMapeador::paraDominio)
+                .toList();
+
     }
 }
