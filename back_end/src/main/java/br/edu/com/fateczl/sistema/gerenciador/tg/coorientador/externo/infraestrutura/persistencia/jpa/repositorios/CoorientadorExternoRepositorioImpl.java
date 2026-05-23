@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.infraestr
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.entidade.CoorientadorExterno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.CoorientadorExternoId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.Origem;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.repositorio.CoorientadorExternoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.infraestrutura.persistencia.jpa.mapeador.CoorientadorExternoMapeador;
@@ -33,6 +34,13 @@ public class CoorientadorExternoRepositorioImpl
             Origem origem
     ) {
         return repositorio.findByNomeAndOrigem(nome.valor(), origem.valor())
+                .map(CoorientadorExternoMapeador::paraDominio);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CoorientadorExterno> buscarPorId(CoorientadorExternoId coorientadorExternoId) {
+        return repositorio.findById(coorientadorExternoId.texto())
                 .map(CoorientadorExternoMapeador::paraDominio);
     }
 }

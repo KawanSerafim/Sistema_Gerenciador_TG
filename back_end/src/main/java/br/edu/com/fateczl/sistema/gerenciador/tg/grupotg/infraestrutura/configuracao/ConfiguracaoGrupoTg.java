@@ -71,9 +71,14 @@ public class ConfiguracaoGrupoTg {
     public BuscarGrupoAlunoCaso buscarGrupoAlunoCaso(
             AlunoRepositorio alunoRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            CoorientadorExternoRepositorio coorientadorExternoRepositorio
     ) {
-        return new BuscarGrupoAlunoCaso(alunoRepositorio,grupoTgRepositorio,professorRepositorio);
+        return new BuscarGrupoAlunoCaso(
+                alunoRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio,
+                coorientadorExternoRepositorio);
     }
 
     @Bean

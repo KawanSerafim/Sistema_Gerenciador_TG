@@ -5,6 +5,8 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.Aluno
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.ContaUsuarioId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.objetosvalor.CoorientadorExternoId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.coorientador.externo.dominio.repositorio.CoorientadorExternoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
@@ -16,18 +18,18 @@ public class BuscarGrupoAlunoCaso {
     private final AlunoRepositorio alunoRepositorio;
     private final GrupoTgRepositorio grupoTgRepositorio;
     private final ProfessorRepositorio professorRepositorio;
-    // private final CoorientadorExternoRepositorio coorientadorRepositorio; // Descomente se for usar
+    private final CoorientadorExternoRepositorio coorientadorRepositorio; // Descomente se for usar
 
     public BuscarGrupoAlunoCaso(
             AlunoRepositorio alunoRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
-            ProfessorRepositorio professorRepositorio
-            // CoorientadorExternoRepositorio coorientadorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            CoorientadorExternoRepositorio coorientadorRepositorio
     ) {
         this.alunoRepositorio = alunoRepositorio;
         this.grupoTgRepositorio = grupoTgRepositorio;
         this.professorRepositorio = professorRepositorio;
-        // this.coorientadorRepositorio = coorientadorRepositorio;
+        this.coorientadorRepositorio = coorientadorRepositorio;
     }
 
     public record Comando(String idAlunoLogado) {}
@@ -35,7 +37,7 @@ public class BuscarGrupoAlunoCaso {
     public record MeuGrupoDetalhadoDTO(
             String idGrupo,
             String tema,
-            String descricao, // Adapte caso o nome do atributo seja diferente na sua entidade
+            String descricao,
             List<String> integrantes,
             String nomeOrientador,
             String nomeCoorientador
@@ -68,12 +70,15 @@ public class BuscarGrupoAlunoCaso {
 
         // Resolve o Nome do Coorientador (se existir)
         String nomeCoorientador = null;
-        // Exemplo simplificado (adapte para como você salva o coorientador no GrupoTg):
-//        if (grupo.coorientadorIdTexto() != null) {
-//            nomeCoorientador = coorientadorRepositorio.buscarPorId(grupo.coorientadorId())
-//                    .map(coor -> coor.nome().valor())
-//                    .orElse("Coorientador não encontrado");
-//        }
+         //Implementação de coorientador-externo
+        if (grupo.coorientadorIdTexto() != null) {
+            nomeCoorientador = coorientadorRepositorio.buscarPorId(
+                    new CoorientadorExternoId(UUID.fromString(grupo.coorientadorIdTexto())))
+                    .map(coor -> coor.nome().valor())
+                    .orElse("Coorientador não encontrado");
+        } else {
+            nomeCoorientador = "Grupo sem coorientador";
+        }
 
         // 6. Monta o DTO
         return new MeuGrupoDetalhadoDTO(
