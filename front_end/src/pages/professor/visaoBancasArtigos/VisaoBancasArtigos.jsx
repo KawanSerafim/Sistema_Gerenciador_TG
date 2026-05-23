@@ -1,4 +1,4 @@
-import { Alert, Button, Col, Container, Form, Modal, Row, Stack, Spinner } from "react-bootstrap";
+import { Toast, ToastContainer, Alert, Button, Col, Container, Form, Modal, Row, Stack, Spinner } from "react-bootstrap";
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 import TableComponent from "../../../components/table/TableComponent";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,10 +15,10 @@ import { grupoService } from "../../../services/grupotg/grupoService";
 
 const VisaoBancasArtigos = () => {
     // Estados da API
-    const [data, setData] = useState([]);
+    const [dados, setDados] = useState([]);
     const [carregando, setCarregando] = useState(true);
 
-    const [exibirResultado, setExibirResultado] = useState({
+    const [resultado, setResultado] = useState({
         exibir: false, mensagem: "", variante: ""
     });
     const [_temaSelecionado, setTemaSelecionado] = useState(null);
@@ -47,10 +47,10 @@ const VisaoBancasArtigos = () => {
             // setExibirResultado({ exibir: false, mensagem: "", variante: "" });
 
             const response = await bancaService.listarBancas();
-            setData(response);
+            setDados(response);
         } catch (error) {
             console.error(error);
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 variante: "danger",
                 mensagem: "Não foi possível carregar as bancas. Tente novamente."
@@ -83,7 +83,7 @@ const VisaoBancasArtigos = () => {
             // Chama a service que bate no endpoint PATCH /bancas/{idBanca}/cancelar
             await bancaService.cancelarBanca(idBanca);
 
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 mensagem: `Avaliação do grupo "${tema}" foi cancelada com sucesso.`,
                 variante: "success"
@@ -93,7 +93,7 @@ const VisaoBancasArtigos = () => {
             carregarBancas();
         } catch (error) {
             console.error(error);
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 mensagem: "Erro ao tentar cancelar a avaliação. Tente novamente.",
                 variante: "danger"
@@ -104,7 +104,7 @@ const VisaoBancasArtigos = () => {
 
     const handleBaixarTrabalho = async (idBanca) => {
         try {
-            setExibirResultado({ exibir: true, variante: "info", mensagem: "Iniciando download..." });
+            setResultado({ exibir: true, variante: "info", mensagem: "Iniciando download..." });
 
             const { blob, filename } = await grupoService.baixarTrabalhoBanca(idBanca);
 
@@ -122,11 +122,11 @@ const VisaoBancasArtigos = () => {
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            setExibirResultado({ exibir: false, variante: "", mensagem: "" });
+            setResultado({ exibir: false, variante: "", mensagem: "" });
 
         } catch (error) {
             console.error(error);
-            setExibirResultado({
+            setResultado({
                 exibir: true, variante: "danger", mensagem: "Não foi possível baixar o trabalho. Verifique se o aluno já realizou o envio."
             });
         }
@@ -376,7 +376,7 @@ const VisaoBancasArtigos = () => {
 
             await bancaService.atribuirNotasBanca(dadosValidados.idBanca, payload);
 
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 variante: "success",
                 mensagem: `Notas da banca atribuídas com sucesso.`
@@ -387,7 +387,7 @@ const VisaoBancasArtigos = () => {
 
         } catch (e) {
             console.error(e);
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 variante: "danger",
                 mensagem: "Erro ao enviar notas. Verifique os dados e tente novamente."
@@ -416,7 +416,7 @@ const VisaoBancasArtigos = () => {
                 ) : (
                     <TableComponent
                         colunas={columns}
-                        dados={data}
+                        dados={dados}
                     />
                 )}
 
@@ -429,10 +429,28 @@ const VisaoBancasArtigos = () => {
                     {renderModalContent()}
                 </Modal>
 
-                {exibirResultado.exibir && (
-                    <Alert variant={exibirResultado.variante} onClose={() => setExibirResultado({ ...exibirResultado, exibir: false })} dismissible className="mt-3" >
-                        {exibirResultado.mensagem}
-                    </Alert>
+                {resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante}
+                        //desaparece somente quando o usuario clicar em fechar
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
             </Container>
         </>

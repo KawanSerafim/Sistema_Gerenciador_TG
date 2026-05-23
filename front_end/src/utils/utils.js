@@ -1,6 +1,6 @@
 export function bloquearCaracteresInputNumber(e) {
     //Bloqueia "e", "E", "+", "-", ".", ","
-    if (["e", "E", "+", "-", ".", ","].includes(e.key)) {
+    if (["e", "E", "+", "-", "."].includes(e.key)) {
         e.preventDefault();
     }
 }
