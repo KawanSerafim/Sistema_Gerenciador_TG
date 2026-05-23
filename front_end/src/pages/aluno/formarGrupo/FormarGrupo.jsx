@@ -1,7 +1,7 @@
 import addIcon from '../../../assets/add.svg'
 import CancelIcon from '../../../assets/Cancel.svg'
 import "./formarGrupo.css"
-import { Alert, Col, Container, FormControl, FormLabel, FormSelect, ListGroup, Row, Spinner, Stack, Table } from 'react-bootstrap';
+import { Toast, ToastContainer, Col, Container, FormControl, FormLabel, FormSelect, ListGroup, Row, Spinner, Stack, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormGroup } from "react-bootstrap";
@@ -387,14 +387,26 @@ const FormarGrupo = () => {
 
                 {/* Renderiza o alerta de resultado após passar nas validações */}
                 {resultado.exibir && (
-                    <Alert
-                        variant={resultado.variante}
-                        onClose={() => setResultado({ ...resultado, exibir: false })}
-                        dismissible
-                        className="mt-4 fw-bold fs-5 shadow-sm"
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
                     >
-                        {resultado.mensagem}
-                    </Alert>
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante}
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
             </Container >
         </>

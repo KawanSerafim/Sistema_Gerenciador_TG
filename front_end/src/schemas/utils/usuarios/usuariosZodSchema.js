@@ -35,7 +35,6 @@ export const alunoSchema = usuarioSchema
       .min(1, "Nome é um campo obrigatório")
       .refine(validarNome, "Nome com caracteres invalidos"),
     matricula: z.string().length(13, "A matricula tem que ter 13 dígitos"),
-    telefone: z.string().length(11, "Telefone inválido"),
     // Array de Redes
     redes: z.array(
       z.object({

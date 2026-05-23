@@ -1,4 +1,4 @@
-import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Alert, Spinner } from "react-bootstrap";
+import { Container, Form, FormGroup, FormSelect, FormLabel, Button, FormControl, Row, Col, Toast, ToastContainer, Spinner, Alert } from "react-bootstrap";
 import UserNavBar from "../../../../components/usernavbar/UserNavBar";
 import { useEffect, useState } from "react";
 import { bloquearCaracteresInputNumber } from "../../../../utils/utils";
@@ -321,7 +321,6 @@ const CadastrarTurma = () => {
                         </Alert>
                     )}
 
-
                     {/* Botão de Cadastrar */}
                     <Row className="mt-5">
                         <Col>
@@ -339,12 +338,26 @@ const CadastrarTurma = () => {
                 </Form>
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
                 {resultado.exibir && (
-                    <Alert
-                        variant={resultado.variante}
-                        onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
-                        dismissible className="mt-3" >
-                        {resultado.mensagem}
-                    </Alert>
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante}
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
             </Container >
         </>

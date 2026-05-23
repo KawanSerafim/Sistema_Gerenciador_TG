@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormSelect,
   Button,
-  Alert,
+  Toast, ToastContainer,
 } from "react-bootstrap";
 import "./cadastrarCurso.css";
 import UserNavBar from "../../components/usernavbar/UserNavBar";
@@ -263,6 +263,9 @@ const CadastrarCurso = () => {
                         isInvalid={isAtivo && !!errors.tiposTG?.[index]?.qntMax}
                         min="1"
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.tiposTG?.[index]?.qntMax?.message}
+                      </Form.Control.Feedback>
                     </div>
                   </div>
                 );
@@ -315,16 +318,28 @@ const CadastrarCurso = () => {
           </FormGroup>
 
           {resultado.exibir && (
-            <Alert
-              variant={resultado.variante}
-              onClose={() =>
-                setResultado({ exibir: false, variante: "", mensagem: "" })
-              }
-              dismissible
-              className="mb-0 rounded-0 shadow-sm fw-bold text-center border-start border-end border-dark"
+            // Toast flutuante no topo direito
+            <ToastContainer
+              position="top-end"
+              className="p-3"
+              style={{ position: "fixed", zIndex: 9999 }}
             >
-              {resultado.mensagem}
-            </Alert>
+              <Toast
+                show={resultado.exibir}
+                onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                bg={resultado.variante} // Cor vem do variante
+              //autohide retirado para garantir que usuario venha retirar
+              >
+                <Toast.Header>
+                  <strong className="me-auto text-dark">
+                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                  </strong>
+                </Toast.Header>
+                <Toast.Body className="text-white fw-bold fs-6">
+                  {resultado.mensagem}
+                </Toast.Body>
+              </Toast>
+            </ToastContainer>
           )}
         </Form>
       </Container>

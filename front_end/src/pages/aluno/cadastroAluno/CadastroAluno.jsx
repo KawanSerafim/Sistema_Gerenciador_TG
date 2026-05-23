@@ -1,4 +1,4 @@
-import { Container, InputGroup, Alert } from "react-bootstrap";
+import { Container, InputGroup, Toast, ToastContainer } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { FormGroup } from "react-bootstrap";
@@ -35,7 +35,6 @@ const CadastroAluno = () => {
       nome: "",
       matricula: "",
       email: "",
-      telefone: "",
       senha: "",
       confirmarSenha: "",
     },
@@ -79,7 +78,6 @@ const CadastroAluno = () => {
         nome: dadosValidados.nome,
         matricula: dadosValidados.matricula,
         email: dadosValidados.email,
-        telefone: dadosValidados.telefone,
         senha: dadosValidados.senha,
         // Envia o mapa formatado em vez do array cru do RHF
         redesSociais: redesMap
@@ -98,7 +96,7 @@ const CadastroAluno = () => {
       setResultado({
         exibir: true,
         variante: "success",
-        mensagem: "Cadastro realizado! Verifique seu e-mail para ativar a conta",
+        mensagem: "Cadastro realizado! Redirecionando para a pagina de confirmar email...",
       });
       //Após 3 segs vai para confirmarEmail
       setTimeout(() => navigate("/confirmarEmail", {
@@ -187,26 +185,6 @@ const CadastroAluno = () => {
             </Form.Control.Feedback>
           </Form.Group>
 
-          {/* Contato */}
-          <Form.Group className="mb-3">
-            <Form.Label className="text-secondary fs-4 fw-medium">
-              Telefone
-            </Form.Label>
-            <Form.Control
-              type="tel"
-              placeholder="11912345678"
-              className="bg-white text-black fw-normal fs-5"
-              pattern="[0-9]{2}-[9]{1}-[0-9]{8}"
-              name="telefone"
-              {...register("telefone")}
-              isInvalid={!!errors.telefone}
-            />
-
-            <Form.Control.Feedback type="invalid">
-              {errors.telefone?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-
           {/* Redes Sociais */}
 
           <Form.Group className="mb-4" controlId="formRedes">
@@ -240,7 +218,7 @@ const CadastroAluno = () => {
                   <Form.Control
                     type="url"
                     className="fs-5 text-black"
-                    placeholder={`Ex: https://${rede.rede}.com/in/seu-perfil`}
+                    placeholder={`Ex: https://${rede.rede}.com/seu-perfil`}
                     {...register(`redes.${index}.url`)}
                     isInvalid={!!errors.redes?.[index]?.url}
                   />
@@ -344,16 +322,26 @@ const CadastroAluno = () => {
           </FormGroup>
         </Form>
         {resultado.exibir && (
-          <Alert
-            variant={resultado.variante}
-            onClose={() =>
-              setResultado({ exibir: false, variante: "", mensagem: "" })
-            }
-            dismissible
-            className="mt-3 shadow-sm fw-bold text-center"
+          <ToastContainer
+            position="top-end"
+            className="p-3"
+            style={{ position: "fixed", zIndex: 9999 }}
           >
-            {resultado.mensagem}
-          </Alert>
+            <Toast
+              show={resultado.exibir}
+              onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+              bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+            >
+              <Toast.Header>
+                <strong className="me-auto text-dark">
+                  {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                </strong>
+              </Toast.Header>
+              <Toast.Body className="text-white fw-bold fs-6">
+                {resultado.mensagem}
+              </Toast.Body>
+            </Toast>
+          </ToastContainer>
         )}
       </Container>
     </>

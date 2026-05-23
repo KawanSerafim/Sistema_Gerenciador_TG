@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Form, Alert } from "react-bootstrap";
+import { Container, Button, Form, Toast, ToastContainer } from "react-bootstrap";
 import { bloquearCaracteresInputNome } from "../../../utils/utils";
 
 // Importações do RHF e Zod
@@ -262,16 +262,27 @@ const CadastroProfessor = () => {
         </Form>
 
         {resultado.exibir && (
-          <Alert
-            variant={resultado.variante}
-            onClose={() =>
-              setResultado({ exibir: false, variante: "", mensagem: "" })
-            }
-            dismissible
-            className="mt-3 shadow-sm fw-bold text-center"
+          <ToastContainer
+            position="top-end"
+            className="p-3"
+            style={{ position: "fixed", zIndex: 9999 }}
           >
-            {resultado.mensagem}
-          </Alert>
+            <Toast
+              show={resultado.exibir}
+              onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+              bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+            //tirado autohide
+            >
+              <Toast.Header>
+                <strong className="me-auto text-dark">
+                  {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                </strong>
+              </Toast.Header>
+              <Toast.Body className="text-white fw-bold fs-6">
+                {resultado.mensagem}
+              </Toast.Body>
+            </Toast>
+          </ToastContainer>
         )}
       </Container>
     </>

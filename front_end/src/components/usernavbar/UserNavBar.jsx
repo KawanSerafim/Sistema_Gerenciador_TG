@@ -80,6 +80,9 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                                     <>
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/aluno/formarGrupo")}>Formar Grupo</NavDropdown.Item>
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/aluno/solicitarOrientacao")}>Solicitar Orientação</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/aluno/meuGrupo")}>Meu grupo</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/aluno/enviarTG")}>Enviar Trabalho de Graduação</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/aluno/vincularCoOrientadorExterno")}>Vincular Co orientador externo</NavDropdown.Item>
                                     </>
                                 )}
 

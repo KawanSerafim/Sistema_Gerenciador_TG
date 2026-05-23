@@ -1,4 +1,4 @@
-import { Alert, Button, Container, Form, FormControl, FormGroup, FormLabel, FormSelect, Spinner } from "react-bootstrap"
+import { Toast, ToastContainer, Button, Container, Form, FormControl, FormGroup, FormLabel, FormSelect, Spinner } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import TableComponent from "../../../components/table/TableComponent"
 import "./EnviarTurma.css"
@@ -20,7 +20,7 @@ const EnviarTurma = () => {
     // ======== ESTADOS ==========
     const [turmas, setTurmas] = useState([]);
     const [alunosCadastrados, setAlunosCadastrados] = useState([]);
-    const [exibirResultado, setExibirResultado] = useState({ exibir: false, variante: "", mensagem: "" })
+    const [resultado, setResultado] = useState({ exibir: false, variante: "", mensagem: "" })
     const [carregando, setCarregando] = useState(false);
 
     //======== RHF =========
@@ -76,7 +76,7 @@ const EnviarTurma = () => {
     const enviarParaBackend = async (dadosValidados) => {
         try {
             setCarregando(true);
-            setExibirResultado({ exibir: true, variante: "info", mensagem: "Enviando arquivo e processando alunos. Aguarde..." });
+            setResultado({ exibir: true, variante: "info", mensagem: "Enviando arquivo e processando alunos. Aguarde..." });
             setAlunosCadastrados([]); // Limpa a tabela anterior caso haja uma
 
             // Montagem do FormData
@@ -92,14 +92,14 @@ const EnviarTurma = () => {
             // o Java devolva a lista de alunos [{ id, nome, ra }]
             setAlunosCadastrados(respostaBackend);
 
-            setExibirResultado({ exibir: true, variante: "success", mensagem: "Turma enviada e alunos registrados com sucesso!" });
+            setResultado({ exibir: true, variante: "success", mensagem: "Turma enviada e alunos registrados com sucesso!" });
 
             // Limpa o formulário para um novo envio
             reset({ turmaId: '', arquivo: undefined });
 
         } catch (e) {
             console.error("Erro no envio:", e);
-            setExibirResultado({
+            setResultado({
                 exibir: true,
                 variante: "danger",
                 mensagem: e.message || "Erro ao processar o arquivo. Verifique se a planilha não está corrompida e segue o padrão."
@@ -194,10 +194,29 @@ const EnviarTurma = () => {
                 </Form>
 
                 {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado.exibir && (
-                    <Alert variant={exibirResultado.variante} onClose={() => setExibirResultado({ ...exibirResultado, exibir: false })} dismissible className="mt-3" >
-                        {exibirResultado.mensagem}
-                    </Alert>
+                {resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+                            delay={5000} // Tempo em milissegundos para sumir sozinho
+                            autohide
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
 
                 {/* Renderiza a tabela se o backend retornar dados */}

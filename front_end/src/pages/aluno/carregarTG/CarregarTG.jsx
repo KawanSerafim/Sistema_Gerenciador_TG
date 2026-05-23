@@ -1,4 +1,4 @@
-import { Alert, Button, Container, Form, FormControl, FormGroup, FormLabel } from "react-bootstrap"
+import { Button, Container, Form, FormControl, FormGroup, FormLabel, Toast, ToastContainer } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import "./CarregarTG.css"
 import { useState } from "react"
@@ -11,8 +11,8 @@ import { grupoService } from "../../../services/grupotg/grupoService"
 
 
 const CarregarTG = () => {
-    const [exibirResultado, setExibirResultado] = useState({
-        show: false, message: "", variant: ""
+    const [resultado, setResultado] = useState({
+        exibir: false, mensagem: "", variante: ""
     })
 
     const {
@@ -20,11 +20,12 @@ const CarregarTG = () => {
         control,
         reset,
         handleSubmit,
-        formState: { errors, isSubmitting } // isSubmitting adicionado para bloquear duplo clique
+        // isSubmitting adicionado para bloquear duplo clique
+        formState: { errors, isSubmitting }
     } = useForm({
         resolver: zodResolver(camposSchema),
         defaultValues: {
-            // Arquivos começam com undefined. O mock do grupo foi deletado pois o backend usa o JWT!
+            // Arquivos começam com undefined
             arquivo: undefined
         }
     })
@@ -36,23 +37,23 @@ const CarregarTG = () => {
     });
     const nomeArquivo = arquivoSelecionado && arquivoSelecionado.length > 0 ? arquivoSelecionado[0].name : null;
 
-    // Comunicação real com Backend
+    // Comunicação com Backend
     const enviarParaBackend = async (dadosValidados) => {
         try {
             // Limpa qualquer mensagem de erro anterior
-            setExibirResultado({ show: false, message: "", variant: "" });
+            setResultado({ exibir: false, mensagem: "", variante: "" });
 
             // Extrai o arquivo real (o [0] pega o arquivo dentro da FileList gerada pelo input type="file")
             const arquivoFisico = dadosValidados.arquivo[0];
 
-            // Chama a service passando apenas o arquivo
+            // Chama a service passando o arquivo
             await grupoService.enviarTrabalhoGraduacao(arquivoFisico);
 
             // Sucesso
-            setExibirResultado({
-                show: true,
-                variant: "success",
-                message: "Trabalho de Graduação enviado com sucesso!"
+            setResultado({
+                exibir: true,
+                variante: "success",
+                mensagem: "Trabalho de Graduação enviado com sucesso!"
             });
 
             // Limpa o formulário
@@ -60,10 +61,10 @@ const CarregarTG = () => {
 
         } catch (e) {
             console.error(e);
-            setExibirResultado({
-                show: true,
-                variant: "danger",
-                message: e.message || "Erro ao processar o arquivo. Verifique o documento e tente novamente."
+            setResultado({
+                exibir: true,
+                variante: "danger",
+                mensagem: e.message || "Erro ao processar o arquivo. Verifique o documento e tente novamente."
             });
         }
     };
@@ -125,11 +126,28 @@ const CarregarTG = () => {
 
                 </Form>
 
-                {/* Renderiza o alerta de sucesso após passar nas validações */}
-                {exibirResultado.show && (
-                    <Alert variant={exibirResultado.variant} onClose={() => setExibirResultado({ ...exibirResultado, show: false })} dismissible className="mt-3" >
-                        {exibirResultado.message}
-                    </Alert>
+                {/* Renderiza o toast de sucesso após passar nas validações */}
+                {resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
             </Container>
         </>

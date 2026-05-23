@@ -1,4 +1,4 @@
-import { Alert, Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { Toast, ToastContainer, Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import TableComponent from "../../../components/table/TableComponent";
 import AddIcon from "../../../assets/add.svg";
 import CancelIcon from "../../../assets/Cancel.svg";
@@ -25,7 +25,7 @@ const MarcarBanca = () => {
     const [enviando, setEnviando] = useState(false);
 
     // Estado unificado de feedback (sucesso ou erro)
-    const [resultadoPedido, setResultadoPedido] = useState({ exibir: false, variante: "", mensagem: "" });
+    const [resultado, setResultado] = useState({ exibir: false, variante: "", mensagem: "" });
 
     // Configuração do React Hook Form
     const {
@@ -64,7 +64,7 @@ const MarcarBanca = () => {
         const carregarDadosIniciais = async () => {
             try {
                 setCarregando(true);
-                setResultadoPedido({ exibir: false, variante: "", mensagem: "" });
+                setResultado({ exibir: false, variante: "", mensagem: "" });
 
                 // Dispara as duas requisições em paralelo para maior performance
                 const [gruposData, professoresData] = await Promise.all([
@@ -83,7 +83,7 @@ const MarcarBanca = () => {
 
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
-                setResultadoPedido({
+                setResultado({
                     exibir: true,
                     variante: "danger",
                     mensagem: "Não foi possível carregar os grupos ou professores. Atualize a página."
@@ -174,10 +174,10 @@ const MarcarBanca = () => {
                 setValue("nomeExterno", "");
                 setValue("emailExterno", "");
                 setValue("telExterno", "");
-                setResultadoPedido({ exibir: false, variante: "", mensagem: "" }); // Limpa erros anteriores
+                setResultado({ exibir: false, variante: "", mensagem: "" }); // Limpa erros anteriores
             }
         } else {
-            setResultadoPedido({
+            setResultado({
                 exibir: true,
                 variante: "warning",
                 mensagem: "Nome e e-mail do membro externo são obrigatórios para adição."
@@ -189,7 +189,7 @@ const MarcarBanca = () => {
     const enviarParaBackend = async (dadosValidados) => {
         try {
             setEnviando(true);
-            setResultadoPedido({ exibir: false, variante: "", mensagem: "" });
+            setResultado({ exibir: false, variante: "", mensagem: "" });
 
             // Filtra e formata as listas de membros separadamente conforme DTO Java
             const idsProfessoresConvidados = dadosValidados.membros
@@ -217,10 +217,10 @@ const MarcarBanca = () => {
             // Certifique-se de ter este método na sua professorService
             await bancaService.marcarBanca(payload);
 
-            setResultadoPedido({
+            setResultado({
                 exibir: true,
                 variante: "success",
-                mensagem: "Banca marcada com sucesso! Os convites foram enviados."
+                mensagem: "Banca marcada com sucesso!"
             });
 
             // Reseta o formulário após o sucesso
@@ -228,7 +228,7 @@ const MarcarBanca = () => {
 
         } catch (error) {
             console.error("Erro ao marcar banca:", error);
-            setResultadoPedido({
+            setResultado({
                 exibir: true,
                 variante: "danger",
                 mensagem: error.message || "Ocorreu um erro ao tentar marcar a banca. Tente novamente."
@@ -450,15 +450,27 @@ const MarcarBanca = () => {
                 </Form >
 
                 {/* Alerta global para retorno de sucesso ou erros */}
-                {resultadoPedido.exibir && (
-                    <Alert
-                        variant={resultadoPedido.variante}
-                        onClose={() => setResultadoPedido({ exibir: false, variante: "", mensagem: "" })}
-                        dismissible
-                        className="mt-3 fs-5 fw-medium text-center shadow-sm"
+                {resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
                     >
-                        {resultadoPedido.mensagem}
-                    </Alert>
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante}
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
             </Container >
         </>

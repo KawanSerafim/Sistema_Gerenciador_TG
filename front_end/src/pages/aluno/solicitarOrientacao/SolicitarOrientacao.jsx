@@ -40,13 +40,14 @@ const SolicitarOrientacao = () => {
     const [carregandoProfessores, setCarregandoProfessores] = useState(true);
     const [enviando, setEnviando] = useState(false);
 
-    // Novo estado unificado para feedbacks (Substitui o erroAPI e o antigo exibirSucesso)
-    const [exibirSucesso, setExibirSucesso] = useState({ exibir: false, variante: "", mensagem: "" });
+    // estado unificado para feedbacks
+    const [resultado, setResultado] = useState({ exibir: false, variante: "", mensagem: "" });
 
     /* === Estados do Input Auto-complete === */
     const [buscaOrientador, setBuscaOrientador] = useState("");
     const [sugestoes, setSugestoes] = useState([]);
 
+    //Ao montar a pagina busca os professores orientadores
     useEffect(() => {
         const carregarOrientadores = async () => {
             try {
@@ -62,7 +63,7 @@ const SolicitarOrientacao = () => {
             } catch (error) {
                 console.error("Erro ao buscar orientadores:", error);
                 // Usando o novo estado para mostrar erro de carregamento
-                setExibirSucesso({
+                setResultado({
                     exibir: true,
                     variante: "danger",
                     mensagem: "Não foi possível carregar a lista de orientadores disponíveis."
@@ -86,7 +87,7 @@ const SolicitarOrientacao = () => {
             setSugestoes([]);
         }, 200);
     }
-
+    //Lida com a busca de orientador do input
     const handleBuscaOrientador = (e) => {
         const termo = e.target.value;
         setBuscaOrientador(termo);
@@ -112,7 +113,7 @@ const SolicitarOrientacao = () => {
         try {
             setEnviando(true);
             // Reseta o alerta antes de tentar de novo
-            setExibirSucesso({ exibir: false, variante: "", mensagem: "" });
+            setResultado({ exibir: false, variante: "", mensagem: "" });
 
             const payload = {
                 idProfessor: dadosValidados.orientadorId
@@ -121,7 +122,7 @@ const SolicitarOrientacao = () => {
             await alunoService.solicitarOrientacao(payload);
 
             // Fluxo de Sucesso usando o novo objeto
-            setExibirSucesso({
+            setResultado({
                 exibir: true,
                 variante: "success",
                 mensagem: "Solicitação de orientação enviada com sucesso!"
@@ -129,14 +130,10 @@ const SolicitarOrientacao = () => {
 
             setBuscaOrientador("");
             reset();
-
-            // Esconde automaticamente após 5 segundos
-            setTimeout(() => setExibirSucesso({ exibir: false, variante: "", mensagem: "" }), 5000);
-
         } catch (error) {
             console.error("Erro ao solicitar orientação:", error);
             // Fluxo de Erro usando o mesmo objeto, mudando apenas a variante
-            setExibirSucesso({
+            setResultado({
                 exibir: true,
                 variante: "danger",
                 mensagem: error.message || "Ocorreu um erro ao enviar a solicitação. Verifique se você já possui um orientador."
@@ -232,16 +229,16 @@ const SolicitarOrientacao = () => {
                 </Form>
 
                 {/* Renderiza o alerta dinamico de erro ou sucesso após passar nas validações */}
-                {exibirSucesso.exibir && (
+                {resultado.exibir && (
                     <Row className="justify-content-center mt-3">
                         <Col xs={12} md={8} lg={6}>
                             <Alert
-                                variant={exibirSucesso.variante}
-                                onClose={() => setExibirSucesso({ exibir: false, variante: "", mensagem: "" })}
+                                variant={resultado.variante}
+                                onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
                                 dismissible
                                 className="fw-bold"
                             >
-                                {exibirSucesso.mensagem}
+                                {resultado.mensagem}
                             </Alert>
                         </Col>
                     </Row>

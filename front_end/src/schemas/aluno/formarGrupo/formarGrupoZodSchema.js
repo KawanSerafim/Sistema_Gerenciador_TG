@@ -11,5 +11,5 @@ export const camposSchema = z.object({
     integrantes: z.array(z.object({
         // Aceita string ou number
         matricula: z.string(),
-    })).min(1, "Adicione pelo menos um integrante ao grupo.")
+    }))
 })

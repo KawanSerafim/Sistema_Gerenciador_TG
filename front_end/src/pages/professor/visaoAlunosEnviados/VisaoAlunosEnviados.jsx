@@ -1,4 +1,4 @@
-import { Alert, Container, Form, FormGroup, FormSelect, Spinner } from "react-bootstrap"
+import { Toast, ToastContainer, Container, Form, FormGroup, FormSelect, Spinner } from "react-bootstrap"
 import UserNavBar from "../../../components/usernavbar/UserNavBar"
 import TableComponent from "../../../components/table/TableComponent"
 
@@ -22,7 +22,7 @@ const VisaoAlunosEnviados = () => {
     // Estados de UI (Carregamento e Erros)
     const [carregandoTurmas, setCarregandoTurmas] = useState(false);
     const [carregandoAlunos, setCarregandoAlunos] = useState(false);
-    const [erro, setErro] = useState("");
+    const [resultado, setResultado] = useState({ exibir: "", variante: "", mensagem: "" });
 
 
     //Colunas da tabela
@@ -47,7 +47,7 @@ const VisaoAlunosEnviados = () => {
                 }
             } catch (error) {
                 console.error("Erro ao carregar turmas:", error);
-                setErro("Não foi possível carregar suas turmas.");
+                setResultado({ exibir: true, variante: "danger", mensagem: "Não foi possível carregar suas turmas." });
             } finally {
                 setCarregandoTurmas(false);
             }
@@ -64,7 +64,7 @@ const VisaoAlunosEnviados = () => {
         const carregarAlunosDaTurma = async () => {
             try {
                 setCarregandoAlunos(true);
-                setErro(""); // Limpa erros anteriores
+                setResultado({ exbir: false, variante: "", mensagem: "" }); // Limpa erros anteriores
                 // Passa os parâmetros de paginação para o Service
                 const resposta = await alunoService.buscarAlunosPorTurmaId(
                     turmaSelecionada,
@@ -93,7 +93,7 @@ const VisaoAlunosEnviados = () => {
                 setTotalPaginas(paginaDominio.totalPaginas || 1);
             } catch (error) {
                 console.error("Erro ao buscar alunos:", error);
-                setErro("Erro ao buscar a lista de alunos desta turma.");
+                setResultado({ exibir: true, variante: "danger", mensagem: "Erro ao buscar a lista de alunos desta turma." });
             } finally {
                 setCarregandoAlunos(false);
             }
@@ -169,10 +169,28 @@ const VisaoAlunosEnviados = () => {
                 </Form>
 
                 {/* Exibição de Erros */}
-                {erro && (
-                    <Alert variant="danger" className="mt-4 text-center fw-bold">
-                        {erro}
-                    </Alert>
+                {resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+                        //sem auto-hide, usuario deve escolher quando remover o toast
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
 
                 {/* Tabela de alunos, só exibe se tiver dados e não estiver carregando */}
@@ -187,10 +205,27 @@ const VisaoAlunosEnviados = () => {
                         />
                     </div>
                 )}
-                {!carregandoAlunos && turmaSelecionada && alunos.length === 0 && !erro && (
-                    <Alert variant="info" className="mt-4 text-center fw-bold">
-                        Nenhum aluno encontrado para esta turma.
-                    </Alert>
+                {!carregandoAlunos && turmaSelecionada && alunos.length === 0 && resultado.exibir && (
+                    <ToastContainer
+                        position="top-end"
+                        className="p-3"
+                        style={{ position: "fixed", zIndex: 9999 }}
+                    >
+                        <Toast
+                            show={resultado.exibir}
+                            onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+                            bg={"info"}
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto text-dark">
+                                    "Atenção"
+                                </strong>
+                            </Toast.Header>
+                            <Toast.Body className="text-white fw-bold fs-6">
+                                {resultado.mensagem}
+                            </Toast.Body>
+                        </Toast>
+                    </ToastContainer>
                 )}
 
             </Container>
