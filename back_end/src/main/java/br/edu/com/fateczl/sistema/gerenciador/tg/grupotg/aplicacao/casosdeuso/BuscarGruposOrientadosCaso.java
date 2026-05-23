@@ -125,7 +125,8 @@ public class BuscarGruposOrientadosCaso {
         Banca banca = bancaOpt.get();
         //Se tiver banca extrai o status dela
         if (banca.status().name().equals("AVALIADA")){
-            return "Avaliado com nota: " + banca.notaFinal();
+            //Retorna a nota com 2 casas decimais
+            return "Avaliado com nota: " + String.format("%.2f", banca.notaFinal());
         }//Se não, retorna a situação da banca
         return banca.status().name();
     }

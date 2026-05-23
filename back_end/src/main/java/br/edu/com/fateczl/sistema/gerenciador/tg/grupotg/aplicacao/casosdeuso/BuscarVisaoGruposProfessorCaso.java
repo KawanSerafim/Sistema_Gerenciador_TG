@@ -191,7 +191,8 @@ public class BuscarVisaoGruposProfessorCaso {
 
         Banca banca = bancaOpt.get();
         if ("AVALIADA".equals(banca.status().name())) {
-            return "Avaliado - Nota: " + banca.notaFinal();
+            //Retorna a nota com 2 casas decimais
+            return "Avaliado - Nota: " + String.format("%.2f", banca.notaFinal());
         }
 
         // Retorna o status amigável da banca (AGENDADA, CONFIRMADA, etc.)
