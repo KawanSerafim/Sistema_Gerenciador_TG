@@ -13,10 +13,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Prof
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.entidade.Turma;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Ano;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.PeriodoLetivo;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.Semestre;
-import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.TurmaId;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.ValidadorComposicaoTurma;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.VerificadorUnicidadeTurma;
@@ -106,7 +103,8 @@ public class GerarTurmaCaso {
                 comando.disciplina(),
                 comando.turno(),
                 periodoLetivo,
-                professorTg.id()
+                professorTg.id(),
+                StatusTurma.ATIVA
         );
 
         turmaRepositorio.salvar(novaTurma);
