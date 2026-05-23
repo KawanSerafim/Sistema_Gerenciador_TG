@@ -49,9 +49,14 @@ public class ConfiguracaoGrupoTg {
             GrupoTgRepositorio repositorio,
             AlunoRepositorio alunoRepositorio,
             ProfessorRepositorio professorRepositorio,
-            TurmaRepositorio turmaRepositorio
+            TurmaRepositorio turmaRepositorio,
+            BancaRepositorio bancaRepositorio
     ) {
-        return new BuscarVisaoGruposProfessorCaso(repositorio, alunoRepositorio, professorRepositorio, turmaRepositorio);
+        return new BuscarVisaoGruposProfessorCaso(repositorio,
+                alunoRepositorio,
+                professorRepositorio,
+                turmaRepositorio,
+                bancaRepositorio);
     }
 
     @Bean
