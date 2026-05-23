@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.turma.infraestrutura.persisten
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Disciplina;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Turno;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.objetosvalor.StatusTurma;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,4 +37,9 @@ public class TurmaModelo {
 
     @Column(length = 36, name = "professor_id", nullable = false)
     private String professorId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30, nullable = false, name = "status_turma")
+    // Valor padrão ao criar uma turma nova
+    private StatusTurma statusTurma = StatusTurma.ATIVA;
 }

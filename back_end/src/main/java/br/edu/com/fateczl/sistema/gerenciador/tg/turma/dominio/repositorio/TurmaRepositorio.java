@@ -14,6 +14,7 @@ import java.util.Set;
 
 public interface TurmaRepositorio {
     void salvar(Turma turma);
+    void salvarTodas(List<Turma> turmas);
     Optional<Turma> buscarPorId(TurmaId id);
     List<Turma> buscarTodasPorIds(Set<TurmaId> ids);
     Optional<Turma> buscarPorCursoIdEDisciplinaETurnoEAnoESemestre(
@@ -22,5 +23,6 @@ public interface TurmaRepositorio {
             Turno turno,
             PeriodoLetivo periodoLetivo
     );
+
     List<Turma> buscarPorProfessorTgId(ProfessorId professorId);
 }

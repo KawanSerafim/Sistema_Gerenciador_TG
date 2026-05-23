@@ -8,6 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.Gru
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasPorProfessorTgIdCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.BuscarTurmasProfessorLogadoCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.FinalizarTurmasCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.aplicacao.casosdeuso.GerarTurmaCaso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.repositorio.TurmaRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.turma.dominio.servicos.ValidadorComposicaoTurma;
@@ -73,5 +74,13 @@ public class ConfiguracaoTurma {
                 professorRepositorio,grupoTgRepositorio,
                 alunoRepositorio,turmaRepositorio
         );
+    }
+
+    @Bean
+    public FinalizarTurmasCaso finalizarTurmasCaso(
+        TurmaRepositorio turmaRepositorio,
+        ProfessorRepositorio professorRepositorio
+    ) {
+        return new FinalizarTurmasCaso(turmaRepositorio, professorRepositorio);
     }
 }

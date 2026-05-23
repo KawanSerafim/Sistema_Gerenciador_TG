@@ -30,6 +30,15 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
     }
 
     @Override
+    @Transactional
+    public void salvarTodas(List<Turma> turmas) {
+        var modelos = turmas.stream()
+                .map(TurmaMapeador::paraModelo)
+                .toList();
+        repositorio.saveAll(modelos);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Optional<Turma> buscarPorId(TurmaId id) {
         return repositorio.findById(id.texto())
@@ -69,9 +78,12 @@ public class TurmaRepositorioImpl implements TurmaRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Turma> buscarPorProfessorTgId(ProfessorId professorId) {
         return repositorio.findByProfessorId(professorId.texto())
                 .stream().map(TurmaMapeador::paraDominio)
                 .toList();
     }
+
+
 }

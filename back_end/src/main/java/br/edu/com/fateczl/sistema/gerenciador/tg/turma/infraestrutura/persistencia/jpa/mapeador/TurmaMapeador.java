@@ -22,7 +22,8 @@ public class TurmaMapeador {
                 dominio.turno(),
                 dominio.anoLetivoValor(),
                 dominio.semestreLetivoValor(),
-                dominio.professorTgIdTexto()
+                dominio.professorTgIdTexto(),
+                dominio.statusTurma()
         );
     }
 
@@ -38,7 +39,8 @@ public class TurmaMapeador {
                 modelo.getDisciplina(),
                 modelo.getTurno(),
                 periodoLetivo,
-                new ProfessorId(UUID.fromString(modelo.getProfessorId()))
+                new ProfessorId(UUID.fromString(modelo.getProfessorId())),
+                modelo.getStatusTurma()
         );
     }
 }
