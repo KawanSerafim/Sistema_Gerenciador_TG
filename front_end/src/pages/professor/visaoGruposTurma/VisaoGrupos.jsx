@@ -82,7 +82,7 @@ const VisaoGrupos = () => {
                     const isAlunoSemGrupo = item.tema === "" || item.tema === "Sem tema definido";
 
                     return {
-                        tipoTG: isAlunoSemGrupo ? "Sem grupo" : item.tipoTg,
+                        tipoTG: isAlunoSemGrupo ? "Sem grupo" : item.tipoTg.replace("_", " "),
                         tema: isAlunoSemGrupo ? "Sem grupo" : item.tema,
                         orientador: isAlunoSemGrupo ? "Sem grupo" : (item.nomeOrientador || "Sem orientador"),
                         grupo: item.integrantes ? item.integrantes.map(i => i.nome) : [],

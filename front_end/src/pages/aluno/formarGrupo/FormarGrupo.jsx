@@ -290,10 +290,10 @@ const FormarGrupo = () => {
                                 className='bg-white text-black fw-bolder fs-5'
                             >
                                 <option value="" disabled>Selecione o tipo de trabalho</option>
-                                <option value="monografia">Monografia</option>
-                                <option value="desenvolvimento">Desenvolvimento</option>
-                                <option value="artigo">Artigo</option>
-                                <option value="plano-de-negocio">Plano de negocio</option>
+                                <option value="MONOGRAFIA">Monografia</option>
+                                <option value="DESENVOLVIMENTO_SOFTWARE">Desenvolvimento</option>
+                                <option value="ARTIGO">Artigo</option>
+                                <option value="PROJETO_NEGOCIO">Plano de negocio</option>
                             </FormSelect>
                             <Form.Control.Feedback type="invalid">{errors.tipoTG?.message}</Form.Control.Feedback>
                         </Col>

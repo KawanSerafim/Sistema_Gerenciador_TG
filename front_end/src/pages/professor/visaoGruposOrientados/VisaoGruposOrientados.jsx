@@ -64,7 +64,7 @@ const VisaoGruposOrientados = () => {
                 // Mapeia os dados do DTO do Java para o TableComponent
                 const dadosFormatados = response.map(item => ({
                     idGrupo: item.idGrupo,
-                    tipoTg: item.tipoTg,
+                    tipoTg: item.tipoTg.replace("_", " "),
                     tema: item.tema,
                     // Monta a string do período ou exibe um aviso se faltar
                     periodo: item.semestre && item.ano ? `${item.semestre}º/${item.ano}` : "Não definido",

@@ -47,7 +47,7 @@ const TableComponent = ({ colunas, dados,
     return (
         <div className="d-flex flex-column w-100">
             <Table responsive className="custom-table custom-table-hover">
-                <thead className="text-nowrap">
+                <thead className="text-wrap">
                     <tr className='fs-5 fw-medium'>
                         {colunas.map((col) => (
                             <th key={col.accessor} className="table-header">

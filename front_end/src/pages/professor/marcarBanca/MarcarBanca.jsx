@@ -289,7 +289,7 @@ const MarcarBanca = () => {
                             {selectedGrupo && (
                                 <div className="text-center mb-4">
                                     <h5 className="text-secondary fs-4 fw-bold">
-                                        {selectedGrupo.tema} - {selectedGrupo.tipoTg}
+                                        {selectedGrupo.tema} - {selectedGrupo.tipoTg.replace("_", " ")}
                                     </h5>
                                     <div className="mt-3">
                                         <TableComponent

@@ -43,9 +43,6 @@ const VisaoGrupoAluno = () => {
             <Container className="mt-5" style={{ maxWidth: '1000px' }}>
                 <div className="d-flex justify-content-between align-items-center bg-primary rounded-top-4 p-3 shadow-sm">
                     <h2 className='text-white fs-2 m-0'>Meu Trabalho de Graduação</h2>
-                    <Button variant="outline-light" onClick={() => navigate('/inicio')}>
-                        Voltar
-                    </Button>
                 </div>
 
                 <div className='form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm'>

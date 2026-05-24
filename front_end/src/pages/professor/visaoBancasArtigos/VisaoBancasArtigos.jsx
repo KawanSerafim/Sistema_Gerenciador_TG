@@ -307,7 +307,7 @@ const VisaoBancasArtigos = () => {
                     onSubmit={handleSubmit(enviarParaBackend)}>
                     <Modal.Header className="d-flex justify-content-center" closeButton>
                         <div className="custom-modal-title">
-                            <span className="fw-bold fs-5">{`${data.tema} - ${data.tipoTg.toUpperCase()} - ${data.disciplina.toUpperCase()}`}</span>
+                            <span className="fw-bold fs-5">{`${data.tema} - ${data.tipoTg.toUpperCase().replace("_", " ")} - ${data.disciplina.toUpperCase()}`}</span>
                         </div>
                     </Modal.Header>
 
