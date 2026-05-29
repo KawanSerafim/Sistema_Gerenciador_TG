@@ -43,7 +43,8 @@ public class EnviarEmailConfirmacaoCaso {
     private ContaUsuario procurarConta(Email emailAlvo) {
         return repositorio.buscarPorEmail(emailAlvo)
                 .orElseThrow(() -> new GenericaExcecao(
-                        CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO
+                        CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO,
+                        "conta de usuário"
                 ));
     }
 
