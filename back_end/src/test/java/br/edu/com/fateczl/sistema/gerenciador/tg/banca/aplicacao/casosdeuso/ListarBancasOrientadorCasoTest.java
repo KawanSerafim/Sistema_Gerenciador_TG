@@ -1,12 +1,13 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.StatusBanca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.entidade.GrupoTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.GrupoTgId;
-import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.objetosvalor.TemaTg;
 import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.entidade.Professor;
 import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.ProfessorId;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,8 +34,8 @@ class ListarBancasOrientadorCasoTest {
 
     @Mock private GrupoTgRepositorio grupoTgRepositorio;
     @Mock private BancaRepositorio bancaRepositorio;
-    @Mock
-    private ProfessorRepositorio professorRepositorio;
+    @Mock private ProfessorRepositorio professorRepositorio;
+    @Mock private AlunoRepositorio alunoRepositorio; // Repositório adicionado ao contexto do teste
 
     @InjectMocks
     private ListarBancasOrientadorCaso casoDeUso;
@@ -54,17 +56,26 @@ class ListarBancasOrientadorCasoTest {
     void deveListarBancasComSucessoEPermitirAtribuicaoQuandoBancaJaOcorreu() {
         // Arrange
         Professor orientador = Mockito.mock(Professor.class);
+        Nome nomeOrientador = Mockito.mock(Nome.class);
+
+        Mockito.when(nomeOrientador.valor()).thenReturn("Prof. Orientador");
+        Mockito.when(orientador.nome()).thenReturn(nomeOrientador);
+        Mockito.when(orientador.idTexto()).thenReturn("orientador-123");
         Mockito.when(orientador.id()).thenReturn(professorId);
+
         Mockito.when(professorRepositorio.buscarPorEmail(any(Email.class)))
                 .thenReturn(Optional.of(orientador));
 
         GrupoTg grupo = Mockito.mock(GrupoTg.class);
-        TemaTg tema = new TemaTg("Sistema de Gestão",
-                "Descrição de uma monografia de trabalho graduacao para testes unitarios");
         Mockito.when(grupo.id()).thenReturn(new GrupoTgId(UUID.randomUUID()));
-        Mockito.when(grupo.temaTg()).thenReturn(tema);
+        Mockito.when(grupo.idTexto()).thenReturn("grupo-123");
+        Mockito.when(grupo.nomeTemaTg()).thenReturn("Sistema de Gestão");
+        Mockito.when(grupo.disciplinas()).thenReturn(Set.of());
         Mockito.when(grupo.tipoTg())
                 .thenReturn(br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg.MONOGRAFIA);
+
+        Mockito.when(grupo.alunosIds()).thenReturn(List.of());
+        Mockito.when(alunoRepositorio.buscarTodosPorIds(any())).thenReturn(List.of());
 
         Mockito.when(grupoTgRepositorio.buscarPorOrientadorId(professorId))
                 .thenReturn(List.of(grupo));
@@ -87,7 +98,7 @@ class ListarBancasOrientadorCasoTest {
         assertEquals("banca-123", dto.idBanca());
         assertEquals("Sistema de Gestão", dto.tema());
         assertTrue(dto.podeAtribuirNota());
-        assertEquals("Pré Banca realizada", dto.situacao());
+        assertEquals("Realizada", dto.situacao());
     }
 
     @Test
@@ -116,21 +127,34 @@ class ListarBancasOrientadorCasoTest {
     void deveBloquearAtribuicaoDeNotaQuandoBancaForFutura() {
         // Arrange
         Professor orientador = Mockito.mock(Professor.class);
+        Nome nomeOrientador = Mockito.mock(Nome.class);
+
+
+        Mockito.when(nomeOrientador.valor()).thenReturn("Prof. Orientador");
+        Mockito.when(orientador.nome()).thenReturn(nomeOrientador);
+        Mockito.when(orientador.idTexto()).thenReturn("orientador-123");
         Mockito.when(orientador.id()).thenReturn(professorId);
+
         Mockito.when(professorRepositorio.buscarPorEmail(any(Email.class)))
                 .thenReturn(Optional.of(orientador));
 
         GrupoTg grupo = Mockito.mock(GrupoTg.class);
-        Mockito.when(grupo.temaTg()).thenReturn(
-                new TemaTg("IA em Saúde",
-                        "Descrição de um trabalho de graduação sobre IA na área de saúde"));
+        Mockito.when(grupo.id()).thenReturn(new GrupoTgId(UUID.randomUUID()));
+        Mockito.when(grupo.idTexto()).thenReturn("grupo-123");
+        Mockito.when(grupo.nomeTemaTg()).thenReturn("IA em Saúde");
+        Mockito.when(grupo.disciplinas()).thenReturn(Set.of());
         Mockito.when(grupo.tipoTg())
                 .thenReturn(br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.objetosvalor.TipoTg.ARTIGO);
+
+        Mockito.when(grupo.alunosIds()).thenReturn(List.of());
+        Mockito.when(alunoRepositorio.buscarTodosPorIds(any())).thenReturn(List.of());
+
         Mockito.when(grupoTgRepositorio.buscarPorOrientadorId(professorId))
                 .thenReturn(List.of(grupo));
 
         // Banca no futuro
         Banca bancaFutura = Mockito.mock(Banca.class);
+        Mockito.when(bancaFutura.idTexto()).thenReturn("banca-futura-123");
         Mockito.when(bancaFutura.status()).thenReturn(StatusBanca.MARCADA);
         Mockito.when(bancaFutura.dataHora()).thenReturn(LocalDateTime.now().plusWeeks(2));
 
@@ -141,6 +165,6 @@ class ListarBancasOrientadorCasoTest {
 
         // Assert
         assertFalse(resultado.getFirst().podeAtribuirNota());
-        assertEquals("MARCADA", resultado.getFirst().situacao());
+        assertEquals("Marcada", resultado.getFirst().situacao());
     }
 }
