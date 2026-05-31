@@ -1,6 +1,6 @@
 # Sistema Gerenciador de Trabalho de Graduação 🎓
 
-Um sistema completo desenvolvido para modernizar e automatizar o ciclo de vida do Trabalho de Graduação (TG). O TG Manager conecta Alunos, Professores Orientadores, Coordenadores e Professores da Disciplina em uma plataforma única, gerenciando desde a importação de alunos e formação de grupos até o agendamento de bancas e atribuição de notas.
+Um sistema completo desenvolvido para modernizar e automatizar o ciclo de vida do Trabalho de Graduação (TG). O sistema conecta Alunos, Professores Orientadores, Coordenadores e Professores da Disciplina em uma plataforma única, gerenciando desde a importação de alunos e formação de grupos até o agendamento de bancas, notificação automática e geração de atas oficiais.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -9,14 +9,17 @@ Um sistema completo desenvolvido para modernizar e automatizar o ciclo de vida d
 * **MySQL** (Banco de Dados Relacional)
 * **Spring Data JPA** / Hibernate
 * **Spring Security** + **JWT** (JSON Web Token) para autenticação e autorização
-* **JavaMailSender** para envio de e-mails transacionais (códigos OTP para senhas)
+* **JavaMailSender** para envio de e-mails transacionais assíncronos (códigos OTP, convites de banca e anexos)
 * **Apache POI** para leitura e processamento de planilhas Excel (Importação de alunos)
+* **Thymeleaf** operando como motor de template interno (processamento de corpos de e-mail e estruturação de documentos HTML)
+* **OpenHTMLToPDF** para a conversão de templates HTML em documentos PDF nativos e responsivos sob demanda (ex: Ata da Banca)
 
 ### Frontend
 * **React.js** com **Vite**
 * **JavaScript** / JSX
 * **React Bootstrap** + CSS customizado para estilização responsiva
 * **React Hook Form** + **Zod** para gerenciamento e validação de formulários complexos
+* **Implementação própria de  cliente HTTP** configurado com interceptadores (interceptors) globais para injeção de JWT e tratamento de downloads de arquivos binários (Blob).
 
 ---
 
@@ -27,11 +30,12 @@ O backend foi construído seguindo os princípios rigorosos da **Arquitetura Lim
 O projeto está dividido nas seguintes camadas principais:
 
 1. **Domínio (`dominio`)**: O coração do software. Contém as Regras de Negócio, Entidades puras do Java (ex: `Aluno`, `Turma`, `GrupoTg`), Objetos de Valor (Value Objects) e as assinaturas (interfaces) dos Repositórios. **Não possui nenhuma dependência do Spring**.
-2. **Aplicação (`aplicacao`)**: Contém os **Casos de Uso** (ex: `FinalizarTurmasCaso`, `MarcarBancaCaso`). Orquestra o fluxo de dados entre o domínio e a infraestrutura, executando as lógicas de negócio e as transações de maneira segura.
+2. **Aplicação (`aplicacao`)**: Contém os **Casos de Uso** (ex: `FinalizarTurmasCaso`, `MarcarBancaCaso`). Orquestra o fluxo de dados, executa as lógicas de negócio e dispara **Eventos de Domínio** (Observer Pattern) para lidar com efeitos colaterais (como envio de e-mails) sem travar a transação principal.
 3. **Infraestrutura (`infraestrutura`)**: A borda externa do sistema. Aqui vivem as implementações técnicas:
    * **API / Controladores**: Endpoints REST (`@RestController`).
-   * **Persistência / JPA**: Modelos de banco de dados mapeados para tabelas (ex: `TurmaModelo`), Mapeadores (Mappers) e as implementações reais dos Repositórios usando Spring Data.
-   * **Configurações**: Injeção de dependências (`@Configuration`), Beans customizados e Filtros do Spring Security.
+   * **Persistência / JPA**: Modelos de banco de dados mapeados para tabelas, Mapeadores (Mappers) e as implementações reais dos Repositórios usando Spring Data.
+   * **Adaptadores de Saída**: Implementações para envio de e-mail (`JavaMailSender`), acesso ao sistema de arquivos (upload de TG) e geração de PDFs.
+   * **Configurações**: Injeção de dependências (`@Configuration`), processamento assíncrono (`@EnableAsync`) e Filtros do Spring Security.
 
 ---
 
@@ -90,9 +94,9 @@ VITE_API_URL=http://localhost:8080/api
 1. Abra o terminal e navegue até a pasta `back_end`.
 2. Certifique-se de que o MySQL está rodando e as credenciais batem com as do seu `application.properties`.
 3. Execute o comando do Maven Wrapper para baixar as dependências e iniciar o servidor:
+
 * **Windows**: `.\mvnw spring-boot:run`
 * **Linux/Mac**: `./mvnw spring-boot:run`
-
 
 4. A API estará disponível e escutando na porta `http://localhost:8080`.
 
@@ -100,18 +104,18 @@ VITE_API_URL=http://localhost:8080/api
 
 1. Abra um novo terminal e navegue até a pasta `front_end`.
 2. Instale as dependências do ecossistema Node:
+
 ```bash
 npm install
 
 ```
 
-
 3. Inicie o servidor de desenvolvimento do Vite:
+
 ```bash
 npm run dev
 
 ```
-
 
 4. A aplicação estará disponível no seu navegador (geralmente em `http://localhost:5173`).
 
@@ -150,8 +154,9 @@ Abaixo estão os principais conjuntos de rotas expostas pelo sistema (Todas as r
 
 
 * **Bancas de Avaliação (`/api/bancas`)**
-* `POST /marcar`: Orientador agenda a data, hora, local e compõe os membros (internos e externos) da banca.
-* `POST /avaliar`: Atribui as notas e finaliza o ciclo de defesa do trabalho.
+* `POST /marcar`: Orientador agenda a data, hora, local e compõe os membros. (Dispara notificação assíncrona por e-mail com anexo do trabalho).
+* `GET /{id}/ata/download`: Geração e download sob demanda do documento oficial (Ata da Banca) em formato PDF.
+* `POST /avaliar`: Atribui as notas da banca e finaliza o ciclo de defesa do trabalho.
 
 
 
@@ -159,6 +164,4 @@ Abaixo estão os principais conjuntos de rotas expostas pelo sistema (Todas as r
 
 *Desenvolvido como projeto de Trabalho de Graduação.*
 
-*Código feito por: Kawan Serafim de Souza e Thiago Silva Antenr*
-
-```
+*Desenvolvido por: Kawan Serafim de Souza, Thiago Silva Antenor e Felype Dantas dos Santos.*
