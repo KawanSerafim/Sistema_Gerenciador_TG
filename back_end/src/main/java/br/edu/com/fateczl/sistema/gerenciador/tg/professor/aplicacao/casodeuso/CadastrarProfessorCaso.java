@@ -1,7 +1,10 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Matricula;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.objetosvalor.Nome;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
@@ -30,6 +33,7 @@ public class CadastrarProfessorCaso {
     private final VerificadorUnicidadeEmail verificadorEmail;
     private final VerificadorUnicidadeProfessor verificadorProfessor;
     private final IdentificadorAutoridadesProfessor identificadorAutoridades;
+    private final AdministradorRepositorio administradorRepositorio;
 
     public CadastrarProfessorCaso(
             ProfessorRepositorio professorRepositorio,
@@ -38,7 +42,8 @@ public class CadastrarProfessorCaso {
             PublicadorEventos publicador,
             VerificadorUnicidadeEmail verificadorEmail,
             VerificadorUnicidadeProfessor verificadorProfessor,
-            IdentificadorAutoridadesProfessor identificadorAutoridades
+            IdentificadorAutoridadesProfessor identificadorAutoridades,
+            AdministradorRepositorio administradorRepositorio
     ) {
         this.professorRepositorio = professorRepositorio;
         this.contaUsuarioRepositorio = contaUsuarioRepositorio;
@@ -47,9 +52,12 @@ public class CadastrarProfessorCaso {
         this.verificadorEmail = verificadorEmail;
         this.verificadorProfessor = verificadorProfessor;
         this.identificadorAutoridades = identificadorAutoridades;
+        this.administradorRepositorio = administradorRepositorio;
     }
 
     public record Comando(
+            //Apenas administrador cadastra professores
+            String emailAdministradorLogado,
             String nome,
             String matricula,
             String email,
@@ -65,6 +73,13 @@ public class CadastrarProfessorCaso {
     ) {}
 
     public Resposta executar(Comando comando) {
+        //Verifica se o usuario logado é administrador
+        administradorRepositorio.buscarPorEmail
+                        (new Email(comando.emailAdministradorLogado()))
+                .orElseThrow(() -> new RegraNegocioExcecao(CodigoErro.AU_003_ACAO_NAO_PERMITIDA_MOTIVO,
+                        "cadastrar professor",
+                        "usuário logado não tem permissão de administrador"));
+
         Email emailAlvo = new Email(comando.email());
         Matricula matriculaAlvo = new Matricula(comando.matricula());
         Nome nome = new Nome(comando.nome());

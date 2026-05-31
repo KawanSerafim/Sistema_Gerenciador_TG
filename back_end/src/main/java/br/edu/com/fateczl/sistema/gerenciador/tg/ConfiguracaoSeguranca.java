@@ -27,9 +27,9 @@ import java.util.List;
 @EnableMethodSecurity
 @AllArgsConstructor
 public class ConfiguracaoSeguranca {
+    private final FiltroAutenticacaoJwt filtroJwt;
 
     private static final String[] ROTAS_PUBLICAS_POST = {
-            "/api/professores",
             "/api/alunos",
             "/api/alunos/finalizar-cadastro",
             "/api/autenticacao/validar-codigo",
@@ -47,7 +47,8 @@ public class ConfiguracaoSeguranca {
             "/api/compartilhado/disciplinas"
     };
 
-    private final FiltroAutenticacaoJwt filtroJwt;
+
+
 
     @Bean
     public SecurityFilterChain filtroChavesSeguranca(HttpSecurity http)

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "professor")
+@Table(name = "professores")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class ProfessorModelo {

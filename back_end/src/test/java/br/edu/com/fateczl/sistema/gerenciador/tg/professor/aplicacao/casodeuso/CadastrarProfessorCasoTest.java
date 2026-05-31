@@ -1,5 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
@@ -39,6 +40,7 @@ class CadastrarProfessorCasoTest {
     @Mock private VerificadorUnicidadeEmail verificadorEmail;
     @Mock private VerificadorUnicidadeProfessor verificadorProfessor;
     @Mock private IdentificadorAutoridadesProfessor identificadorAutoridades;
+    @Mock private AdministradorRepositorio administradorRepositorio;
 
     @InjectMocks
     private CadastrarProfessorCaso cadastrarProfessorCaso;
@@ -47,13 +49,14 @@ class CadastrarProfessorCasoTest {
     void deveCadastrarProfessorEContaComSucesso() {
         // Arrange com dados válidos segundo as regras de negócio
         CadastrarProfessorCaso.Comando comando = new CadastrarProfessorCaso.Comando(
+                "admin@cps.sp.gov.br",
                 "Carlos Silva",
                 "1110482323001", // Matrícula válida com 13 dígitos
                 "carlos.silva@cps.sp.gov.br", // Domínio de e-mail institucional
                 "SenhaSegura123!",
                 CargoProfessor.ORIENTADOR
         );
-
+        doNothing().when(administradorRepositorio.buscarPorEmail(any(Email.class)));
         when(identificadorAutoridades.identificar(CargoProfessor.ORIENTADOR))
                 .thenReturn(Set.of(Autoridade.ROLE_ORIENTADOR));
 
@@ -85,13 +88,14 @@ class CadastrarProfessorCasoTest {
     void deveLancarExcecaoEInterromperFluxoQuandoEmailJaExistir() {
         // Arrange
         CadastrarProfessorCaso.Comando comando = new CadastrarProfessorCaso.Comando(
+                "admin@cps.sp.gov.br",
                 "Carlos Silva",
                 "1110482323001",
                 "carlos.silva@cps.sp.gov.br",
                 "SenhaSegura123!",
                 CargoProfessor.ORIENTADOR
         );
-
+        doNothing().when(administradorRepositorio.buscarPorEmail(any(Email.class)));
         when(identificadorAutoridades.identificar(CargoProfessor.ORIENTADOR))
                 .thenReturn(Set.of(Autoridade.ROLE_ORIENTADOR));
 

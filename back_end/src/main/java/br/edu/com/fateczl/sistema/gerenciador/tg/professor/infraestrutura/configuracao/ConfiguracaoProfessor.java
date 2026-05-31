@@ -1,5 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.infraestrutura.configuracao;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.CriptografoSenhas;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
@@ -36,7 +37,8 @@ public class ConfiguracaoProfessor {
             PublicadorEventos publicador,
             VerificadorUnicidadeEmail verificadorEmail,
             VerificadorUnicidadeProfessor verificadorProfessor,
-            IdentificadorAutoridadesProfessor identificadorAutoridades
+            IdentificadorAutoridadesProfessor identificadorAutoridades,
+            AdministradorRepositorio administradorRepositorio
     ) {
         return new CadastrarProfessorCaso(
                 professorRepositorio,
@@ -45,7 +47,8 @@ public class ConfiguracaoProfessor {
                 publicador,
                 verificadorEmail,
                 verificadorProfessor,
-                identificadorAutoridades
+                identificadorAutoridades,
+                administradorRepositorio
         );
     }
 
