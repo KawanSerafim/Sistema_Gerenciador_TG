@@ -63,12 +63,14 @@ public class ConfiguracaoBanca {
     public AtribuirNotasBancaCaso atribuirNotasBancaCaso(
             BancaRepositorio bancaRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            PublicadorEventos publicadorEventos
     ){
         return new AtribuirNotasBancaCaso(
                 bancaRepositorio,
                 grupoTgRepositorio,
-                professorRepositorio
+                professorRepositorio,
+                publicadorEventos
         );
     }
 

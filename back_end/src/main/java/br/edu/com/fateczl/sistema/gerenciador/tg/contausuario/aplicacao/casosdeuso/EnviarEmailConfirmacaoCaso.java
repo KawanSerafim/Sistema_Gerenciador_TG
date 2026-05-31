@@ -71,6 +71,6 @@ public class EnviarEmailConfirmacaoCaso {
                 </div>
                \s""".formatted(codigo);
 
-        remetente.enviarEmail(emailAlvo, assunto, mensagemHtml);
+        remetente.enviarEmail(emailAlvo.valor(), assunto, mensagemHtml);
     }
 }

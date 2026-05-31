@@ -3,6 +3,8 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.BancaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.BancaAvaliadaEvento;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
@@ -20,15 +22,18 @@ public class AtribuirNotasBancaCaso {
     private final BancaRepositorio bancaRepositorio;
     private final GrupoTgRepositorio grupoTgRepositorio;
     private final ProfessorRepositorio professorRepositorio;
+    private final PublicadorEventos publicador;
 
     public AtribuirNotasBancaCaso(
             BancaRepositorio bancaRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            PublicadorEventos publicador
     ) {
         this.bancaRepositorio = bancaRepositorio;
         this.grupoTgRepositorio = grupoTgRepositorio;
         this.professorRepositorio = professorRepositorio;
+        this.publicador = publicador;
     }
 
     public record Comando(
@@ -59,5 +64,8 @@ public class AtribuirNotasBancaCaso {
 
         // Salva a Banca atualizada
         bancaRepositorio.salvar(banca);
+
+        // Dispara o evento para os ouvintes (Isso acorda a nossa classe de certificados)
+        publicador.publicar(new BancaAvaliadaEvento(banca.idTexto()));
     }
 }

@@ -99,10 +99,10 @@ public class NotificarMembrosBancaOuvinte {
                             .orElseThrow(() -> new GenericaExcecao(CodigoErro.GN_001_REGISTRO_NAO_ENCONTRADO,
                                     "Conta do professor da banca"));
                     if (trabalhoBytes != null) {
-                        remetenteEmail.enviarEmailComAnexo(new Email(conta.emailTexto()), assunto, htmlAvaliadores,
+                        remetenteEmail.enviarEmailComAnexo(conta.emailTexto(), assunto, htmlAvaliadores,
                                 trabalhoBytes, nomeArquivo);
                     } else {
-                        remetenteEmail.enviarEmail(new Email(conta.emailTexto()), assunto, htmlAvaliadores);
+                        remetenteEmail.enviarEmail(conta.emailTexto(), assunto, htmlAvaliadores);
                     }
                 });
             }
@@ -111,10 +111,10 @@ public class NotificarMembrosBancaOuvinte {
             for (MembroExterno membroExterno : banca.avaliadoresExternos()) {
                 try {
                     if (trabalhoBytes != null) {
-                        remetenteEmail.enviarEmailComAnexo(new Email(membroExterno.email()), assunto,
+                        remetenteEmail.enviarEmailComAnexo(membroExterno.email(), assunto,
                                 htmlAlunos, trabalhoBytes, nomeArquivo);
                     } else {
-                        remetenteEmail.enviarEmail(new Email(membroExterno.email()), assunto, htmlAlunos);
+                        remetenteEmail.enviarEmail(membroExterno.email(), assunto, htmlAlunos);
                     }
                 } catch (Exception e) {
                     log.error("Ignorando formatação de email inválida {}: {}", membroExterno.email(), e.getMessage());
@@ -126,7 +126,7 @@ public class NotificarMembrosBancaOuvinte {
                 alunoRepositorio.buscarPorId(alunoId).ifPresent(aluno -> {
                     if (aluno.contaUsuarioId() != null) {
                         contaUsuarioRepositorio.buscarPorId(aluno.contaUsuarioId()).ifPresent(conta ->
-                                remetenteEmail.enviarEmail(conta.email(), assunto, htmlAlunos)
+                                remetenteEmail.enviarEmail(conta.email().valor(), assunto, htmlAlunos)
                         );
                     }
                 });

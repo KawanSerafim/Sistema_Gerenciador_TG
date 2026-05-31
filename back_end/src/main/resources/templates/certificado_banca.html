@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        /* Define a folha como A4 Deitada (Landscape) */
+        @page {
+            size: A4 landscape;
+            margin: 25mm;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #333;
+            font-size: 12pt;
+            line-height: 1.6;
+        }
+
+        .header-table {
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+        }
+
+        .texto-principal {
+            text-align: justify;
+            margin-bottom: 40px;
+        }
+
+        .membros-banca {
+            margin-left: 40px;
+            margin-bottom: 60px;
+            font-weight: bold;
+        }
+
+        .membros-banca p {
+            margin: 5px 0;
+        }
+
+        .assinatura-container {
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        .data-emissao {
+            width: 50%;
+            float: left;
+            padding-top: 40px;
+            font-size: 12pt;
+        }
+
+        .box-assinatura {
+            width: 50%;
+            float: right;
+            text-align: center;
+            font-size: 12pt;
+        }
+
+        .img-assinatura {
+            max-height: 80px;
+            margin-bottom: 5px;
+        }
+
+        .linha-assinatura {
+            border-top: 1px solid #000;
+            width: 80%;
+            margin: 0 auto 5px auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="header-table">
+        <tr>
+            <td style="width: 30%; text-align: left;">
+                <img th:if="${!#strings.isEmpty(logoFatec)}" th:src="${logoFatec}" style="height: 60px;" />
+            </td>
+            <td style="width: 40%; text-align: center;">
+                <h1 style="margin: 0; font-size: 24pt; color: #555;">CERTIFICADO</h1>
+                <p style="margin: 0; font-size: 12pt; letter-spacing: 2px;">CENTRO PAULA SOUZA</p>
+            </td>
+            <td style="width: 30%; text-align: right;">
+                <img th:if="${!#strings.isEmpty(logoSp)}" th:src="${logoSp}" style="height: 70px;" />
+            </td>
+        </tr>
+    </table>
+
+    <div class="texto-principal">
+        Certificamos, para os devidos fins, que o Projeto de Graduação intitulado
+        <strong>"<span th:text="${tema}"></span>"</strong> dos(as) alunos(as)
+        <strong>"<span th:text="${alunos}"></span>"</strong> do Curso Superior de Tecnologia em
+        <span th:text="${curso}"></span> foi defendido em <span th:text="${dataDefesa}"></span>,
+        tendo participado da banca os Srs.(as):
+    </div>
+
+    <div class="membros-banca">
+        <p th:each="membro : ${membros}">
+            <span th:text="${membro.papel}"></span>: <span th:text="${membro.nome}"></span>
+        </p>
+    </div>
+
+    <div class="assinatura-container">
+        <div class="data-emissao">
+            São Paulo, <span th:text="${dataEmissao}"></span>.
+        </div>
+        <div class="box-assinatura">
+            <img class="img-assinatura" th:if="${!#strings.isEmpty(assinaturaDiretor)}" th:src="${assinaturaDiretor}" />
+            <br th:if="${#strings.isEmpty(assinaturaDiretor)}" />
+            <div class="linha-assinatura"></div>
+            <p style="margin: 0; font-weight: bold;" th:text="${nomeDiretor}"></p>
+            <p style="margin: 0;">Diretor da FATEC Zona Leste</p>
+        </div>
+    </div>
+
+</body>
+
+</html>

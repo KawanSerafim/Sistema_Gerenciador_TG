@@ -1,7 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.implementadores;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.RemetenteEmail;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class RemetenteEmailImpl implements RemetenteEmail {
     @Async
     @Override
     public void enviarEmail(
-            Email destinatario,
+            String destinatario,
             String assunto,
             String mensagem
     ) {
@@ -44,7 +43,7 @@ public class RemetenteEmailImpl implements RemetenteEmail {
             );
 
             helper.setFrom(remetenteOficial);
-            helper.setTo(destinatario.valor());
+            helper.setTo(destinatario);
             helper.setSubject(assunto);
             helper.setText(mensagem, true);
 
@@ -52,25 +51,31 @@ public class RemetenteEmailImpl implements RemetenteEmail {
             log.info(
                     "Email [{}] enviado com sucesso para: {}",
                     assunto,
-                    destinatario.valor()
+                    destinatario
             );
         } catch(MessagingException e) {
             log.error(
                     "Falha crítica ao enviar email para {}: {}",
-                    destinatario.valor(),
+                    destinatario,
                     e.getMessage()
             );
         }
     }
     @Async
     @Override
-    public void enviarEmailComAnexo(Email destinatario, String assunto, String mensagem, byte[] anexo, String nomeAnexo) {
+    public void enviarEmailComAnexo(
+            String destinatario,
+            String assunto,
+            String mensagem,
+            byte[] anexo,
+            String nomeAnexo)
+    {
         try {
             final MimeMessage message = mailSender.createMimeMessage();
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(remetenteOficial);
-            helper.setTo(destinatario.valor());
+            helper.setTo(destinatario);
             helper.setSubject(assunto);
             helper.setText(mensagem, true);
 
@@ -80,9 +85,9 @@ public class RemetenteEmailImpl implements RemetenteEmail {
             }
 
             mailSender.send(message);
-            log.info("Email [{}] com anexo '{}' enviado com sucesso para: {}", assunto, nomeAnexo, destinatario.valor());
+            log.info("Email [{}] com anexo '{}' enviado com sucesso para: {}", assunto, nomeAnexo, destinatario);
         } catch(MessagingException e) {
-            log.error("Falha crítica ao enviar email com anexo para {}: {}", destinatario.valor(), e.getMessage());
+            log.error("Falha crítica ao enviar email com anexo para {}: {}", destinatario, e.getMessage());
         }
     }
 }
