@@ -86,6 +86,10 @@ const Inicio = () => {
                                     onClick={() => handleClick('/curso/cadastro')}>
                                     Cadastrar Curso
                                 </Button>
+                                <Button variant="primary" className='fs-4 fw-medium flex-grow-1' style={{ minWidth: '300px' }}
+                                    onClick={() => handleClick('/admin/visaoMandatosDiretor')}>
+                                    Visão dos Mandatos de Diretor
+                                </Button>
                                 {/* Outras telas de admin... */}
                             </>
                         )}
@@ -117,7 +121,7 @@ const Inicio = () => {
                                     onClick={() => handleClick('/aluno/vincularCoOrientadorExterno')}>
                                     Vincular Co Orientador Externo
                                 </Button>
-                                {/* ... MANTENHA O RESTO DOS SEUS BOTÕES AQUI ... */}
+
                             </>
                         )}
 

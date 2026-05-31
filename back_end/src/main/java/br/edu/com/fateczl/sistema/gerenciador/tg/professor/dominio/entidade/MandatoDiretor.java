@@ -83,7 +83,9 @@ public class MandatoDiretor {
 
     //O comportamento do domínio para antecipar o fim do mandato
     public void encerrar() {
-        this.dataFim = LocalDate.now();
+        // Define o fim do mandato para ontem.
+        // Assim, a validação 'dataFim >= hoje' dará FALSO instantaneamente.
+        this.dataFim = LocalDate.now().minusDays(1);
     }
 
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------

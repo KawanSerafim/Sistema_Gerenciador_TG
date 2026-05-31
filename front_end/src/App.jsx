@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CadastroAluno from './pages/aluno/cadastroAluno/CadastroAluno.jsx';
 import FormarGrupo from './pages/aluno/formarGrupo/FormarGrupo.jsx';
 import ConfirmarEmail from './pages/utils/ConfirmarEmail.jsx';
-import CadastrarCurso from './pages/curso/CadastrarCurso.jsx';
+import CadastrarCurso from './pages/admin/curso/CadastrarCurso.jsx';
 import VisaoSolicitacaoOrientacao from './pages/professor/visaoSolicitacaoOrientacao/VisaoSolicitacaoOrientacao.jsx';
 import EnviarTurma from "./pages/professor/enviarTurma/EnviarTurma.jsx"
 import VisaoGrupos from './pages/professor/visaoGruposTurma/VisaoGrupos.jsx';
@@ -24,10 +24,11 @@ import AcessoNegado from './components/erros/AcessoNegado.jsx';
 import RecuperacaoSenha from './pages/utils/RecuperacaoSenha.jsx';
 import VincularCoorientadorExterno from './pages/aluno/vincularCoOrientadorExterno/VincularCoOrientadorExterno.jsx';
 import VisaoGruposOrientados from './pages/professor/visaoGruposOrientados/VisaoGruposOrientados.jsx';
-
+import VisaoGrupoAluno from './pages/aluno/visaoGrupoAluno/VisaoGrupoAluno.jsx';
+import VisaoMandatosDiretor from './pages/admin/mandatoDiretor/VisaoMandatosDiretor.jsx';
 // Importação de Componentes Globais
 import './App.css';
-import VisaoGrupoAluno from './pages/aluno/visaoGrupoAluno/VisaoGrupoAluno.jsx';
+
 
 function App() {
   return (
@@ -62,6 +63,11 @@ function App() {
         <Route path="/admin/cadastrar-professor" element={
           <RotaProtegida roleNecessaria="ROLE_ADMIN">
             <CadastroProfessor />
+          </RotaProtegida>
+        } />
+        <Route path="/admin/visaoMandatosDiretor" element={
+          <RotaProtegida roleNecessaria="ROLE_ADMIN">
+            <VisaoMandatosDiretor />
           </RotaProtegida>
         } />
 

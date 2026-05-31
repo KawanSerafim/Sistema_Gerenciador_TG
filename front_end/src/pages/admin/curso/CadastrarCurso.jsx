@@ -11,14 +11,14 @@ import {
   Toast, ToastContainer,
 } from "react-bootstrap";
 import "./cadastrarCurso.css";
-import UserNavBar from "../../components/usernavbar/UserNavBar";
+import UserNavBar from "../../../components/usernavbar/UserNavBar";
 
 // Zod e RHF para validações
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cursoSchema } from "../../schemas/curso/cadastrarCursoZodSchema";
-import { professorService } from "../../services/professor/professorService";
-import { cursoService } from "../../services/curso/cursoService";
+import { cursoSchema } from "../../../schemas/curso/cadastrarCursoZodSchema";
+import { professorService } from "../../../services/professor/professorService";
+import { cursoService } from "../../../services/curso/cursoService";
 
 const CadastrarCurso = () => {
   // Estado para exibição do resultado de requisições
