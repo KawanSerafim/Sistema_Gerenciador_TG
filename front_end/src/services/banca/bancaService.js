@@ -33,5 +33,14 @@ export const bancaService = {
         return await apiClient(`/bancas/${idBanca}/cancelar`, {
             method: "PUT",
         });
+    },
+    baixarAtaBanca: async (idBanca) => {
+        const resposta = await apiClient(`/bancas/${idBanca}/ata/baixar`, {
+            method: "GET",
+            //Avisa o fetch que não é um json e sim um arquivo
+            skipJsonParse: true
+        });
+        //Transforma a resposta crua em blob para ser 
+        return await resposta.blob();
     }
 }

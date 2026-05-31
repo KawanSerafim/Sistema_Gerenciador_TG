@@ -6,7 +6,6 @@ import { autenticacaoService } from "../../../services/usuario/autenticacaoServi
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema"
-import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
     const [erro, setErro] = useState()
@@ -26,32 +25,21 @@ const Login = () => {
         try {
             //Limpa erros anteriores
             setErro("");
-            console.log("Enviando dados ao backend", dadosValidados);
             // Chama o Service
             await autenticacaoService.login({
                 email: dadosValidados.email,
                 senha: dadosValidados.senha
             });
 
-            // 2. Recupera e decodifica o token para decidir a rota inicial
-            const token = localStorage.getItem("meu_token_tg");
-            const payload = jwtDecode(token);
-            const cargos = payload.cargos || [];
 
             console.log("Login realizado com sucesso. Redirecionando...");
+            // ALUNO, PROFESSOR_TG, COORDENADOR e ORIENTADOR 
+            // Todos vão para a tela de inicio universal
+            navigate("/inicio");
 
-            // 3. Lógica de Redirecionamento simplificada
-            if (cargos.includes("ROLE_ADMIN")) {
-                // Admin geralmente tem um painel de controle totalmente diferente
-                navigate("/curso/cadastro");
-            } else {
-                // ALUNO, PROFESSOR_TG, COORDENADOR e ORIENTADOR 
-                // Todos vão para a tela de inicio universal
-                navigate("/inicio");
-            }
 
         } catch (erro) {
-            console.log("Erro capturado no login:", erro.codigo, erro.message);
+            console.debug("Erro capturado no login:", erro.codigo, erro.message);
             const mensagemErro = (erro.message || "").toLowerCase();
             const codigoErro = erro.codigo || ""; // Pega o código que o apiClient injetou!
 

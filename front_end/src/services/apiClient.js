@@ -45,8 +45,6 @@ export const apiClient = async (endpoint, options = {}) => {
 
         //Se backend dizer que o token é invalido/expirado (401 ou 403)
         if (resposta.status === 401 || resposta.status === 403) {
-            // AJUSTE AQUI: Transformamos isRotaDeLogin em isRotaPublica
-            // e adicionamos "/usuarios" (ou o endpoint exato de cadastro) e o confirmar email
             const isRotaPublica = endpoint.includes("/login") ||
                 endpoint.includes("/autenticacao") ||
                 endpoint.includes("/alunos") ||

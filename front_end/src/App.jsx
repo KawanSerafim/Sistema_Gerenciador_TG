@@ -15,7 +15,7 @@ import GerarCertificado from './pages/professor/gerarCertificado/GerarCertificad
 import MarcarBanca from './pages/professor/marcarBanca/MarcarBanca.jsx';
 import FinalizarDisciplinas from './pages/professor/finalizarDisciplinas/FinalizarDisciplinas.jsx';
 import SolicitarOrientacao from './pages/aluno/solicitarOrientacao/SolicitarOrientacao.jsx';
-import VisaoBancasArtigos from './pages/professor/visaoBancasArtigos/VisaoBancasArtigos.jsx';
+import VisaoBancas from './pages/professor/visaoBancasArtigos/VisaoBancas.jsx';
 import RotaProtegida from './components/seguranca/RotaProtegida.jsx';
 import CadastroProfessor from './pages/professor/cadastroProfessor/CadastroProfessor.jsx';
 import Login from './pages/utils/login/Login.jsx';
@@ -121,7 +121,7 @@ function App() {
         } />
         <Route path="/professor/visaoBancas" element={
           <RotaProtegida roleNecessaria="ROLE_ORIENTADOR">
-            <VisaoBancasArtigos />
+            <VisaoBancas />
           </RotaProtegida>
         } />
         <Route path="/professor/certificados" element={

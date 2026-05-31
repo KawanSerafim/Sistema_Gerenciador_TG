@@ -8,9 +8,8 @@ const Inicio = () => {
     const navigate = useNavigate();
 
     // ==============================================================
-    // 1. LAZY INITIALIZATION (Evita o erro de cascading renders)
-    // Passamos uma função para o useState. O React vai rodar isso 
-    // APENAS UMA VEZ antes de desenhar a tela pela primeira vez.
+    // LAZY INITIALIZATION (Evita o erro de cascading renders)
+    // Passa uma função para o useState. O React vai rodar isso na hora de montar o componente
     // ==============================================================
     const dadosUsuario = useMemo(() => {
         const token = localStorage.getItem("meu_token_tg");
@@ -19,22 +18,23 @@ const Inicio = () => {
             try {
                 const payload = jwtDecode(token);
 
-                // TRUQUE PARA O NOME: Se não vier o 'nome', pegamos o 'sub' (email),
-                // quebramos no '@' e formatamos "leon.kennedy" para "Leon Kennedy"
+                // TRUQUE PARA O NOME: Se não vier o 'nome', pega o 'sub' (email),
+                // quebramos no '@' e formata para o "primeiro nome", "sobrenome"
                 let nomeFormatado = "Usuário";
                 if (payload.nome) {
                     nomeFormatado = payload.nome;
                 } else if (payload.sub) {
-                    const parteEmail = payload.sub.split('@')[0]; // Pega "leon.kennedy"
+                    // Pega "primeiro_nome.sobrenome"
+                    const parteEmail = payload.sub.split('@')[0];
                     nomeFormatado = parteEmail
                         .split('.')
                         .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
-                        .join(' '); // Transforma em "Leon Kennedy"
+                        // Transforma em "PrimeiroNome Sobrenome"
+                        .join(' ');
                 }
 
                 return {
                     nome: nomeFormatado,
-                    // AJUSTE CRUCIAL: Agora lemos de 'payload.cargos'
                     roles: payload.cargos || []
                 };
             } catch (error) {
@@ -51,7 +51,7 @@ const Inicio = () => {
 
     // ==============================================================
     // 2. PROTEÇÃO DE ROTA
-    // O useEffect agora cuida APENAS de expulsar quem não tem token
+    // O useEffect cuida apenas de expulsar quem não tem token
     // ==============================================================
     useEffect(() => {
         const token = localStorage.getItem("meu_token_tg");
