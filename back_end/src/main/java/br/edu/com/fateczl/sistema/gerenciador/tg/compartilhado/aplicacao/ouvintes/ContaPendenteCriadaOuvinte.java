@@ -1,4 +1,4 @@
-package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.infraestrutura.ouvintes;
+package br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.ouvintes;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.casosdeuso.EnviarEmailConfirmacaoCaso;

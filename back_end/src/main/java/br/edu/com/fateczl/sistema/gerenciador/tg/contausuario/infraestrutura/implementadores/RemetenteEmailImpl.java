@@ -7,6 +7,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -29,7 +30,7 @@ public class RemetenteEmailImpl implements RemetenteEmail {
 
     @Async
     @Override
-    public void enviarEmailTexto(
+    public void enviarEmail(
             Email destinatario,
             String assunto,
             String mensagem
@@ -59,6 +60,29 @@ public class RemetenteEmailImpl implements RemetenteEmail {
                     destinatario.valor(),
                     e.getMessage()
             );
+        }
+    }
+    @Async
+    @Override
+    public void enviarEmailComAnexo(Email destinatario, String assunto, String mensagem, byte[] anexo, String nomeAnexo) {
+        try {
+            final MimeMessage message = mailSender.createMimeMessage();
+            final MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(remetenteOficial);
+            helper.setTo(destinatario.valor());
+            helper.setSubject(assunto);
+            helper.setText(mensagem, true);
+
+            // Anexa os bytes do arquivo em memória
+            if (anexo != null && anexo.length > 0) {
+                helper.addAttachment(nomeAnexo, new ByteArrayResource(anexo));
+            }
+
+            mailSender.send(message);
+            log.info("Email [{}] com anexo '{}' enviado com sucesso para: {}", assunto, nomeAnexo, destinatario.valor());
+        } catch(MessagingException e) {
+            log.error("Falha crítica ao enviar email com anexo para {}: {}", destinatario.valor(), e.getMessage());
         }
     }
 }

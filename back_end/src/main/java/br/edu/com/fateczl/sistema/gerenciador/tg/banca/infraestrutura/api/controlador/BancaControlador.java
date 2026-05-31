@@ -1,14 +1,11 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.banca.infraestrutura.api.controlador;
 
-import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.AtribuirNotasBancaCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.CancelarAvaliacaoCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.ListarBancasOrientadorCaso;
-import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.MarcarBancaCaso;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.*;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -20,6 +17,7 @@ public class BancaControlador {
 
     private final MarcarBancaCaso marcarBancaCaso;
     private final GeradorToken geradorToken;
+    private final BaixarAtaBancaCaso baixarAtaBancaCaso;
     private final ListarBancasOrientadorCaso listarBancasOrientadorCaso;
     private final AtribuirNotasBancaCaso atribuirNotasBancaCaso;
     private final CancelarAvaliacaoCaso cancelarAvaliacaoCaso;
@@ -27,15 +25,18 @@ public class BancaControlador {
     public BancaControlador(
             MarcarBancaCaso marcarBancaCaso,
             GeradorToken geradorToken,
+            BaixarAtaBancaCaso baixarAtaBancaCaso,
             ListarBancasOrientadorCaso listarBancasOrientadorCaso,
             AtribuirNotasBancaCaso atribuirNotasBancaCaso,
             CancelarAvaliacaoCaso cancelarAvaliacaoCaso) {
         this.marcarBancaCaso = marcarBancaCaso;
         this.geradorToken = geradorToken;
+        this.baixarAtaBancaCaso = baixarAtaBancaCaso;
         this.listarBancasOrientadorCaso = listarBancasOrientadorCaso;
         this.atribuirNotasBancaCaso = atribuirNotasBancaCaso;
         this.cancelarAvaliacaoCaso = cancelarAvaliacaoCaso;
     }
+
 
     /**
      * Realiza a marcação da banca do grupoTg
@@ -70,8 +71,35 @@ public class BancaControlador {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Endpoint para download da Ata de Defesa em formato PDF.
+     * Renderiza o HTML via Thymeleaf e converte para binário sob demanda.
+     * @param id id da banca enviado pelo caminho da rota
+     */
+    @GetMapping("/{id}/ata/baixar")
+    public ResponseEntity<byte[]> baixarAtaBanca(@PathVariable String id) {
+        BaixarAtaBancaCaso.Comando comando = new BaixarAtaBancaCaso.Comando(id);
+        BaixarAtaBancaCaso.Saida saida = baixarAtaBancaCaso.executar(comando);
+
+        // Define os cabeçalhos HTTP necessários para forçar o download de arquivos binários
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        // Garante a formatação correta do nome do arquivo evitando problemas com caracteres especiais
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(saida.nomeArquivo(), StandardCharsets.UTF_8)
+                .build();
+        headers.setContentDisposition(contentDisposition);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(saida.conteudo());
+    }
+
+
     // ========================================================================
-    // ROTA 2: LISTAR BANCAS DO ORIENTADOR (Para a Tabela)
+    // ROTA 3: LISTAR BANCAS DO ORIENTADOR (Para a Tabela)
     // ========================================================================
 
     /**
@@ -157,7 +185,7 @@ public class BancaControlador {
     }
 
     // ========================================================================
-    // DTO DE REQUISIÇÃO (Mapeia exatamente o JSON que o frontend vai enviar)
+    // DTOs DE REQUISIÇÃO (Mapeia exatamente o JSON que o frontend vai enviar)
     // ========================================================================
     public record MarcarBancaRequisicao(
             String idGrupo,
@@ -167,7 +195,10 @@ public class BancaControlador {
             List<String> idsProfessoresConvidados,
             List<MarcarBancaCaso.MembroExternoDto> convidadosExternos
     ) {}
+
     public record AtribuirNotasRequisicao(
             Map<String, Double> notasMembros
     ) {}
+
+
 }

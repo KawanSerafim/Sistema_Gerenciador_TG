@@ -4,6 +4,8 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.BancaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.MembroExterno;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.BancaMarcadaEvento;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
@@ -25,15 +27,18 @@ public class MarcarBancaCaso {
     private final BancaRepositorio bancaRepositorio;
     private final GrupoTgRepositorio grupoTgRepositorio;
     private final ProfessorRepositorio professorRepositorio;
+    private final PublicadorEventos publicador;
 
     public MarcarBancaCaso(
             BancaRepositorio bancaRepositorio,
             GrupoTgRepositorio grupoTgRepositorio,
-            ProfessorRepositorio professorRepositorio
+            ProfessorRepositorio professorRepositorio,
+            PublicadorEventos publicador
     ) {
         this.bancaRepositorio = bancaRepositorio;
         this.grupoTgRepositorio = grupoTgRepositorio;
         this.professorRepositorio = professorRepositorio;
+        this.publicador = publicador;
     }
 
     public record MembroExternoDto(String nome, String email, String telefone) {}
@@ -69,9 +74,18 @@ public class MarcarBancaCaso {
             throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "grupo", "sem banca já marcada");
         }
 
+        // Regra: Só pode marcar banca se o trabalho já foi enviado!
+        if (grupo.caminhoArquivoTrabalho() == null || grupo.caminhoArquivoTrabalho().isBlank()) {
+            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "grupo",
+                    "com o arquivo do Trabalho de Graduação enviado");
+        }
+
+
         // Mapeia os convidados internos para ProfessorId
         List<ProfessorId> avaliadoresInternos = comando.idsProfessoresConvidados().stream()
                 .map(id -> new ProfessorId(UUID.fromString(id)))
+                //Remove o orientador para evitar duplicatas
+                .filter(id -> !id.equals(orientadorLogado.id()))
                 .toList();
 
         // Mapeia os convidados externos para o Value Object
@@ -94,7 +108,7 @@ public class MarcarBancaCaso {
 
         bancaRepositorio.salvar(novaBanca);
 
-        // Aqui seria um ótimo lugar para disparar um evento ou chamar um "ServicoEmail"
-        // para avisar aos membros da banca que eles foram convidados!
+        //Inicia o evento de notificar a banca
+        publicador.publicar(new BancaMarcadaEvento(novaBanca.idTexto()));
     }
 }

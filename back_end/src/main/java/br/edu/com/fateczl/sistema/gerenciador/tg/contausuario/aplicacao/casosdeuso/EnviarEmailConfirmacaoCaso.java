@@ -49,11 +49,11 @@ public class EnviarEmailConfirmacaoCaso {
     }
 
     private void publicarEmail(String codigo, Email emailAlvo) {
-        String assunto = "Confirmação de Cadastro - TG Manager FATEC";
+        String assunto = "Confirmação de Cadastro - Sistema de Gerenciamento de TGs da FATEC ZL";
 
         String mensagemHtml = """
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                    <h2 style="color: #b30000; text-align: center;">Bem-vindo(a) ao TG Manager!</h2>
+                    <h2 style="color: #b30000; text-align: center;">Bem-vindo(a) ao Sistema de Gerenciamento de TGs da FATEC ZL!</h2>
                     <p style="font-size: 16px; color: #333;">Olá 😄</p>
                     <p style="font-size: 16px; color: #333;">Você está a apenas um passo de concluir o seu cadastro na plataforma de gerenciamento de Trabalhos de Graduação.</p>
                     <p style="font-size: 16px; color: #333;">Por favor, insira o código de verificação abaixo na tela do sistema para confirmar o seu e-mail:</p>
@@ -71,6 +71,6 @@ public class EnviarEmailConfirmacaoCaso {
                 </div>
                \s""".formatted(codigo);
 
-        remetente.enviarEmailTexto(emailAlvo, assunto, mensagemHtml);
+        remetente.enviarEmail(emailAlvo, assunto, mensagemHtml);
     }
 }

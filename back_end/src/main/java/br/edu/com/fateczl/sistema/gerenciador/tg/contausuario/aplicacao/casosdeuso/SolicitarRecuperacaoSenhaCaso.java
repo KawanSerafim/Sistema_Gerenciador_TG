@@ -69,6 +69,6 @@ public class SolicitarRecuperacaoSenhaCaso {
                 </div>
                \s""".formatted(codigo);
 
-        remetente.enviarEmailTexto(emailAlvo, assunto, mensagemHtml);
+        remetente.enviarEmail(emailAlvo, assunto, mensagemHtml);
     }
 }

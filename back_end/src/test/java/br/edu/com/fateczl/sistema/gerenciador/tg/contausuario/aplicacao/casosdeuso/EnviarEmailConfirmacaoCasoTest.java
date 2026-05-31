@@ -44,13 +44,13 @@ class EnviarEmailConfirmacaoCasoTest {
 
         when(geradorCodigo.gerar(6)).thenReturn("123456");
         doNothing().when(cache).salvarCodigo(any(Email.class), eq("123456"));
-        doNothing().when(remetente).enviarEmailTexto(any(Email.class), anyString(), anyString());
+        doNothing().when(remetente).enviarEmail(any(Email.class), anyString(), anyString());
 
         enviarEmailConfirmacaoCaso.executar(comando);
 
         verify(contaMock, times(1)).validarStatusParaEnviarEmail();
         verify(cache, times(1)).salvarCodigo(any(Email.class), eq("123456"));
-        verify(remetente, times(1)).enviarEmailTexto(any(Email.class), anyString(), contains("123456"));
+        verify(remetente, times(1)).enviarEmail(any(Email.class), anyString(), contains("123456"));
     }
 
     @Test
@@ -69,6 +69,6 @@ class EnviarEmailConfirmacaoCasoTest {
 
         verify(geradorCodigo, never()).gerar(anyInt());
         verify(cache, never()).salvarCodigo(any(), any());
-        verify(remetente, never()).enviarEmailTexto(any(), any(), any());
+        verify(remetente, never()).enviarEmail(any(), any(), any());
     }
 }

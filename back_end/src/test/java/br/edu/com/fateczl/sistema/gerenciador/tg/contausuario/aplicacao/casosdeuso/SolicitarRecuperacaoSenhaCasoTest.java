@@ -56,7 +56,7 @@ class SolicitarRecuperacaoSenhaCasoTest {
                 .salvarCodigo(any(Email.class),Mockito.eq(codigoMock));
         //Verifica se enviarEmailTexto foi chamada
         Mockito.verify(remetente, times(1))
-                .enviarEmailTexto(any(),any(),any());
+                .enviarEmail(any(),any(),any());
     }
 
     @Test
@@ -74,7 +74,7 @@ class SolicitarRecuperacaoSenhaCasoTest {
         assertThrows(GenericaExcecao.class, () -> casoDeUso.executar(comando));
 
         // Assert ADICIONAL: Garante que o e-mail NUNCA tentou ser enviado
-        Mockito.verify(remetente, never()).enviarEmailTexto(any(), any(), any());
+        Mockito.verify(remetente, never()).enviarEmail(any(), any(), any());
 
         // Garante que não sujou o cache à toa
         Mockito.verify(cache, never()).salvarCodigo(any(), any());
