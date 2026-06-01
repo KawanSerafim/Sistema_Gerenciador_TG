@@ -45,7 +45,6 @@ const VisaoBancas = () => {
     const carregarBancas = useCallback(async () => {
         try {
             setCarregando(true);
-            // setExibirResultado({ exibir: false, mensagem: "", variante: "" });
 
             const response = await bancaService.listarBancas();
             setDados(response);
@@ -424,7 +423,7 @@ const VisaoBancas = () => {
             setResultado({
                 exibir: true,
                 variante: "success",
-                mensagem: `Notas da banca atribuídas com sucesso.`
+                mensagem: `Notas salvas! Os certificados foram gerados e enviados para o email dos membros da banca.`
             });
 
             // Atualiza a tabela buscando os dados novamente do banco

@@ -12,7 +12,6 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.RemetenteEmail;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
-import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.repositorio.ContaUsuarioRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.entidade.Curso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
@@ -99,13 +98,13 @@ public class GerarCertificadosBancaOuvinte {
 
             Professor orientador = professorRepositorio.buscarPorId(grupo.orientadorId()).orElseThrow();
             membrosParaPdf.add(new GeradorCertificadoPdf.MembroCertificado(
-                    "Orientador", "Prof(a). " + orientador.nomeTexto()));
+                    "Orientadora", "Prof. " + orientador.nomeTexto()));
 
             banca.avaliadoresInternos().forEach(profId -> {
                 if (!profId.equals(orientador.id())) {
                     professorRepositorio.buscarPorId(profId).ifPresent(p -> {
                         membrosParaPdf.add(new GeradorCertificadoPdf.MembroCertificado(
-                                "Banca", "Prof(a). " + p.nomeTexto()));
+                                "Banca", "Prof. " + p.nomeTexto()));
                         avaliadoresInternosParaEmail.add(p);
                     });
                 }
@@ -132,7 +131,8 @@ public class GerarCertificadosBancaOuvinte {
                     mandatoAtual.assinaturaBase64() // Injeta a imagem validada no banco
             );
 
-            String nomeArquivo = "Certificado_Banca_" + grupo.nomeTemaTg().replaceAll("\\s+", "_") + ".pdf";
+            String nomeArquivo = "Certificado_Banca_" +
+                    grupo.nomeTemaTg().replaceAll("\\s+", "_") + ".pdf";
             String htmlEmail = montarHtmlEmailCertificado(grupo.nomeTemaTg());
             String assunto = "Certificado de Participação em Banca - FATEC ZL";
 
