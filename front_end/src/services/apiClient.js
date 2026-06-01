@@ -1,4 +1,9 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+//Busca o endereço base da api que esta em public/config.js
+// Pega dinamicamente do navegador
+const hostURL = window.APP_CONFIG.API_URL;
+
+const baseURL = `${hostURL}/api`;
+
 /**
  * Cliente HTTP customizado que atua como interceptador de requisições.
  * Injeta automaticamente o token de autenticação e trata erros globais (ex: sessão expirada).
@@ -36,7 +41,7 @@ export const apiClient = async (endpoint, options = {}) => {
 
     try {
         //Usa o fetch original com URL_BASE + Endpoint
-        const resposta = await fetch(`${BASE_URL}${endpoint}`, {
+        const resposta = await fetch(`${baseURL}${endpoint}`, {
             ...options,
             headers,
         });
