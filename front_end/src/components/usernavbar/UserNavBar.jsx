@@ -73,6 +73,7 @@ const UserNavBar = ({ userName = '', opcoes = ["inicio", "nome", "sair"], maxWid
                                     <>
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/admin/cadastrar-professor")}>Cadastrar Professor</NavDropdown.Item>
                                         <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/curso/cadastro")}>Cadastrar Curso</NavDropdown.Item>
+                                        <NavDropdown.Item onClick={(e) => handleNavegacao(e, "/admin/visaoMandatosDiretor")}>Visão dos Mandatos de Diretor</NavDropdown.Item>
                                     </>
                                 )}
                                 {/* AÇÕES DO ALUNO */}

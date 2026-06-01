@@ -96,6 +96,7 @@ public class MandatoDiretor {
     //O comportamento do domínio para antecipar o fim do mandato
     public void encerrar() {
         this.dataFim = LocalDate.now();
+        this.ativo = false;
     }
 
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
