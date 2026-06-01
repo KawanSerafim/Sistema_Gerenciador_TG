@@ -1,5 +1,6 @@
 package br.edu.com.fateczl.sistema.gerenciador.tg.professor.aplicacao.casodeuso;
 
+import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.entidade.Administrador;
 import br.edu.com.fateczl.sistema.gerenciador.tg.administrador.dominio.repositorio.AdministradorRepositorio;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.ContaPendenteCriadaEvento;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
@@ -24,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +43,7 @@ class CadastrarProfessorCasoTest {
     @Mock private VerificadorUnicidadeProfessor verificadorProfessor;
     @Mock private IdentificadorAutoridadesProfessor identificadorAutoridades;
     @Mock private AdministradorRepositorio administradorRepositorio;
+    @Mock private Administrador administrador;
 
     @InjectMocks
     private CadastrarProfessorCaso cadastrarProfessorCaso;
@@ -56,7 +59,8 @@ class CadastrarProfessorCasoTest {
                 "SenhaSegura123!",
                 CargoProfessor.ORIENTADOR
         );
-        doNothing().when(administradorRepositorio.buscarPorEmail(any(Email.class)));
+       when(administradorRepositorio.buscarPorEmail(any(Email.class)))
+               .thenReturn(Optional.of(administrador));
         when(identificadorAutoridades.identificar(CargoProfessor.ORIENTADOR))
                 .thenReturn(Set.of(Autoridade.ROLE_ORIENTADOR));
 
@@ -95,7 +99,8 @@ class CadastrarProfessorCasoTest {
                 "SenhaSegura123!",
                 CargoProfessor.ORIENTADOR
         );
-        doNothing().when(administradorRepositorio.buscarPorEmail(any(Email.class)));
+        when(administradorRepositorio.buscarPorEmail(any(Email.class)))
+                .thenReturn(Optional.of(administrador));
         when(identificadorAutoridades.identificar(CargoProfessor.ORIENTADOR))
                 .thenReturn(Set.of(Autoridade.ROLE_ORIENTADOR));
 

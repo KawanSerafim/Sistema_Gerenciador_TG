@@ -4,6 +4,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.BancaId;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.StatusBanca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
@@ -33,6 +34,8 @@ class AtribuirNotasBancaCasoTest {
     private BancaRepositorio bancaRepositorio;
     @Mock private GrupoTgRepositorio grupoTgRepositorio;
     @Mock private ProfessorRepositorio professorRepositorio;
+    @Mock
+    private PublicadorEventos publicador;
 
     @InjectMocks
     private AtribuirNotasBancaCaso casoDeUso;

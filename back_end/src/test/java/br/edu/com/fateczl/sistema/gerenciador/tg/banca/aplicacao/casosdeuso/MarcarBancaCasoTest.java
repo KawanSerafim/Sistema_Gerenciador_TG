@@ -3,6 +3,9 @@ package br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.entidade.Banca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.objetosvalor.StatusBanca;
 import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.eventos.BancaMarcadaEvento;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.GenericaExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.objetosvalor.Email;
@@ -35,6 +38,7 @@ class MarcarBancaCasoTest {
     @Mock private BancaRepositorio bancaRepositorio;
     @Mock private GrupoTgRepositorio grupoTgRepositorio;
     @Mock private ProfessorRepositorio professorRepositorio;
+    @Mock private PublicadorEventos publicadorEventos;
 
     @InjectMocks
     private MarcarBancaCaso casoDeUso;
@@ -43,12 +47,15 @@ class MarcarBancaCasoTest {
     private ProfessorId orientadorId;
     private GrupoTgId grupoTgId;
     private MarcarBancaCaso.Comando comandoValido;
+    private String caminhoArquivoTrabalho = "/arquivos/arquivoTg.pdf";
+
 
     @BeforeEach
     void setUp(){
         emailContaLogado = "teste@cps.sp.gov.br";
         orientadorId = new ProfessorId(UUID.randomUUID());
         grupoTgId = new GrupoTgId(UUID.randomUUID());
+
 
         // Setup base de comando válido
         comandoValido = new MarcarBancaCaso.Comando(
@@ -81,6 +88,8 @@ class MarcarBancaCasoTest {
 
         Mockito.when(bancaRepositorio.existeBancaParaGrupo(any(GrupoTgId.class)))
                 .thenReturn(false);
+
+        Mockito.when(grupo.caminhoArquivoTrabalho()).thenReturn(caminhoArquivoTrabalho);
 
         // Act
         casoDeUso.executar(comandoValido);
@@ -134,12 +143,15 @@ class MarcarBancaCasoTest {
         Mockito.when(bancaRepositorio.existeBancaParaGrupo(any(GrupoTgId.class)))
                 .thenReturn(false);
 
+        Mockito.when(grupo.caminhoArquivoTrabalho()).thenReturn(caminhoArquivoTrabalho);
+
         // Act & Assert
         // O erro vai estourar dentro do "Banca.nova()" pela falta de membros
         RegraNegocioExcecao excecao = assertThrows(RegraNegocioExcecao.class,
                 () -> casoDeUso.executar(comandoSemAvaliadores));
 
-        assertTrue(excecao.getMessage().contains("composição da banca"));
+        // Compara pelo Código de Erro (o código que avisa de erro de estado da entidade)
+        assertEquals(CodigoErro.GN_002_QUANTIDADE_INFERIOR, excecao.getCodigoErro());
         Mockito.verify(bancaRepositorio, Mockito.never()).salvar(any());
     }
 
