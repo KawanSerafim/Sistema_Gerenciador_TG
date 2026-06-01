@@ -78,7 +78,8 @@ public class Banca {
             Map<String, Double> notasMembros,
             Double notaFinal
     ) {
-        return new Banca(id, grupoId, dataHora, local, avaliadoresInternos, avaliadoresExternos,status, notasMembros, notaFinal);
+        return new Banca(id, grupoId, dataHora, local, avaliadoresInternos,
+                avaliadoresExternos,status, notasMembros, notaFinal);
     }
 
     // MÉTODOS PARA GARANTIR PRESENÇA E VALIDAÇÃO ------------------------------

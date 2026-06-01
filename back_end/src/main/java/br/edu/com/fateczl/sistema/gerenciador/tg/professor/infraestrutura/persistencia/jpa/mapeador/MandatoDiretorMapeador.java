@@ -17,8 +17,9 @@ public class MandatoDiretorMapeador {
                 mandato.professorId().texto(),
                 mandato.dataInicio(),
                 mandato.dataFim(),
-                mandato.assinaturaBase64()
-        );
+                mandato.assinaturaBase64(),
+                mandato.ativo()
+                );
 
     }
 
@@ -28,7 +29,8 @@ public class MandatoDiretorMapeador {
                 new ProfessorId(UUID.fromString(modelo.getProfessorId())),
                 modelo.getDataInicio(),
                 modelo.getDataFim(),
-                modelo.getAssinaturaBase64()
+                modelo.getAssinaturaBase64(),
+                modelo.isAtivo()
         );
     }
 }

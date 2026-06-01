@@ -71,7 +71,8 @@ public class MarcarBancaCaso {
 
         // Regra: Um grupo só pode ter uma banca ativa
         if (bancaRepositorio.existeBancaParaGrupo(grupoId)) {
-            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO, "grupo", "sem banca já marcada");
+            throw new RegraNegocioExcecao(CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
+                    "grupo", "sem banca já marcada");
         }
 
         // Regra: Só pode marcar banca se o trabalho já foi enviado!

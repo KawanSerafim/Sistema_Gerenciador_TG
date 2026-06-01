@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface MandatoDiretorJpaRepositorio extends JpaRepository<MandatoDiretorModelo, String> {
 
-    // Busca quem é o diretor na data atual (data_fim pode ser nula ou maior que hoje)
-    @Query("SELECT m FROM MandatoDiretorModelo m WHERE m.dataInicio <= :hoje AND (m.dataFim IS NULL OR m.dataFim >= :hoje)")
+    @Query("SELECT m FROM MandatoDiretorModelo m WHERE m.ativo = true AND m.dataInicio <= :hoje " +
+            "AND (m.dataFim IS NULL OR m.dataFim >= :hoje)")
     Optional<MandatoDiretorModelo> buscarMandatoVigenteNaData(@Param("hoje") LocalDate hoje);
 
 }
