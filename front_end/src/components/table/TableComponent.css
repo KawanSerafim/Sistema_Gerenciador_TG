@@ -1,0 +1,91 @@
+/* TableStyles.css */
+
+/* Remove as bordas arredondadas padrões do Bootstrap para ficar "quadradão" igual ao design */
+.custom-table {
+    border-collapse: collapse !important;
+    border: 1px solid black;
+    border-radius: 50px;
+}
+
+/* Estilo do Cabeçalho */
+.custom-table thead th {
+    background-color: #212529 !important;
+    /* Cor escura do header */
+    color: white !important;
+    border: 1px solid black !important;
+    /* Bordas pretas */
+    text-align: center;
+    vertical-align: middle;
+    padding: 15px;
+}
+
+/* Estilo do Corpo (Linhas) */
+.custom-table tbody td {
+    background-color: #FDF1E6 !important;
+    /* Aquele bege/rosado da imagem */
+    color: black !important;
+    /* Texto preto e negrito se quiser */
+    font-weight: 600;
+    border: 1px solid black !important;
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+}
+
+/* Ajuste para garantir que o hover não deixe a linha cinza (opcional) */
+.custom-table-hover tbody tr:hover td {
+    background-color: #ffe0c0 !important;
+    /* Um bege um pouco mais escuro no hover */
+}
+
+/* Quando a tela for menor que 768px (celulares e tablets pequenos) */
+@media (max-width: 768px) {
+
+    /* Força a tabela a não se comportar como tabela */
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    /* Esconde o cabeçalho tradicional (ID, Tema, etc) */
+    thead tr {
+        display: none;
+    }
+
+    /* Transforma cada linha em um "Card" */
+    tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    /* Transforma cada célula em uma linha do card */
+    td {
+        border: none !important;
+        position: relative;
+        padding-left: 50% !important;
+        /* Abre espaço para o rótulo */
+        text-align: right;
+        margin-bottom: 5px;
+    }
+
+    /* O pulo do gato: Usa o atributo data-label do HTML para criar um "falso" cabeçalho */
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #6c757d;
+        /* text-secondary do bootstrap */
+    }
+}

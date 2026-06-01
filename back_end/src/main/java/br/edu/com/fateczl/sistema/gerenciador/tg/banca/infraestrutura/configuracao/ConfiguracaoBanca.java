@@ -1,0 +1,89 @@
+package br.edu.com.fateczl.sistema.gerenciador.tg.banca.infraestrutura.configuracao;
+
+import br.edu.com.fateczl.sistema.gerenciador.tg.aluno.dominio.repositorio.AlunoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.casosdeuso.*;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.aplicacao.portas.GeradorAtaBancaPdf;
+import br.edu.com.fateczl.sistema.gerenciador.tg.banca.dominio.repositorio.BancaRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.aplicacao.portas.PublicadorEventos;
+import br.edu.com.fateczl.sistema.gerenciador.tg.curso.dominio.repositorio.CursoRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.grupotg.dominio.repositorio.GrupoTgRepositorio;
+import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.repositorio.ProfessorRepositorio;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ConfiguracaoBanca {
+    @Bean
+    public MarcarBancaCaso marcarBancaCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            PublicadorEventos publicadorEventos
+    ){
+        return new MarcarBancaCaso(
+                bancaRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio,
+                publicadorEventos);
+    }
+
+    @Bean
+    public BaixarAtaBancaCaso baixarAtaBancaCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            AlunoRepositorio alunoRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            CursoRepositorio cursoRepositorio,
+            GeradorAtaBancaPdf geradorAtaBancaPdf
+    ){
+        return new BaixarAtaBancaCaso(bancaRepositorio,
+                grupoTgRepositorio,
+                alunoRepositorio,
+                professorRepositorio,
+                cursoRepositorio,
+                geradorAtaBancaPdf);
+    }
+
+    @Bean
+    public ListarBancasOrientadorCaso listarBancasOrientadorCaso(
+            GrupoTgRepositorio grupoTgRepositorio,
+            BancaRepositorio bancaRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            AlunoRepositorio alunoRepositorio
+    ){
+        return new ListarBancasOrientadorCaso(
+                grupoTgRepositorio,
+                bancaRepositorio,
+                professorRepositorio,
+                alunoRepositorio
+        );
+    }
+
+    @Bean
+    public AtribuirNotasBancaCaso atribuirNotasBancaCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            ProfessorRepositorio professorRepositorio,
+            PublicadorEventos publicadorEventos
+    ){
+        return new AtribuirNotasBancaCaso(
+                bancaRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio,
+                publicadorEventos
+        );
+    }
+
+    @Bean
+    public CancelarAvaliacaoCaso cancelarAvaliacaoCaso(
+            BancaRepositorio bancaRepositorio,
+            GrupoTgRepositorio grupoTgRepositorio,
+            ProfessorRepositorio professorRepositorio
+    ){
+        return new CancelarAvaliacaoCaso(
+                bancaRepositorio,
+                grupoTgRepositorio,
+                professorRepositorio
+        );
+    }
+}

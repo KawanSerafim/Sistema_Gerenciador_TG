@@ -1,0 +1,98 @@
+package br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.implementadores;
+
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.CodigoErro;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.RegraNegocioExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.compartilhado.dominio.excecoes.ValidacaoExcecao;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.aplicacao.portas.GeradorToken;
+import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.dominio.entidade.ContaUsuario;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.List;
+
+@Component
+public class GeradorTokenImpl implements GeradorToken {
+
+    @Value("${jwt.secret}")
+    private String segredoJwt;
+
+    @Value("${jwt.expiration.ms:86400000}")
+    private long expiracaoMs;
+
+    private SecretKey pegarChaveAssinatura() {
+        return Keys.hmacShaKeyFor(segredoJwt.getBytes());
+    }
+
+    @Override
+    public String gerarToken(ContaUsuario usuario) {
+        if(usuario == null) {
+            throw new ValidacaoExcecao(
+                    CodigoErro.VD_001_CAMPO_OBRIGATORIO,
+                    "conta de usuário"
+            );
+        }
+
+        final Date agora = new Date();
+        final Date dataExpiracao = new Date(agora.getTime() + expiracaoMs);
+        //Extrai as autoridades do usuario para colocar como cargos no jwt
+        List<String> autoridadesUsuario = usuario.autoridades().stream()
+            .map(Enum::name)
+            .toList();
+
+        return Jwts.builder()
+                .subject(usuario.emailTexto())
+                .claim("id", usuario.idTexto())
+                .claim("status", usuario.status().name())
+                .claim("cargos", autoridadesUsuario)
+                .issuedAt(agora)
+                .expiration(dataExpiracao)
+                .signWith(pegarChaveAssinatura())
+                .compact();
+    }
+
+    /**
+     * Extrai o email do usuario logado
+     * @param token string do token jwt
+     * @return String email usuario logado
+     */
+    @Override
+    public String extrairTopico(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(pegarChaveAssinatura())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (Exception e) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_006_TOKEN_INVALIDO_EXPIRADO
+            );
+        }
+    }
+
+    /**
+     * Extrai o id do usuario logado
+     * @param token string do token jwt
+     * @return String id usuario logado
+     */
+    @Override
+    public String extrairId(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(pegarChaveAssinatura())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("id", String.class); // Pega exatamente a chave que você salvou no claim!
+        } catch (Exception e) {
+            throw new RegraNegocioExcecao(
+                    CodigoErro.RN_006_TOKEN_INVALIDO_EXPIRADO
+            );
+        }
+    }
+}

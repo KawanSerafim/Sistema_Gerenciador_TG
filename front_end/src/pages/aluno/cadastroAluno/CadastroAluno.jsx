@@ -1,0 +1,351 @@
+import { Container, InputGroup, Toast, ToastContainer } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { FormGroup } from "react-bootstrap";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Zod e RHF (react hook form)
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useFieldArray } from "react-hook-form";
+import { alunoSchema } from "../../../schemas/utils/usuarios/usuariosZodSchema";
+import { bloquearCaracteresInputNome } from "../../../utils/utils";
+
+import { usuarioService } from "../../../services/usuario/usuarioService";
+
+const CadastroAluno = () => {
+  // Inicializa o navegador do React
+  const navigate = useNavigate();
+  const [resultado, setResultado] = useState({
+    exibir: false,
+    variante: "",
+    mensagem: "",
+  });
+
+  // Inicializa react hook form
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(alunoSchema),
+    defaultValues: {
+      nome: "",
+      matricula: "",
+      email: "",
+      senha: "",
+      confirmarSenha: "",
+    },
+  });
+
+  //Gerenciamento de arrays dinâmicos(substitui useStates manuais)
+  const { fields, append, remove } = useFieldArray({
+    control,
+    //Nome do array no Schema
+    name: "redes",
+  });
+
+  // Redes Sociais
+  const handleRedeSelecionada = (e) => {
+    const redeEscolhida = e.target.value;
+
+    // Evita adicionar se não escolheu nada ou se já adicionou aquela rede (opcional)
+    if (redeEscolhida) {
+      append({ rede: redeEscolhida, url: "" });
+      //Reseta o select
+      e.target.value = "";
+    }
+  };
+
+  // A função que realmente envia os dados caso passe na validação do frontend
+  const enviarParaBackend = async (dadosValidados) => {
+    try {
+      // Cria um objeto vazio para ser o nosso Map do Java
+      const redesMap = {};
+
+      // Transforma o Array do RHF no formato de Map do Java
+      if (dadosValidados.redes && dadosValidados.redes.length > 0) {
+        dadosValidados.redes.forEach(item => {
+          // Transforma "linkedin" em "LINKEDIN" e atribui a URL
+          redesMap[item.rede.toUpperCase()] = item.url;
+        });
+      }
+
+      // Monta o payload (DTO) final exatamente como o Java espera
+      const payloadJava = {
+        nome: dadosValidados.nome,
+        matricula: dadosValidados.matricula,
+        email: dadosValidados.email,
+        senha: dadosValidados.senha,
+        // Envia o mapa formatado em vez do array cru do RHF
+        redesSociais: redesMap
+      };
+
+
+      console.info("Enviando payload para a API Java:", payloadJava);
+
+      // Aguarda o service com o payload formatado
+      await usuarioService.cadastrarUsuario(
+        payloadJava,
+        "aluno",
+      );
+
+      //Se chegou aqui deu tudo certo
+      setResultado({
+        exibir: true,
+        variante: "success",
+        mensagem: "Cadastro realizado! Redirecionando para a pagina de confirmar email...",
+      });
+      //Após 3 segs vai para confirmarEmail
+      setTimeout(() => navigate("/confirmarEmail", {
+        state: { emailCapturado: dadosValidados.email }
+      }), 3000);
+      reset(); // Limpa o formulário após o sucesso
+    } catch (erro) {
+      console.error("Falha no cadastro: ", erro);
+      setResultado({
+        exibir: true,
+        variante: "danger",
+        mensagem: erro.message || "Erro ao cadastrar. Tente novamente.",
+      });
+    }
+  };
+
+  return (
+    <>
+      <Container className="mt-5" style={{ maxWidth: "1000px" }}>
+        <h2 className="bg-primary text-white p-3 fs-1 rounded-top-4 text-center m-0">
+          Cadastro de Aluno
+        </h2>
+        <Form
+          onSubmit={handleSubmit(enviarParaBackend)}
+          noValidate
+          className="form-bg border border-dark border-top-0 p-4 rounded-bottom-4 shadow-sm no-success-icon"
+        >
+          {/* Nome */}
+          <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Nome Completo
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="nome"
+              placeholder="Digite seu nome completo"
+              required={true}
+              //Conecta input ao RHF
+              {...register("nome")}
+              className="bg-white text-black fw-normal fs-5"
+              onKeyDown={bloquearCaracteresInputNome}
+              isInvalid={!!errors.nome}
+            />
+
+            <Form.Control.Feedback type="invalid">
+              {errors.nome?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* Matrícula */}
+          <FormGroup className="mb-3" controlId="formBasicMatricula">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Matrícula
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Digite sua matrícula"
+              className="bg-white text-black fw-normal fs-5"
+              name="matricula"
+              //Conecta input ao RHF
+              {...register("matricula")}
+              isInvalid={!!errors.matricula}
+            />
+
+            <Form.Control.Feedback type="invalid">
+              {errors.matricula?.message}
+            </Form.Control.Feedback>
+          </FormGroup>
+
+          {/* Email */}
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Email
+            </Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Digite seu email"
+              className="bg-white text-black fw-normal fs-5"
+              name="email"
+              {...register("email")}
+              isInvalid={!!errors.email}
+            />
+
+            <Form.Control.Feedback type="invalid">
+              {errors.email?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* Redes Sociais */}
+
+          <Form.Group className="mb-4" controlId="formRedes">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Redes Sociais
+            </Form.Label>
+
+            <Form.Select
+              required={false}
+              className="bg-white fw-medium fs-5 w-100 text-center mb-3"
+              onChange={handleRedeSelecionada}
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Selecione as redes sociais que deseja adicionar
+              </option>
+              <option value="linkedin">Linkedin</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+            </Form.Select>
+
+            {/*Array dinamico gerenciado pelo RHF  */}
+            {fields.map((rede, index) => (
+              <div key={rede.id} className="mb-2">
+                <InputGroup className="w75" key={index}>
+                  {/* Exibe o nome da rede com a primeira letra maiúscula */}
+                  <InputGroup.Text className="text-capitalize fw-bold fs-5">
+                    {rede.rede}
+                  </InputGroup.Text>
+
+                  <Form.Control
+                    type="url"
+                    className="fs-5 text-black"
+                    placeholder={`Ex: https://${rede.rede}.com/seu-perfil`}
+                    {...register(`redes.${index}.url`)}
+                    isInvalid={!!errors.redes?.[index]?.url}
+                  />
+                  <Button
+                    variant="outline-primary"
+                    className="fs-5"
+                    title="Clique aqui para remover essa rede social"
+                    onClick={() => remove(index)}
+                  >
+                    Remover
+                  </Button>
+                </InputGroup>
+                {/* Erro da URL da rede específica */}
+                {errors.redes?.[index]?.url && (
+                  <div className="text-danger mt-1 small fw-bold">
+                    {errors.redes[index].url.message}
+                  </div>
+                )}
+              </div>
+            ))}
+          </Form.Group>
+
+          {/* Senha */}
+          <Form.Group className="mb-4" controlId="formBasicPassword">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Senha
+            </Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Digite sua senha"
+              className="bg-white text-black fw-normal fs-5"
+              name="senha"
+              {...register("senha")}
+              isInvalid={!!errors.senha}
+            />
+
+            <Form.Control.Feedback type="invalid">
+              {errors.senha?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* Confirmar Senha */}
+          <FormGroup className="mb-4" controlId="formBasicConfirmPassword">
+            <Form.Label className="text-secondary fs-4 fw-medium">
+              Confirmar Senha
+            </Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Confirme sua senha"
+              required={true}
+              className="bg-white text-black fw-normal fs-5"
+              name="confirmarSenha"
+              {...register("confirmarSenha")}
+              isInvalid={!!errors.confirmarSenha}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.confirmarSenha?.message}
+            </Form.Control.Feedback>
+          </FormGroup>
+
+          {/* CHECKBOX DE TERMOS E CONDIÇÕES */}
+          <Form.Group className="mb-4 text-start" controlId="formTermosAceitos">
+            <Form.Check
+              type="checkbox"
+              id="termos-aceitos-checkbox"
+            >
+              <Form.Check.Input
+                type="checkbox"
+                {...register("termosAceitos")}
+                isInvalid={!!errors.termosAceitos}
+                className="cursor-pointer border-secondary"
+              />
+              <Form.Check.Label className="text-secondary ms-2 cursor-pointer">
+                Concordo que meus dados serão utilizados exclusivamente para fins acadêmicos e de gerenciamento do Trabalho de Graduação.
+              </Form.Check.Label>
+
+              <Form.Control.Feedback type="invalid" className="d-block mt-1 fw-bold">
+                {errors.termosAceitos?.message}
+              </Form.Control.Feedback>
+            </Form.Check>
+          </Form.Group>
+
+          {/* Botão de Cadastrar */}
+          <FormGroup className="text-center">
+            <Button
+              variant="primary"
+              type="submit"
+              id="btn-cadastro"
+              className="mb-2 fs-4 fw-medium w-100"
+            >
+              Cadastrar
+            </Button>
+
+            <Button
+              variant="outline-secondary"
+              onClick={() => navigate('/')}
+              className='mt-2 fs-5 fw-medium w-100'
+            >
+              Voltar para o Login
+            </Button>
+          </FormGroup>
+        </Form>
+        {resultado.exibir && (
+          <ToastContainer
+            position="top-end"
+            className="p-3"
+            style={{ position: "fixed", zIndex: 9999 }}
+          >
+            <Toast
+              show={resultado.exibir}
+              onClose={() => setResultado({ exibir: false, variante: "", mensagem: "" })}
+              bg={resultado.variante} // Aproveitamos a string "success" ou "danger"
+            >
+              <Toast.Header>
+                <strong className="me-auto text-dark">
+                  {resultado.variante === "danger" ? "Atenção" : "Sucesso"}
+                </strong>
+              </Toast.Header>
+              <Toast.Body className="text-white fw-bold fs-6">
+                {resultado.mensagem}
+              </Toast.Body>
+            </Toast>
+          </ToastContainer>
+        )}
+      </Container>
+    </>
+  );
+};
+
+export default CadastroAluno;

@@ -1,0 +1,79 @@
+/* Fundo bege e borda preta fina para todo o modal */
+.custom-modal-content {
+    background-color: #ffebd2 !important;
+    /* Cor bege da imagem */
+    border: 1px solid black !important;
+    border-radius: 6px;
+    /* Leve arredondamento ou 0 para quadrado */
+    overflow: hidden;
+    /* Garante que o cabeçalho não vaze a borda */
+}
+
+/* Header customizado */
+.custom-modal-header {
+    background-color: transparent !important;
+    /* Mantém a cor do content */
+    border-bottom: 1px solid black !important;
+    /* Linha preta abaixo do título */
+    padding: 0 !important;
+    /* Remove padding padrão para controlar altura */
+    position: relative;
+    /* Para posicionar o botão fechar */
+    height: 50px;
+    /* Altura fixa para alinhar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* O Título "Integrantes" */
+.custom-modal-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: black;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+    /* Evita cliques no texto */
+}
+
+/* O Botão "Fechar" Vermelho */
+.custom-close-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    /* Ocupa toda a altura do header */
+    border-radius: 0 !important;
+    /* Quadrado */
+    border: none !important;
+    border-left: 1px solid black !important;
+    /* Divisória esquerda */
+    background-color: #ff6b6b !important;
+    /* Vermelho claro da imagem */
+    color: white !important;
+    font-weight: 600;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.custom-close-btn:hover {
+    background-color: #ff4c4c !important;
+    /* Vermelho mais escuro no hover */
+}
+
+/* A Lista de Alunos */
+.custom-list-item {
+    border-bottom: 1px solid black;
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    color: black;
+    list-style: none;
+    /* Remove bolinhas */
+}
+
+/* Remove a borda do último item para não duplicar com a borda do modal */
+.custom-list-item:last-child {
+    border-bottom: none;
+}

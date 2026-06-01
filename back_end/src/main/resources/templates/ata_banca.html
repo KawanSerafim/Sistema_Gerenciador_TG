@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 50px 70px;
+            color: #000;
+            font-size: 12pt;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            height: auto;
+        }
+
+        .header-text {
+            line-height: 1.3;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .alunos-list {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tema {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .texto-requisito {
+            text-align: justify;
+            font-weight: normal;
+            margin-left: 45%;
+            font-size: 12pt;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .aprovado-em {
+            text-align: left;
+            margin-bottom: 40px;
+            font-size: 12pt;
+        }
+
+        .banca-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 14pt;
+        }
+
+        .membros-container {
+            width: 90%;
+            /* Deixa a lista de professores mais centralizada mas com texto alinhado à esquerda */
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .membro-banca {
+            margin-bottom: 30px;
+            font-size: 12pt;
+        }
+
+        .membro-banca p {
+            margin: 6px 0;
+        }
+
+        /*Usa table em vez de flex, dado a limitação da biblioteca de conversão para PDF*/
+        .tabela-assinaturas {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .tabela-assinaturas td {
+            padding: 0;
+            vertical-align: bottom;
+            width: 50%;
+        }
+
+        .footer-data {
+            margin-top: 60px;
+            font-size: 12pt;
+        }
+    </style>
+</head>
+
+<body>
+    <!--Logo CPS-->
+    <div class="logo-container" th:if="${!#strings.isEmpty(logoCps)}">
+        <img th:src="${logoCps}" alt="Logo Centro Paula Souza" style="width: 120px;" />
+    </div>
+
+    <div class="center header-text">
+        <p style="margin: 0;" class="uppercase bold">FACULDADE DE TECNOLOGIA DA ZONA LESTE</p>
+    </div>
+
+    <div class="alunos-list">
+        <div th:each="aluno : ${alunos}">
+            <p style="margin: 5px 0;" class="uppercase bold" th:text="${aluno}"></p>
+        </div>
+    </div>
+
+    <div class="tema" th:text="${tema}"></div>
+
+    <div class="texto-requisito">
+        Trabalho de Conclusão de Curso apresentado ao Curso de Tecnologia em <span th:text="${curso}"></span>,
+        como requisito parcial para obtenção do Título de Tecnólogo em <span th:text="${curso}"></span>.
+    </div>
+
+    <div class="aprovado-em">
+        Aprovado em: ___/___/___
+    </div>
+
+    <div class="banca-title center">
+        Banca Examinadora
+    </div>
+
+    <div class="membros-container">
+        <div th:each="membro : ${membrosBanca}" class="membro-banca">
+            <p>Prof. <span th:text="${membro.nome}"></span> Instituição: <span th:text="${membro.instituicao}"></span>
+            </p>
+            <table class="tabela-assinaturas">
+                <tr>
+                    <td>Julgamento: ___________________________ </td>
+                    <td>Assinatura: ___________________________ </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-data center">
+        São Paulo, <span th:text="${dia}"></span> de <span th:text="${mes}"></span> de <span th:text="${ano}"></span>.
+    </div>
+
+</body>
+
+</html>
