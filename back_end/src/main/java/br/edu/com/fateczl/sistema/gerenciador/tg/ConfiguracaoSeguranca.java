@@ -2,6 +2,7 @@ package br.edu.com.fateczl.sistema.gerenciador.tg;
 
 import br.edu.com.fateczl.sistema.gerenciador.tg.contausuario.infraestrutura.configuracao.seguranca.FiltroAutenticacaoJwt;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,10 @@ import java.util.List;
 @EnableMethodSecurity
 @AllArgsConstructor
 public class ConfiguracaoSeguranca {
+    // Lê do application.properties a lista de origens permitidas para o CORS
+    @Value("${api.cors.origins}")
+    private List<String> origensPermitidas;
+
     private final FiltroAutenticacaoJwt filtroJwt;
 
     private static final String[] ROTAS_PUBLICAS_POST = {
@@ -83,8 +88,8 @@ public class ConfiguracaoSeguranca {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        //Portas local do React
-        configuracao.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        //Usa a lista dinamica vinda do application properties
+        configuracao.setAllowedOrigins(origensPermitidas);
         configuracao.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuracao.setAllowedHeaders(List.of("*"));
         configuracao.addExposedHeader("Content-Disposition");

@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "mandato_diretor")
+@Table(name = "mandatos_diretor")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,4 +32,7 @@ public class MandatoDiretorModelo {
     @Lob
     @Column(name = "assinatura_base64", columnDefinition = "LONGTEXT")
     private String assinaturaBase64;
+
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo = true;
 }

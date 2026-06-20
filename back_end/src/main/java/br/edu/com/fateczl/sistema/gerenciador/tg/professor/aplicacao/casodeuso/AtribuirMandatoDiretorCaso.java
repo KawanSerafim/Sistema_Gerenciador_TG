@@ -62,14 +62,11 @@ public class AtribuirMandatoDiretorCaso {
 
         // Regra de Negócio: Impede que a instituição tenha múltiplos diretores vigentes simultaneamente
         mandatoDiretorRepositorio.buscarMandatoVigente().ifPresent(mandatoAtivo -> {
-            // Se o mandato ativo for de OUTRO professor, lançamos erro
-            if (!mandatoAtivo.professorId().equals(professor.id())) {
                 throw new RegraNegocioExcecao(
                         CodigoErro.RN_001_ESTADO_INVALIDO_PARA_ACAO,
                         "Mandato Diretor",
                         "sem mandato vigente na faculdade"
                 );
-            }
         });
 
         // Instancia e persiste o novo mandato

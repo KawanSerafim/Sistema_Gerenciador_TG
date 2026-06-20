@@ -8,6 +8,7 @@ import br.edu.com.fateczl.sistema.gerenciador.tg.professor.dominio.objetosvalor.
 import java.time.LocalDate;
 
 public class MandatoDiretor {
+
     private final MandatoDiretorId id;
     private final ProfessorId professorId;
     private final LocalDate dataInicio;
@@ -15,13 +16,15 @@ public class MandatoDiretor {
     private LocalDate dataFim;
     //salvando os bytes reais da imagem com a assinatura do diretor convertidos em texto puro
     private final String assinaturaBase64;
+    private Boolean ativo;
 
     private MandatoDiretor(
             MandatoDiretorId mandatoDiretorId,
             ProfessorId professorId,
             LocalDate dataInicio,
             LocalDate dataFim,
-            String assinaturaBase64) {
+            String assinaturaBase64,
+            Boolean ativo) {
         this.id = assegurarPresenca(mandatoDiretorId, "ID");
         this.professorId = assegurarPresenca(professorId, "professor ID");
         this.dataInicio = assegurarPresenca(dataInicio, "data de inicio do mandato");
@@ -29,6 +32,8 @@ public class MandatoDiretor {
         this.dataFim = dataFim;
         this.assinaturaBase64 = assegurarPresenca(assinaturaBase64,
                 "imagem da assinatura do diretor em Base64");
+        //Inicia como true
+        this.ativo = ativo;
     }
 
     // MÉTODOS FACTORY ---------------------------------------------------------
@@ -45,7 +50,10 @@ public class MandatoDiretor {
                 professorId,
                 dataInicio,
                 dataFim,
-                assinaturaBase64);
+                assinaturaBase64,
+                //Sempre inicia como ATIVO
+                Boolean.TRUE
+        );
     }
 
     public static MandatoDiretor carregar(
@@ -53,14 +61,16 @@ public class MandatoDiretor {
             ProfessorId professorId,
             LocalDate dataInicio,
             LocalDate dataFim,
-            String assinaturaBase64
+            String assinaturaBase64,
+            Boolean ativo
     ){
         return new MandatoDiretor(
                 id,
                 professorId,
                 dataInicio,
                 dataFim,
-                assinaturaBase64);
+                assinaturaBase64,
+                ativo);
     }
 
     // MÉTODOS PARA GARANTIR PRESENÇA ------------------------------------------
@@ -76,16 +86,17 @@ public class MandatoDiretor {
     // MÉTODOS DE VERIFICAÇÃO --------------------------------------------------
     public boolean estaVigente() {
         LocalDate hoje = LocalDate.now();
-        return (hoje.isEqual(dataInicio) || hoje.isAfter(dataInicio)) &&
+        // Só está vigente se estiver dentro da data E estiver com a flag ATIVA
+        return this.ativo &&
+                (hoje.isEqual(dataInicio) || hoje.isAfter(dataInicio)) &&
                 (dataFim == null || hoje.isBefore(dataFim) || hoje.isEqual(dataFim));
     }
     // MÉTODOS DE ATUALIZAÇÃO --------------------------------------------------
 
     //O comportamento do domínio para antecipar o fim do mandato
     public void encerrar() {
-        // Define o fim do mandato para ontem.
-        // Assim, a validação 'dataFim >= hoje' dará FALSO instantaneamente.
-        this.dataFim = LocalDate.now().minusDays(1);
+        this.dataFim = LocalDate.now();
+        this.ativo = false;
     }
 
     // MÉTODOS GETTERS DE DELEGAÇÃO --------------------------------------------
@@ -103,4 +114,5 @@ public class MandatoDiretor {
     public String assinaturaBase64() { return assinaturaBase64; }
     public LocalDate dataInicio(){ return dataInicio;}
     public LocalDate dataFim(){ return dataFim;}
+    public Boolean ativo() {return ativo;}
 }

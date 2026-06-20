@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import UserNavBar from "../../../components/usernavbar/UserNavBar";
 import { Container, Form, Button, Row, Col, Spinner, ToastContainer, Toast, ListGroup, FormControl } from 'react-bootstrap';
+
 //Services
 import { diretorService } from '../../../services/mandatoDiretor/diretorService';
 import { professorService } from '../../../services/professor/professorService';
+
 //RHF e zod
 import { diretorZodSchema } from '../../../schemas/diretor/diretorZodSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
+
 const VisaoMandatosDiretor = () => {
     const [diretorAtual, setDiretorAtual] = useState(null);
     const [carregando, setCarregando] = useState(true);
@@ -51,8 +54,10 @@ const VisaoMandatosDiretor = () => {
 
                 const dadosProfessores = await professorService.buscaProfessoresPorCargo("ORIENTADOR");
 
-                // Mapeamento cravado na matrícula
+                // Salva o ID e a Matrícula para garantir que o "find" vai funcionar
                 const professoresFormatados = dadosProfessores.map(prof => ({
+                    // Previne caso o backend retorne propriedades diferentes
+                    id: prof.id || prof.idProfessor,
                     matricula: prof.matricula,
                     nome: prof.nome
                 }));
@@ -97,7 +102,6 @@ const VisaoMandatosDiretor = () => {
 
     const selecionarSugestao = (professor) => {
         setBuscaProfessor(professor.nome);
-        // Salva a matrícula no estado do formulário
         setValue("matriculaProfessor", String(professor.matricula), { shouldValidate: true });
         setSugestoes([]);
     };
@@ -119,7 +123,7 @@ const VisaoMandatosDiretor = () => {
             setResultado({ exibir: false, variante: "", mensagem: "" });
 
             await diretorService.atribuirDiretor({
-                matriculaProfessor: dadosValidados.matriculaProfessor, // Envia a matrícula validada
+                matriculaProfessor: dadosValidados.matriculaProfessor,
                 dataInicio: dadosValidados.dataInicio,
                 dataFim: dadosValidados.dataFim || null,
                 assinaturaBase64: dadosValidados.assinaturaBase64
@@ -155,6 +159,16 @@ const VisaoMandatosDiretor = () => {
         }
     };
 
+    // HOTFIX: Busca o nome do diretor cruzando o ID/Matrícula da gestão atual com a lista de professores carregada.
+    const obterNomeDiretor = () => {
+        if (!diretorAtual) return "";
+        const profEncontrado = professores.find(
+            p => p.id === diretorAtual.professorId || p.matricula === diretorAtual.professorId
+        );
+        // Se encontrar, retorna o nome. Se não, fallback para exibir o ID como era antes.
+        return profEncontrado ? profEncontrado.nome : diretorAtual.professorId;
+    };
+
     return (
         <>
             <UserNavBar userName='Administrador' maxWidth="1200px" />
@@ -173,7 +187,10 @@ const VisaoMandatosDiretor = () => {
                             <h4 className="text-secondary mb-4">Existe um diretor com mandato vigente na instituição.</h4>
                             <div className="bg-white p-4 rounded-3 shadow-sm border mb-4 text-start">
                                 <h5 className="fw-bold text-primary mb-3">Dados da Gestão Atual</h5>
-                                <p className="mb-2 fs-5"><strong>ID / Matrícula do Professor:</strong> {diretorAtual.professorId}</p>
+
+                                {/* AQUI ESTÁ A MUDANÇA: Exibindo o Nome formatado */}
+                                <p className="mb-2 fs-5"><strong>Diretor(a):</strong> Prof(a). {obterNomeDiretor()}</p>
+
                                 <p className="mb-2 fs-5"><strong>Início do Mandato:</strong> {new Date(diretorAtual.dataInicio).toLocaleDateString('pt-BR')}</p>
 
                                 <div className="mt-4">
